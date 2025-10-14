@@ -16,11 +16,27 @@ NodoTrie::~NodoTrie() {
     hijos.clear();
 }
 
-// Insertar nuevo nodo hijo
 void NodoTrie::insertar(char c) { 
     hoja = false;
-    hijos[c] = new NodoTrie(true); 
+    auto it = hijos.find(c);
+    if (it == hijos.end()) {
+        hijos[c] = new NodoTrie(true); 
+    }
 }
+
+void NodoTrie::insertar_word(string w) {
+    NodoTrie* aux = this; // empezamos desde la raiaz
+    for (char c : w) {
+        NodoTrie* hijo = aux->obtener(c);
+        if (!hijo) {
+            aux->insertar(c);       // crear el hijo si no existe
+            hijo = aux->obtener(c); // obtener el nuevo hijo
+        }
+        aux = hijo;                // avanzamos al hijo
+    }
+    aux->hoja = true; // marcar nodo final como hoja
+}
+
 
 bool NodoTrie::esHoja() const {
     return hoja;
@@ -32,6 +48,19 @@ NodoTrie* NodoTrie::obtener(char c) const {
         return it->second;
     }
     return NULL;
+}
+
+NodoTrie* NodoTrie::obtener(string w) {
+    // Caso base
+    if (w.length() == 0) return this;
+    // Caso recursivo
+    auto it = hijos.find(w[0]);
+    if (it == hijos.end()) {
+        return NULL;
+    } else {
+        string w2 = w.substr(1); // desde el índice 1 hasta el final
+        obtener(w2);
+    }
 }
 
 unordered_map<char, NodoTrie*>& NodoTrie::getHijos() {

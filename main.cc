@@ -10,8 +10,7 @@ int main() {
     while(cin >> c) {
         NodoTrie actual = &trie;
         if (c != ' ') {
-            
+            actual.insertar(c);
         }
-
     }
 }

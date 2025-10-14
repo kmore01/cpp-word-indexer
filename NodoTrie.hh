@@ -25,10 +25,15 @@ class NodoTrie {
     // Insertar nuevo nodo hijo
     void insertar(char c);
 
+    // Insertar nuevo nodo hijo
+    void insertar_word(string w);
+
     // Getters y setters
     bool esHoja() const;
 
     NodoTrie* obtener(char c) const;
+
+    NodoTrie* obtener(string w);
 
     unordered_map<char, NodoTrie *> &getHijos();
 };
