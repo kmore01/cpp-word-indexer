@@ -4,16 +4,18 @@
 #include <fstream>
 #include <sstream>
 #include <list>
+#include <limits>
 
 using namespace std;
 
-void leerEntrada(const string &nombreArchivo, NodoTrie &t) {
+bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     ifstream archivo(nombreArchivo);
     string linea;
     int numeroLinea = 1;
     
     if (!archivo.is_open()) {
         cout << "Error: No se pudo abrir el archivo" << endl;
+        return false;
     }
 
     while (getline(archivo, linea)) {
@@ -24,22 +26,25 @@ void leerEntrada(const string &nombreArchivo, NodoTrie &t) {
         }
         ++numeroLinea;
     }
+    return true;
 }
 
 
 int main() {
     char c;
     NodoTrie trie;
-    cout << "File name: ";
+    cout << ">>File name: ";
     string archivo;
     cin >> archivo;
-    leerEntrada(archivo, trie);
-    cout << endl <<  endl << endl << "File was read" << endl;
+    bool valido = leerEntrada(archivo, trie);
+    cout << "===================" << endl;
+    cout << "File was read." << endl;
+    cout << ">>Press x to exit or press f to search a word: ";
     char command;
     cin >> command;
-    while (command != 'x') {
+    while (valido and command != 'x') {
         if (command == 'f') {
-            cout << "Search word: ";
+            cout << ">>Search word: ";
             string word;
             cin >> word;
             list<int> lines = trie.buscar_word(word);
@@ -47,14 +52,19 @@ int main() {
                 cout << "Couldn't find the word." << endl;
             }
             else {
-                cout << "Word find in the lines: ";
+                cout << "Word found in lines: ";
+                int count = 0;
                 for (int it : lines) {
-                    cout << it << " " << endl;
+                    cout << it << "     ";
+                    ++count;
+                    if (count % 16 == 0) cout << endl;
                 }
+                cout << endl << "Total words founds: " << count << endl;
             }
         }
 
-        cout << "Press x to exit or press f to search a word";
+        cout << ">>Press x to exit or press f to search a word: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin >> command;
     }
 }
