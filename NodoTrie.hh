@@ -11,24 +11,26 @@ class NodoTrie {
     // La clave del map es el valor del nodo. Por ejemplo, para acceder
     // al nodo con el char 'a' haremos hijos[a].
     unordered_map<char, NodoTrie *> hijos;
-    bool esHoja;
-
-   public:
+    bool hoja;
+    
+    public:
     // Constructor
     NodoTrie();
+
+    NodoTrie(bool h);
 
     // Destructor
     ~NodoTrie();
 
+    // Insertar nuevo nodo hijo
+    void insertar(char c);
+
     // Getters y setters
     bool esHoja() const;
 
-    void setEsHoja(bool eh);
+    NodoTrie* obtener(char c) const;
 
     unordered_map<char, NodoTrie *> &getHijos();
-
-    // Métodos
-    void mostrarDatos() const;
 };
 
 #endif
