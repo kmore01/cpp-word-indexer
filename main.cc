@@ -39,23 +39,32 @@ void mostrarMenuArchivos(const vector<string>& archivos) {
 
 bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     ifstream archivo(nombreArchivo);
-    string linea;
-    int numeroLinea = 1;
-    
+
     if (!archivo.is_open()) {
         cout << "Error: The file '" << nombreArchivo << "' could not be opened" << endl;
         return false;
     }
 
-    while (getline(archivo, linea)) {
-        stringstream ss(linea);
-        string word;
-        while (ss >> word) {
-            t.insertar_word(word, numeroLinea);
+    string linea;
+    int numeroLinea = 1;
+
+    try {
+        while (getline(archivo, linea)) {
+            stringstream ss(linea);
+            string word;
+            while (ss >> word) {
+                t.insertar_word(word, numeroLinea);
+            }
+            ++numeroLinea;
         }
-        ++numeroLinea;
+        archivo.close();    // to avoid possible problems
+        return true;
     }
-    return true;
+    catch (const exception& e) {
+        cout << "Error reading file: " << e.what() << endl;
+        archivo.close(); 
+        return false;
+    }
 }
 
 void readFile (bool &valido, const vector<string> &lista, NodoTrie &trie) {
@@ -65,11 +74,13 @@ void readFile (bool &valido, const vector<string> &lista, NodoTrie &trie) {
         int i;
         cin >> i; 
         --i;
-        if (i >= lista.size()) cout << "error: index not available" << endl << endl;
-        else if (i >= 0) {
-            cout << "the file selected was '" << lista[i] << "'" << endl;
-            cout << "reading file '" << lista[i] << "'..." << endl;
-            valido = leerEntrada(lista[i], trie);
+        if (i >= 0) {
+            if (i >= lista.size()) cout << "error: index not available" << endl << endl;
+            else {
+                cout << "the file selected was '" << lista[i] << "'" << endl;
+                cout << "reading file '" << lista[i] << "'..." << endl;
+                valido = leerEntrada(lista[i], trie);
+            }
         }
         else {
             cout << ">> File name: ";
