@@ -24,8 +24,6 @@ void leerEntrada(const string &nombreArchivo, NodoTrie &t) {
         }
         ++numeroLinea;
     }
-    
-
 }
 
 
@@ -36,7 +34,7 @@ int main() {
     string archivo;
     cin >> archivo;
     leerEntrada(archivo, trie);
-    cout << "File was read" << endl;
+    cout << endl <<  endl << endl << "File was read" << endl;
     char command;
     cin >> command;
     while (command != 'x') {
