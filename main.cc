@@ -1,19 +1,19 @@
 #include <iostream>
 #include "NodoTrie.hh"
 #include <string>
+#include <fstream>
 #include <sstream>
 #include <list>
 
 using namespace std;
 
-void leerEntrada(const string &nombreArchivo, NodeTrie &t) {
+void leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     ifstream archivo(nombreArchivo);
     string linea;
     int numeroLinea = 1;
     
     if (!archivo.is_open()) {
         cout << "Error: No se pudo abrir el archivo" << endl;
-        return resultados;
     }
 
     while (getline(archivo, linea)) {
@@ -22,7 +22,7 @@ void leerEntrada(const string &nombreArchivo, NodeTrie &t) {
         while (ss >> word) {
             t.insertar_word(word, numeroLinea);
         }
-        ++numeroLinea
+        ++numeroLinea;
     }
     
 
@@ -33,9 +33,10 @@ int main() {
     char c;
     NodoTrie trie;
     cout << "File name: ";
+    string archivo;
     cin >> archivo;
-    NodeTrie trie;
     leerEntrada(archivo, trie);
+    cout << "File was read" << endl;
     char command;
     cin >> command;
     while (command != 'x') {
@@ -48,7 +49,7 @@ int main() {
                 cout << "Couldn't find the word." << endl;
             }
             else {
-                cout << "Word find in the lines: "
+                cout << "Word find in the lines: ";
                 for (int it : lines) {
                     cout << it << " " << endl;
                 }

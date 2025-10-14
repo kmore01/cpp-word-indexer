@@ -24,8 +24,8 @@ void NodoTrie::insertar(char c) {
     }
 }
 
-void NodoTrie::insertar_word(string w) {
-    NodoTrie* aux = this; // empezamos desde la raiaz
+void NodoTrie::insertar_word(string w, int l) {
+    NodoTrie* aux = this; // empezamos desde la raiz
     for (char c : w) {
         NodoTrie* hijo = aux->obtener(c);
         if (!hijo) {
@@ -35,8 +35,13 @@ void NodoTrie::insertar_word(string w) {
         aux = hijo;                // avanzamos al hijo
     }
     aux->hoja = true; // marcar nodo final como hoja
+    aux->lineas.insert(lineas.end(), l);
 }
 
+list<int> NodoTrie::buscar_word(string w) {
+    NodoTrie* word = obtener(w);
+    return word->lineas;
+}
 
 bool NodoTrie::esHoja() const {
     return hoja;
@@ -59,7 +64,7 @@ NodoTrie* NodoTrie::obtener(string w) {
         return NULL;
     } else {
         string w2 = w.substr(1); // desde el índice 1 hasta el final
-        obtener(w2);
+        return obtener(w2);
     }
 }
 
