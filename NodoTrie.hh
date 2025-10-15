@@ -2,8 +2,8 @@
 #define NODOTRIE_HH
 
 #include <iostream>
-#include <unordered_map>
 #include <list>
+#include <unordered_map>
 
 using namespace std;
 
@@ -15,8 +15,7 @@ class NodoTrie {
     bool hoja;
     list<int> lineas;
 
-    
-    public:
+   public:
     // Constructor
     NodoTrie();
 
@@ -37,9 +36,9 @@ class NodoTrie {
     // Getters y setters
     bool esHoja() const;
 
-    NodoTrie* obtener(char c) const;
+    NodoTrie *obtener(char c) const;
 
-    NodoTrie* obtener(string w);
+    NodoTrie *obtener(string w);
 
     unordered_map<char, NodoTrie *> &getHijos();
 };

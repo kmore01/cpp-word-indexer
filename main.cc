@@ -1,19 +1,20 @@
-#include <iostream>
-#include "NodoTrie.hh"
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <list>
-#include <vector>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <list>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include "NodoTrie.hh"
 
 using namespace std;
 
-vector<string> listarArchivosTxt(const string& directorio = ".") {
+vector<string> listarArchivosTxt(const string &directorio = ".") {
     vector<string> archivos;
-    
+
     try {
-        for (const auto& entrada : filesystem::directory_iterator(directorio)) {
+        for (const auto &entrada : filesystem::directory_iterator(directorio)) {
             if (entrada.is_regular_file()) {
                 string extension = entrada.path().extension().string();
                 if (extension == ".txt" || extension == ".TXT") {
@@ -21,14 +22,14 @@ vector<string> listarArchivosTxt(const string& directorio = ".") {
                 }
             }
         }
-    } catch (const filesystem::filesystem_error& e) {
+    } catch (const filesystem::filesystem_error &e) {
         cout << "Error al leer el directorio: " << e.what() << endl;
     }
-    
+
     return archivos;
 }
 
-void mostrarMenuArchivos(const vector<string>& archivos) {
+void mostrarMenuArchivos(const vector<string> &archivos) {
     cout << "=== AVAILABLE FILES ===" << endl;
     for (size_t i = 0; i < archivos.size(); ++i) {
         cout << i + 1 << ". " << archivos[i] << endl;
@@ -41,9 +42,10 @@ bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     ifstream archivo(nombreArchivo);
     string linea;
     int numeroLinea = 1;
-    
+
     if (!archivo.is_open()) {
-        cout << "Error: The file '" << nombreArchivo << "' could not be opened" << endl;
+        cout << "Error: The file '" << nombreArchivo << "' could not be opened"
+             << endl;
         return false;
     }
 
@@ -58,20 +60,20 @@ bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     return true;
 }
 
-void readFile (bool &valido, const vector<string> &lista, NodoTrie &trie) {
+void readFile(bool &valido, const vector<string> &lista, NodoTrie &trie) {
     while (not valido) {
         mostrarMenuArchivos(lista);
         cout << ">> Select a file (number): ";
         int i;
-        cin >> i; 
+        cin >> i;
         --i;
-        if (i >= lista.size()) cout << "error: index not available" << endl << endl;
+        if (i >= lista.size())
+            cout << "error: index not available" << endl << endl;
         else if (i >= 0) {
             cout << "the file selected was '" << lista[i] << "'" << endl;
             cout << "reading file '" << lista[i] << "'..." << endl;
             valido = leerEntrada(lista[i], trie);
-        }
-        else {
+        } else {
             cout << ">> File name: ";
             string archivo;
             cin >> archivo;
@@ -84,11 +86,10 @@ void readFile (bool &valido, const vector<string> &lista, NodoTrie &trie) {
 void show_commands() {
     cout << ">> Commands: " << endl;
     cout << "   h: show commands" << endl
-         << "   s: search a word" << endl 
-         << "   o: open new file" << endl 
+         << "   s: search a word" << endl
+         << "   o: open new file" << endl
          << "   x: exit" << endl;
 }
-
 
 int main() {
     char c;
@@ -110,8 +111,7 @@ int main() {
             list<int> lines = trie.buscar_word(word);
             if (lines.empty()) {
                 cout << "Couldn't find the word '" << word << "'" << endl;
-            }
-            else {
+            } else {
                 cout << "Word found in lines: ";
                 int count = 0;
                 for (int it : lines) {
@@ -122,17 +122,16 @@ int main() {
                 cout << endl << endl << "Total words founds: " << count << endl;
             }
             cout << "===================" << endl;
-        }
-        else if (command == 'o') {
+        } else if (command == 'o') {
             cout << "Open file:" << endl;
             NodoTrie aux;
             trie = aux;
             valido = false;
             readFile(valido, lista, trie);
-                cout << "=============================" << endl;
-                cout << "File was read correctly." << endl;
-        }
-        else if (command == 'h') show_commands();
+            cout << "=============================" << endl;
+            cout << "File was read correctly." << endl;
+        } else if (command == 'h')
+            show_commands();
         cout << "enter the command: ";
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin >> command;
