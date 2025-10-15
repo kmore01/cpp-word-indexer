@@ -6,6 +6,7 @@
 #include <list>
 #include <vector>
 #include <filesystem>
+#include <stdexcept>
 
 using namespace std;
 
@@ -39,7 +40,7 @@ void mostrarMenuArchivos(const vector<string>& archivos) {
 
 bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     ifstream archivo(nombreArchivo);
-
+    
     if (!archivo.is_open()) {
         cout << "Error: The file '" << nombreArchivo << "' could not be opened" << endl;
         return false;
@@ -67,30 +68,57 @@ bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     }
 }
 
+bool esNumeroStoi(const string& str) {
+    if (str.empty()) return false;
+    
+    try {
+        size_t pos = 0;
+        int numero = stoi(str, &pos);
+        
+        // Verificar que se procesó todo el string
+        return (pos == str.length());
+    }
+    catch (const invalid_argument& e) {
+        return false;
+    }
+    catch (const out_of_range& e) {
+        return false; // Número demasiado grande
+    }
+}
+
 void readFile (bool &valido, const vector<string> &lista, NodoTrie &trie) {
     while (not valido) {
         mostrarMenuArchivos(lista);
         cout << ">> Select a file (number): ";
-        int i;
-        cin >> i; 
-        --i;
-        if (i >= 0) {
-            if (i >= lista.size()) cout << "error: index not available" << endl << endl;
+        string num;
+        cin >> num; 
+        if (esNumeroStoi(num)) {
+            int i = stoi(num);
+            --i;
+            if (i >= 0) {
+                if (i >= lista.size()) cout << "error: index not available" << endl << endl;
+                else {
+                    cout << "the file selected was '" << lista[i] << "'" << endl;
+                    cout << "reading file '" << lista[i] << "'..." << endl;
+                    valido = leerEntrada(lista[i], trie);
+                }
+            }
             else {
-                cout << "the file selected was '" << lista[i] << "'" << endl;
-                cout << "reading file '" << lista[i] << "'..." << endl;
-                valido = leerEntrada(lista[i], trie);
+                cout << ">> File name: ";
+                string archivo;
+                cin >> archivo;
+                cout << "reading file '" << archivo << "'..." << endl;
+                valido = leerEntrada(archivo, trie);
             }
         }
         else {
-            cout << ">> File name: ";
-            string archivo;
-            cin >> archivo;
-            cout << "reading file '" << archivo << "'..." << endl;
-            valido = leerEntrada(archivo, trie);
+            cout << "Error: It expected a number" << endl << "Press any key to continue" << endl;
+            string aux;
+            cin >> aux;
         }
     }
 }
+
 
 void show_commands() {
     cout << ">> Commands: " << endl;
