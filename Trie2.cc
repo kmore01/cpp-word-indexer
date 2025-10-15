@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace std;
+
 // ========================================
 // PARTE 1: CONSTRUCCIÓN DE TRIES
 // ========================================
@@ -17,10 +19,10 @@
 // Implementación 1: Trie Clásico (Representación estándar)
 class TrieNode {
    public:
-    std::unordered_map<char, std::unique_ptr<TrieNode>> children;
+    unordered_map<char, unique_ptr<TrieNode>> children;
     bool isEndOfWord;
-    int wordCount;                 // Para contar frecuencias
-    std::vector<int> lineNumbers;  // Líneas donde aparece la palabra
+    int wordCount;            // Para contar frecuencias
+    vector<int> lineNumbers;  // Líneas donde aparece la palabra
 
     TrieNode() : isEndOfWord(false), wordCount(0) {}
 };
@@ -31,47 +33,45 @@ class TrieNode {
 
 class RadixTrieNode {
    public:
-    std::string edgeLabel;  // Etiqueta de la arista (puede contener múltiples
-                            // caracteres)
-    std::unordered_map<char, std::unique_ptr<RadixTrieNode>> children;
+    string edgeLabel;  // Etiqueta de la arista (puede contener múltiples
+                       // caracteres)
+    unordered_map<char, unique_ptr<RadixTrieNode>> children;
     bool isEndOfWord;
     int wordCount;
-    std::vector<int> lineNumbers;
+    vector<int> lineNumbers;
 
-    RadixTrieNode(const std::string& label = "")
+    RadixTrieNode(const string& label = "")
         : edgeLabel(label), isEndOfWord(false), wordCount(0) {}
 };
 
 class RadixTrie {
    private:
-    std::unique_ptr<RadixTrieNode> root;
+    unique_ptr<RadixTrieNode> root;
     int totalNodes;
     int totalWords;
 
    public:
     RadixTrie()
-        : root(std::make_unique<RadixTrieNode>()),
-          totalNodes(1),
-          totalWords(0) {}
+        : root(make_unique<RadixTrieNode>()), totalNodes(1), totalWords(0) {}
 
-    void insert(const std::string& word, int lineNumber = -1) {
+    void insert(const string& word, int lineNumber = -1) {
         insertHelper(root.get(), word, 0, lineNumber);
     }
 
-    bool search(const std::string& word) {
+    bool search(const string& word) {
         return searchHelper(root.get(), word, 0);
     }
 
-    std::vector<int> searchLines(const std::string& word) {
+    vector<int> searchLines(const string& word) {
         return searchLinesHelper(root.get(), word, 0);
     }
 
-    bool startsWith(const std::string& prefix) {
+    bool startsWith(const string& prefix) {
         return startsWithHelper(root.get(), prefix, 0);
     }
 
-    std::vector<std::string> getWordsWithPrefix(const std::string& prefix) {
-        std::vector<std::string> result;
+    vector<string> getWordsWithPrefix(const string& prefix) {
+        vector<string> result;
         RadixTrieNode* node = findPrefixNode(root.get(), prefix, 0);
         if (node != nullptr) {
             dfsCollectWords(node, prefix, result);
@@ -84,15 +84,15 @@ class RadixTrie {
 
     int getMaxDepth() { return calculateMaxDepth(root.get(), 0); }
 
-    std::vector<std::string> getAllWords() {
-        std::vector<std::string> result;
+    vector<string> getAllWords() {
+        vector<string> result;
         dfsCollectWords(root.get(), "", result);
-        std::sort(result.begin(), result.end());  // Ordenar alfabéticamente
+        sort(result.begin(), result.end());  // Ordenar alfabéticamente
         return result;
     }
 
    private:
-    void insertHelper(RadixTrieNode* node, const std::string& word, int index,
+    void insertHelper(RadixTrieNode* node, const string& word, int index,
                       int lineNumber) {
         if (index == word.length()) {
             if (!node->isEndOfWord) {
@@ -110,27 +110,27 @@ class RadixTrie {
 
         if (node->children.find(c) == node->children.end()) {
             // Crear nuevo nodo con el resto de la palabra
-            std::string remainingWord = word.substr(index);
-            auto newNode = std::make_unique<RadixTrieNode>(remainingWord);
+            string remainingWord = word.substr(index);
+            auto newNode = make_unique<RadixTrieNode>(remainingWord);
             newNode->isEndOfWord = true;
             newNode->wordCount = 1;
             if (lineNumber != -1) {
                 newNode->lineNumbers.push_back(lineNumber);
             }
-            node->children[c] = std::move(newNode);
+            node->children[c] = move(newNode);
             totalNodes++;
             totalWords++;
             return;
         }
 
         RadixTrieNode* child = node->children[c].get();
-        std::string& edgeLabel = child->edgeLabel;
+        string& edgeLabel = child->edgeLabel;
 
         // Encontrar el prefijo común
         int commonLength = 0;
-        int maxLength = std::min(edgeLabel.length(), word.length() - index);
+        int maxLength = min(edgeLabel.length(), word.length() - index);
 
-        while (commonLength < maxLength &&
+        while (commonLength < maxLength and
                edgeLabel[commonLength] == word[index + commonLength]) {
             commonLength++;
         }
@@ -146,20 +146,20 @@ class RadixTrie {
     }
 
     void splitNode(RadixTrieNode* node, int splitIndex) {
-        std::string originalLabel = node->edgeLabel;
-        std::string newLabel = originalLabel.substr(splitIndex);
+        string originalLabel = node->edgeLabel;
+        string newLabel = originalLabel.substr(splitIndex);
 
         // Crear nuevo nodo hijo
-        auto newChild = std::make_unique<RadixTrieNode>(newLabel);
-        newChild->children = std::move(node->children);
+        auto newChild = make_unique<RadixTrieNode>(newLabel);
+        newChild->children = move(node->children);
         newChild->isEndOfWord = node->isEndOfWord;
         newChild->wordCount = node->wordCount;
-        newChild->lineNumbers = std::move(node->lineNumbers);
+        newChild->lineNumbers = move(node->lineNumbers);
 
         // Actualizar nodo actual
         node->edgeLabel = originalLabel.substr(0, splitIndex);
         node->children.clear();
-        node->children[newLabel[0]] = std::move(newChild);
+        node->children[newLabel[0]] = move(newChild);
         node->isEndOfWord = false;
         node->wordCount = 0;
         node->lineNumbers.clear();
@@ -167,7 +167,7 @@ class RadixTrie {
         totalNodes++;
     }
 
-    bool searchHelper(RadixTrieNode* node, const std::string& word, int index) {
+    bool searchHelper(RadixTrieNode* node, const string& word, int index) {
         if (index == word.length()) {
             return node->isEndOfWord;
         }
@@ -178,7 +178,7 @@ class RadixTrie {
         }
 
         RadixTrieNode* child = node->children[c].get();
-        std::string& edgeLabel = child->edgeLabel;
+        string& edgeLabel = child->edgeLabel;
 
         if (word.length() - index < edgeLabel.length()) {
             return false;
@@ -193,8 +193,8 @@ class RadixTrie {
         return searchHelper(child, word, index + edgeLabel.length());
     }
 
-    std::vector<int> searchLinesHelper(RadixTrieNode* node,
-                                       const std::string& word, int index) {
+    vector<int> searchLinesHelper(RadixTrieNode* node, const string& word,
+                                  int index) {
         if (index == word.length()) {
             if (node->isEndOfWord) {
                 return node->lineNumbers;
@@ -208,7 +208,7 @@ class RadixTrie {
         }
 
         RadixTrieNode* child = node->children[c].get();
-        std::string& edgeLabel = child->edgeLabel;
+        string& edgeLabel = child->edgeLabel;
 
         if (word.length() - index < edgeLabel.length()) {
             return {};
@@ -223,7 +223,7 @@ class RadixTrie {
         return searchLinesHelper(child, word, index + edgeLabel.length());
     }
 
-    bool startsWithHelper(RadixTrieNode* node, const std::string& prefix,
+    bool startsWithHelper(RadixTrieNode* node, const string& prefix,
                           int index) {
         if (index == prefix.length()) {
             return true;
@@ -235,10 +235,10 @@ class RadixTrie {
         }
 
         RadixTrieNode* child = node->children[c].get();
-        std::string& edgeLabel = child->edgeLabel;
+        string& edgeLabel = child->edgeLabel;
 
         int remainingPrefix = prefix.length() - index;
-        int commonLength = std::min(remainingPrefix, (int)edgeLabel.length());
+        int commonLength = min(remainingPrefix, (int)edgeLabel.length());
 
         for (int i = 0; i < commonLength; i++) {
             if (prefix[index + i] != edgeLabel[i]) {
@@ -253,8 +253,8 @@ class RadixTrie {
         return startsWithHelper(child, prefix, index + edgeLabel.length());
     }
 
-    RadixTrieNode* findPrefixNode(RadixTrieNode* node,
-                                  const std::string& prefix, int index) {
+    RadixTrieNode* findPrefixNode(RadixTrieNode* node, const string& prefix,
+                                  int index) {
         if (index == prefix.length()) {
             return node;
         }
@@ -265,10 +265,10 @@ class RadixTrie {
         }
 
         RadixTrieNode* child = node->children[c].get();
-        std::string& edgeLabel = child->edgeLabel;
+        string& edgeLabel = child->edgeLabel;
 
         int remainingPrefix = prefix.length() - index;
-        int commonLength = std::min(remainingPrefix, (int)edgeLabel.length());
+        int commonLength = min(remainingPrefix, (int)edgeLabel.length());
 
         for (int i = 0; i < commonLength; i++) {
             if (prefix[index + i] != edgeLabel[i]) {
@@ -283,8 +283,8 @@ class RadixTrie {
         return findPrefixNode(child, prefix, index + edgeLabel.length());
     }
 
-    void dfsCollectWords(RadixTrieNode* node, const std::string& currentWord,
-                         std::vector<std::string>& result) {
+    void dfsCollectWords(RadixTrieNode* node, const string& currentWord,
+                         vector<string>& result) {
         if (node->isEndOfWord) {
             result.push_back(currentWord);
         }
@@ -302,7 +302,7 @@ class RadixTrie {
 
         int maxDepth = depth;
         for (auto& child : node->children) {
-            maxDepth = std::max(
+            maxDepth = max(
                 maxDepth,
                 calculateMaxDepth(child.second.get(),
                                   depth + child.second->edgeLabel.length()));
@@ -318,85 +318,24 @@ class RadixTrie {
 
 class TextProcessor {
    public:
-    // Procesar un archivo de texto y construir el trie con todas las palabras
-    static void processFileWords(const std::string& filename,
-                                 StandardTrie& trie) {
-        std::ifstream file(filename);
+    static void processFileWords(const string& filename, RadixTrie& trie) {
+        ifstream file(filename);
         if (!file.is_open()) {
-            std::cerr << "Error: No se pudo abrir el archivo " << filename
-                      << std::endl;
+            cerr << "Error: No se pudo abrir el archivo " << filename << endl;
             return;
         }
 
-        std::string line;
+        string line;
         int lineNumber = 1;
 
-        while (std::getline(file, line)) {
-            std::istringstream iss(line);
-            std::string word;
+        while (getline(file, line)) {
+            istringstream iss(line);
+            string word;
 
             while (iss >> word) {
-                // Limpiar la palabra de signos de puntuación
-                std::string cleanedWord = cleanWord(word);
+                string cleanedWord = cleanWord(word);
                 if (!cleanedWord.empty()) {
                     trie.insert(cleanedWord, lineNumber);
-                }
-            }
-            lineNumber++;
-        }
-
-        file.close();
-    }
-
-    static void processFileWords(const std::string& filename, RadixTrie& trie) {
-        std::ifstream file(filename);
-        if (!file.is_open()) {
-            std::cerr << "Error: No se pudo abrir el archivo " << filename
-                      << std::endl;
-            return;
-        }
-
-        std::string line;
-        int lineNumber = 1;
-
-        while (std::getline(file, line)) {
-            std::istringstream iss(line);
-            std::string word;
-
-            while (iss >> word) {
-                std::string cleanedWord = cleanWord(word);
-                if (!cleanedWord.empty()) {
-                    trie.insert(cleanedWord, lineNumber);
-                }
-            }
-            lineNumber++;
-        }
-
-        file.close();
-    }
-
-    // Procesar archivo creando sufijos (para búsquedas de frases)
-    static void processFileSuffixes(const std::string& filename,
-                                    StandardTrie& trie,
-                                    int maxSuffixLength = 50) {
-        std::ifstream file(filename);
-        if (!file.is_open()) {
-            std::cerr << "Error: No se pudo abrir el archivo " << filename
-                      << std::endl;
-            return;
-        }
-
-        std::string line;
-        int lineNumber = 1;
-
-        while (std::getline(file, line)) {
-            // Crear sufijos de cada línea para permitir búsquedas de frases
-            for (int i = 0; i < line.length(); i++) {
-                if (std::isalnum(line[i]) || line[i] == ' ') {
-                    int suffixLength =
-                        std::min(maxSuffixLength, (int)(line.length() - i));
-                    std::string suffix = line.substr(i, suffixLength);
-                    trie.insert(suffix, lineNumber);
                 }
             }
             lineNumber++;
@@ -406,11 +345,11 @@ class TextProcessor {
     }
 
    private:
-    static std::string cleanWord(const std::string& word) {
-        std::string cleaned;
+    static string cleanWord(const string& word) {
+        string cleaned;
         for (char c : word) {
-            if (std::isalnum(c)) {
-                cleaned += std::tolower(c);
+            if (isalnum(c)) {
+                cleaned += tolower(c);
             }
         }
         return cleaned;
@@ -422,108 +361,22 @@ class TextProcessor {
 // ========================================
 
 void demonstrateTrieOperations() {
-    std::cout << "=== DEMOSTRACIÓN DE OPERACIONES DE TRIE ===" << std::endl;
-
-    // Trie estándar
-    StandardTrie standardTrie;
-    std::cout << "\n--- Trie Estándar ---" << std::endl;
-
+    cout << "=== DEMOSTRACIÓN DE OPERACIONES DE TRIE ===" << endl;
     // Insertar algunas palabras de ejemplo
-    std::vector<std::string> words = {"plant", "planet", "plate",
-                                      "plan",  "plane",  "plants"};
-    for (int i = 0; i < words.size(); i++) {
-        standardTrie.insert(words[i], i + 1);
-    }
-
-    std::cout << "Palabras insertadas: ";
-    for (const auto& word : words) {
-        std::cout << word << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "Nodos totales: " << standardTrie.getNodeCount() << std::endl;
-    std::cout << "Palabras totales: " << standardTrie.getWordCount()
-              << std::endl;
-    std::cout << "Profundidad máxima: " << standardTrie.getMaxDepth()
-              << std::endl;
-
-    // Probar búsquedas
-    std::vector<std::string> searchWords = {"plant", "planet", "plants", "tree",
-                                            "pla"};
-    for (const auto& word : searchWords) {
-        bool found = standardTrie.search(word);
-        std::cout << "Buscar '" << word
-                  << "': " << (found ? "ENCONTRADO" : "NO ENCONTRADO")
-                  << std::endl;
-    }
-
-    // Probar prefijos
-    std::string prefix = "pla";
-    auto wordsWithPrefix = standardTrie.getWordsWithPrefix(prefix);
-    std::cout << "Palabras con prefijo '" << prefix << "': ";
-    for (const auto& word : wordsWithPrefix) {
-        std::cout << word << " ";
-    }
-    std::cout << std::endl;
+    vector<string> words = {"plant", "planet", "plate",
+                            "plan",  "plane",  "plants"};
 
     // Radix Trie
     RadixTrie radixTrie;
-    std::cout << "\n--- Radix Trie (Comprimido) ---" << std::endl;
+    cout << "\n--- Radix Trie (Comprimido) ---" << endl;
 
     for (int i = 0; i < words.size(); i++) {
         radixTrie.insert(words[i], i + 1);
     }
 
-    std::cout << "Nodos totales: " << radixTrie.getNodeCount() << std::endl;
-    std::cout << "Palabras totales: " << radixTrie.getWordCount() << std::endl;
-    std::cout << "Profundidad máxima: " << radixTrie.getMaxDepth() << std::endl;
-
-    // Comparar eficiencia
-    std::cout << "\n--- Comparación de Eficiencia ---" << std::endl;
-    std::cout << "Reducción de nodos: "
-              << ((double)(standardTrie.getNodeCount() -
-                           radixTrie.getNodeCount()) /
-                  standardTrie.getNodeCount() * 100)
-              << "%" << std::endl;
-}
-
-void benchmarkTries(const std::vector<std::string>& words) {
-    std::cout << "\n=== BENCHMARK DE TRIES ===" << std::endl;
-
-    // Benchmark Standard Trie
-    auto start = std::chrono::high_resolution_clock::now();
-    StandardTrie standardTrie;
-    for (const auto& word : words) {
-        standardTrie.insert(word);
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto standardInsertTime =
-        std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-
-    // Benchmark Radix Trie
-    start = std::chrono::high_resolution_clock::now();
-    RadixTrie radixTrie;
-    for (const auto& word : words) {
-        radixTrie.insert(word);
-    }
-    end = std::chrono::high_resolution_clock::now();
-    auto radixInsertTime =
-        std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-
-    std::cout << "Palabras procesadas: " << words.size() << std::endl;
-    std::cout << "Standard Trie - Tiempo inserción: "
-              << standardInsertTime.count() << " μs" << std::endl;
-    std::cout << "Standard Trie - Nodos: " << standardTrie.getNodeCount()
-              << std::endl;
-    std::cout << "Radix Trie - Tiempo inserción: " << radixInsertTime.count()
-              << " μs" << std::endl;
-    std::cout << "Radix Trie - Nodos: " << radixTrie.getNodeCount()
-              << std::endl;
-    std::cout << "Reducción de nodos: "
-              << ((double)(standardTrie.getNodeCount() -
-                           radixTrie.getNodeCount()) /
-                  standardTrie.getNodeCount() * 100)
-              << "%" << std::endl;
+    cout << "Nodos totales: " << radixTrie.getNodeCount() << endl;
+    cout << "Palabras totales: " << radixTrie.getWordCount() << endl;
+    cout << "Profundidad máxima: " << radixTrie.getMaxDepth() << endl;
 }
 
 // ========================================
@@ -531,42 +384,38 @@ void benchmarkTries(const std::vector<std::string>& words) {
 // ========================================
 
 void showUsage(const char* programName) {
-    std::cout << "=== PROCESADOR DE ARCHIVOS CON TRIES ===" << std::endl;
-    std::cout << "USO: " << programName << " <archivo.txt> [opciones]"
-              << std::endl;
-    std::cout << "\nOpciones:" << std::endl;
-    std::cout << "  -s, --standard    Usar solo Standard Trie" << std::endl;
-    std::cout << "  -r, --radix       Usar solo Radix Trie" << std::endl;
-    std::cout << "  -c, --compare     Comparar ambos tipos (por defecto)"
-              << std::endl;
-    std::cout << "  -d, --demo        Ejecutar demostración sin archivo"
-              << std::endl;
-    std::cout << "  -h, --help        Mostrar esta ayuda" << std::endl;
-    std::cout << "\nEjemplos:" << std::endl;
-    std::cout << "  " << programName << " archivo.txt" << std::endl;
-    std::cout << "  " << programName << " archivo.txt --standard" << std::endl;
-    std::cout << "  " << programName << " archivo.txt --radix" << std::endl;
-    std::cout << "  " << programName << " archivo.txt --compare" << std::endl;
-    std::cout << "  " << programName << " --demo" << std::endl;
+    cout << "=== PROCESADOR DE ARCHIVOS CON TRIES ===" << endl;
+    cout << "USO: " << programName << " <archivo.txt> [opciones]" << endl;
+    cout << "\nOpciones:" << endl;
+    cout << "  -s, --standard    Usar solo Standard Trie" << endl;
+    cout << "  -r, --radix       Usar solo Radix Trie" << endl;
+    cout << "  -c, --compare     Comparar ambos tipos (por defecto)" << endl;
+    cout << "  -d, --demo        Ejecutar demostración sin archivo" << endl;
+    cout << "  -h, --help        Mostrar esta ayuda" << endl;
+    cout << "\nEjemplos:" << endl;
+    cout << "  " << programName << " archivo.txt" << endl;
+    cout << "  " << programName << " archivo.txt --standard" << endl;
+    cout << "  " << programName << " archivo.txt --radix" << endl;
+    cout << "  " << programName << " archivo.txt --compare" << endl;
+    cout << "  " << programName << " --demo" << endl;
 }
 
 template <typename TrieType>
-void interactiveSearch(TrieType& trie, const std::string& trieTypeName) {
-    std::cout << "\n=== BÚSQUEDA INTERACTIVA (" << trieTypeName
-              << ") ===" << std::endl;
-    std::cout << "Comandos disponibles:" << std::endl;
-    std::cout << "  'help' - mostrar ayuda" << std::endl;
-    std::cout << "  'stats' - mostrar estadísticas" << std::endl;
-    std::cout << "  'quit' - salir" << std::endl;
-    std::cout << std::endl;
+void interactiveSearch(TrieType& trie, const string& trieTypeName) {
+    cout << "\n=== BÚSQUEDA INTERACTIVA (" << trieTypeName << ") ===" << endl;
+    cout << "Comandos disponibles:" << endl;
+    cout << "  'help' - mostrar ayuda" << endl;
+    cout << "  'stats' - mostrar estadísticas" << endl;
+    cout << "  'quit' - salir" << endl;
+    cout << endl;
 
-    std::string query;
+    string query;
     while (true) {
-        std::cout << "🔍 Buscar> ";
-        std::getline(std::cin, query);
+        cout << "🔍 Buscar> ";
+        getline(cin, query);
 
-        if (query == "quit" || query == "exit" || query == "q") {
-            std::cout << "¡Hasta luego! 👋" << std::endl;
+        if (query == "quit" or query == "exit" or query == "q") {
+            cout << "¡Hasta luego! 👋" << endl;
             break;
         }
 
@@ -575,65 +424,57 @@ void interactiveSearch(TrieType& trie, const std::string& trieTypeName) {
         }
 
         if (query == "help") {
-            std::cout << "\n📖 AYUDA:" << std::endl;
-            std::cout << "- Escribe cualquier palabra para buscarla exactamente"
-                      << std::endl;
-            std::cout
-                << "- Si la palabra existe, verás las líneas donde aparece"
-                << std::endl;
-            std::cout << "- El programa también mostrará autocompletado"
-                      << std::endl;
-            std::cout << "- Ejemplo: 'alice' buscará exactamente 'alice'"
-                      << std::endl;
-            std::cout << "- Ejemplo: 'al' mostrará todas las palabras que "
-                         "empiecen por 'al'"
-                      << std::endl;
+            cout << "\n📖 AYUDA:" << endl;
+            cout << "- Escribe cualquier palabra para buscarla exactamente"
+                 << endl;
+            cout << "- Si la palabra existe, verás las líneas donde aparece"
+                 << endl;
+            cout << "- El programa también mostrará autocompletado" << endl;
+            cout << "- Ejemplo: 'alice' buscará exactamente 'alice'" << endl;
+            cout << "- Ejemplo: 'al' mostrará todas las palabras que "
+                    "empiecen por 'al'"
+                 << endl;
             continue;
         }
 
         if (query == "stats") {
-            std::cout << "\n📊 ESTADÍSTICAS (" << trieTypeName
-                      << "):" << std::endl;
-            std::cout << "Nodos: " << trie.getNodeCount() << std::endl;
-            std::cout << "Palabras: " << trie.getWordCount() << std::endl;
-            std::cout << "Profundidad máxima: " << trie.getMaxDepth()
-                      << std::endl;
+            cout << "\n📊 ESTADÍSTICAS (" << trieTypeName << "):" << endl;
+            cout << "Nodos: " << trie.getNodeCount() << endl;
+            cout << "Palabras: " << trie.getWordCount() << endl;
+            cout << "Profundidad máxima: " << trie.getMaxDepth() << endl;
             continue;
         }
 
         // Limpiar la consulta (convertir a minúsculas)
-        std::string cleanQuery = query;
-        std::transform(cleanQuery.begin(), cleanQuery.end(), cleanQuery.begin(),
-                       ::tolower);
+        string cleanQuery = query;
+        transform(cleanQuery.begin(), cleanQuery.end(), cleanQuery.begin(),
+                  ::tolower);
 
         // Búsqueda exacta
-        auto searchStart = std::chrono::high_resolution_clock::now();
+        auto searchStart = chrono::high_resolution_clock::now();
         bool found = trie.search(cleanQuery);
-        auto searchEnd = std::chrono::high_resolution_clock::now();
-        auto searchTime = std::chrono::duration_cast<std::chrono::nanoseconds>(
-            searchEnd - searchStart);
+        auto searchEnd = chrono::high_resolution_clock::now();
+        auto searchTime =
+            chrono::duration_cast<chrono::nanoseconds>(searchEnd - searchStart);
 
-        std::cout << "Palabra '" << cleanQuery << "': ";
+        cout << "Palabra '" << cleanQuery << "': ";
 
         if (found) {
-            std::cout << "✅ ENCONTRADA (" << searchTime.count() << " ns)"
-                      << std::endl;
+            cout << "✅ ENCONTRADA (" << searchTime.count() << " ns)" << endl;
             auto lines = trie.searchLines(cleanQuery);
             if (!lines.empty()) {
-                std::cout << "   📍 Aparece en líneas: ";
-                for (size_t i = 0; i < std::min((size_t)15, lines.size());
-                     i++) {
-                    std::cout << lines[i] << " ";
+                cout << "   📍 Aparece en líneas: ";
+                for (size_t i = 0; i < min((size_t)15, lines.size()); i++) {
+                    cout << lines[i] << " ";
                 }
                 if (lines.size() > 15) {
-                    std::cout << "... (y " << (lines.size() - 15) << " más)";
+                    cout << "... (y " << (lines.size() - 15) << " más)";
                 }
-                std::cout << " [Total: " << lines.size() << " apariciones]"
-                          << std::endl;
+                cout << " [Total: " << lines.size() << " apariciones]" << endl;
             }
         } else {
-            std::cout << "❌ NO ENCONTRADA (" << searchTime.count() << " ns)"
-                      << std::endl;
+            cout << "❌ NO ENCONTRADA (" << searchTime.count() << " ns)"
+                 << endl;
         }
 
         // Autocompletado
@@ -642,9 +483,8 @@ void interactiveSearch(TrieType& trie, const std::string& trieTypeName) {
         // Si la palabra fue encontrada, removerla de las sugerencias para
         // evitar redundancia
         bool hadExactMatch = false;
-        if (found && !suggestions.empty()) {
-            auto it =
-                std::find(suggestions.begin(), suggestions.end(), cleanQuery);
+        if (found and !suggestions.empty()) {
+            auto it = find(suggestions.begin(), suggestions.end(), cleanQuery);
             if (it != suggestions.end()) {
                 suggestions.erase(it);
                 hadExactMatch = true;
@@ -652,174 +492,158 @@ void interactiveSearch(TrieType& trie, const std::string& trieTypeName) {
         }
 
         if (!suggestions.empty()) {
-            std::cout << "   💡 Autocompletado (" << suggestions.size()
-                      << " sugerencias): ";
-            for (size_t i = 0; i < std::min(size_t(10), suggestions.size());
-                 i++) {
-                std::cout << suggestions[i];
-                if (i < std::min(size_t(9), suggestions.size() - 1))
-                    std::cout << ", ";
+            cout << "   💡 Autocompletado (" << suggestions.size()
+                 << " sugerencias): ";
+            for (size_t i = 0; i < min(size_t(10), suggestions.size()); i++) {
+                cout << suggestions[i];
+                if (i < min(size_t(9), suggestions.size() - 1)) cout << ", ";
             }
-            if (suggestions.size() > 10) std::cout << ", ...";
-            std::cout << std::endl;
+            if (suggestions.size() > 10) cout << ", ...";
+            cout << endl;
         } else if (!found) {
-            std::cout << "   💡 No hay sugerencias para este prefijo"
-                      << std::endl;
+            cout << "   💡 No hay sugerencias para este prefijo" << endl;
         } else if (hadExactMatch) {
-            std::cout << "   💡 Esta es la única palabra con este prefijo"
-                      << std::endl;
+            cout << "   💡 Esta es la única palabra con este prefijo" << endl;
         } else {
-            std::cout << "   💡 No hay sugerencias para este prefijo"
-                      << std::endl;
+            cout << "   💡 No hay sugerencias para este prefijo" << endl;
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
-void processFileWithStandardTrie(const std::string& filename) {
-    std::cout << "\n=== PROCESANDO CON STANDARD TRIE ===" << std::endl;
+void processFileWith(const string& filename) {
+    cout << "\n=== PROCESANDO CON STANDARD TRIE ===" << endl;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    StandardTrie trie;
+    auto start = chrono::high_resolution_clock::now();
+    trie;
     TextProcessor::processFileWords(filename, trie);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto buildTime =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    auto end = chrono::high_resolution_clock::now();
+    auto buildTime = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-    std::cout << "⏱️  Tiempo de construcción: " << buildTime.count() << " ms"
-              << std::endl;
-    std::cout << "🔢 Nodos totales: " << trie.getNodeCount() << std::endl;
-    std::cout << "📝 Palabras únicas: " << trie.getWordCount() << std::endl;
-    std::cout << "📏 Profundidad máxima: " << trie.getMaxDepth() << std::endl;
+    cout << "⏱️  Tiempo de construcción: " << buildTime.count() << " ms" << endl;
+    cout << "🔢 Nodos totales: " << trie.getNodeCount() << endl;
+    cout << "📝 Palabras únicas: " << trie.getWordCount() << endl;
+    cout << "📏 Profundidad máxima: " << trie.getMaxDepth() << endl;
 
     if (trie.getWordCount() > 0) {
         double avgNodesPerWord =
             (double)trie.getNodeCount() / trie.getWordCount();
-        std::cout << "📊 Promedio nodos/palabra: " << std::fixed
-                  << std::setprecision(2) << avgNodesPerWord << std::endl;
+        cout << "📊 Promedio nodos/palabra: " << fixed << setprecision(2)
+             << avgNodesPerWord << endl;
     }
 
     interactiveSearch(trie, "Standard Trie");
 }
 
-void processFileWithRadixTrie(const std::string& filename) {
-    std::cout << "\n=== PROCESANDO CON RADIX TRIE ===" << std::endl;
+void processFileWithRadixTrie(const string& filename) {
+    cout << "\n=== PROCESANDO CON RADIX TRIE ===" << endl;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
     RadixTrie trie;
     TextProcessor::processFileWords(filename, trie);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto buildTime =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    auto end = chrono::high_resolution_clock::now();
+    auto buildTime = chrono::duration_cast<chrono::milliseconds>(end - start);
 
-    std::cout << "⏱️  Tiempo de construcción: " << buildTime.count() << " ms"
-              << std::endl;
-    std::cout << "🔢 Nodos totales: " << trie.getNodeCount() << std::endl;
-    std::cout << "📝 Palabras únicas: " << trie.getWordCount() << std::endl;
-    std::cout << "📏 Profundidad máxima: " << trie.getMaxDepth() << std::endl;
+    cout << "⏱️  Tiempo de construcción: " << buildTime.count() << " ms" << endl;
+    cout << "🔢 Nodos totales: " << trie.getNodeCount() << endl;
+    cout << "📝 Palabras únicas: " << trie.getWordCount() << endl;
+    cout << "📏 Profundidad máxima: " << trie.getMaxDepth() << endl;
 
     if (trie.getWordCount() > 0) {
         double avgNodesPerWord =
             (double)trie.getNodeCount() / trie.getWordCount();
-        std::cout << "📊 Promedio nodos/palabra: " << std::fixed
-                  << std::setprecision(2) << avgNodesPerWord << std::endl;
+        cout << "📊 Promedio nodos/palabra: " << fixed << setprecision(2)
+             << avgNodesPerWord << endl;
     }
 
     interactiveSearch(trie, "Radix Trie");
 }
 
-void compareTrieTypes(const std::string& filename) {
-    std::cout << "\n=== COMPARACIÓN DE TIPOS DE TRIE ===" << std::endl;
-    std::cout << "Archivo: " << filename << std::endl;
+void compareTrieTypes(const string& filename) {
+    cout << "\n=== COMPARACIÓN DE TIPOS DE TRIE ===" << endl;
+    cout << "Archivo: " << filename << endl;
 
     // Construir Standard Trie
-    std::cout << "\n--- Standard Trie ---" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-    StandardTrie standardTrie;
-    TextProcessor::processFileWords(filename, standardTrie);
-    auto end = std::chrono::high_resolution_clock::now();
+    cout << "\n--- Standard Trie ---" << endl;
+    auto start = chrono::high_resolution_clock::now();
+    ;
+    TextProcessor::processFileWords(filename, );
+    auto end = chrono::high_resolution_clock::now();
     auto standardTime =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        chrono::duration_cast<chrono::milliseconds>(end - start);
 
     // Construir Radix Trie
-    std::cout << "--- Radix Trie ---" << std::endl;
-    start = std::chrono::high_resolution_clock::now();
+    cout << "--- Radix Trie ---" << endl;
+    start = chrono::high_resolution_clock::now();
     RadixTrie radixTrie;
     TextProcessor::processFileWords(filename, radixTrie);
-    end = std::chrono::high_resolution_clock::now();
-    auto radixTime =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    end = chrono::high_resolution_clock::now();
+    auto radixTime = chrono::duration_cast<chrono::milliseconds>(end - start);
 
     // Mostrar comparación
-    std::cout << "\n=== RESULTADOS DE LA COMPARACIÓN ===" << std::endl;
-    std::cout << std::left << std::setw(20) << "Métrica" << std::setw(15)
-              << "Standard Trie" << std::setw(15) << "Radix Trie" << "Mejora"
-              << std::endl;
-    std::cout << std::string(65, '-') << std::endl;
+    cout << "\n=== RESULTADOS DE LA COMPARACIÓN ===" << endl;
+    cout << left << setw(20) << "Métrica" << setw(15) << "Standard Trie"
+         << setw(15) << "Radix Trie" << "Mejora" << endl;
+    cout << string(65, '-') << endl;
 
-    std::cout << std::left << std::setw(20) << "Tiempo (ms):" << std::setw(15)
-              << standardTime.count() << std::setw(15) << radixTime.count();
-    if (standardTime.count() > 0 && radixTime.count() > 0) {
+    cout << left << setw(20) << "Tiempo (ms):" << setw(15)
+         << standardTime.count() << setw(15) << radixTime.count();
+    if (standardTime.count() > 0 and radixTime.count() > 0) {
         double speedup = (double)standardTime.count() / radixTime.count();
-        std::cout << std::fixed << std::setprecision(2) << speedup
-                  << "x más rápido";
+        cout << fixed << setprecision(2) << speedup << "x más rápido";
     }
-    std::cout << std::endl;
+    cout << endl;
 
-    std::cout << std::left << std::setw(20) << "Nodos:" << std::setw(15)
-              << standardTrie.getNodeCount() << std::setw(15)
-              << radixTrie.getNodeCount();
+    cout << left << setw(20) << "Nodos:" << setw(15) <<.getNodeCount()
+         << setw(15) << radixTrie.getNodeCount();
     double nodeReduction =
-        ((double)(standardTrie.getNodeCount() - radixTrie.getNodeCount()) /
-         standardTrie.getNodeCount()) *
+        ((double)(.getNodeCount() - radixTrie.getNodeCount()) /
+             .getNodeCount()) *
         100;
-    std::cout << std::fixed << std::setprecision(1) << nodeReduction
-              << "% menos nodos";
-    std::cout << std::endl;
+    cout << fixed << setprecision(1) << nodeReduction << "% menos nodos";
+    cout << endl;
 
-    std::cout << std::left << std::setw(20) << "Palabras:" << std::setw(15)
-              << standardTrie.getWordCount() << std::setw(15)
-              << radixTrie.getWordCount() << "Igual" << std::endl;
+    cout << left << setw(20) << "Palabras:" << setw(15) <<.getWordCount()
+         << setw(15) << radixTrie.getWordCount() << "Igual" << endl;
 
-    std::cout << std::left << std::setw(20) << "Profundidad:" << std::setw(15)
-              << standardTrie.getMaxDepth() << std::setw(15)
-              << radixTrie.getMaxDepth();
-    if (standardTrie.getMaxDepth() == radixTrie.getMaxDepth()) {
-        std::cout << "Igual";
-    } else if (radixTrie.getMaxDepth() < standardTrie.getMaxDepth()) {
-        std::cout << "Menor profundidad";
+    cout << left << setw(20) << "Profundidad:" << setw(15) <<.getMaxDepth()
+         << setw(15) << radixTrie.getMaxDepth();
+    if (.getMaxDepth() == radixTrie.getMaxDepth()) {
+        cout << "Igual";
+    } else if (radixTrie.getMaxDepth() <.getMaxDepth()) {
+        cout << "Menor profundidad";
     } else {
-        std::cout << "Mayor profundidad";
+        cout << "Mayor profundidad";
     }
-    std::cout << std::endl;
+    cout << endl;
 
     // Benchmark de búsquedas - usar palabras del archivo real
-    std::cout << "\n=== BENCHMARK DE BÚSQUEDAS ===" << std::endl;
+    cout << "\n=== BENCHMARK DE BÚSQUEDAS ===" << endl;
 
     // Obtener una muestra de palabras del trie para hacer el benchmark más
     // realista
-    auto allWords = standardTrie.getAllWords();
-    std::vector<std::string> testQueries;
+    auto allWords =.getAllWords();
+    vector<string> testQueries;
 
     if (allWords.size() >= 10) {
         // Tomar una muestra representativa del archivo
         // 1. Palabras más comunes (primeras en orden alfabético que suelen ser
         // artículos/conectores)
-        size_t maxFirst = std::min(size_t(3), allWords.size());
+        size_t maxFirst = min(size_t(3), allWords.size());
         for (size_t i = 0; i < maxFirst; i++) {
             testQueries.push_back(allWords[i]);
         }
 
         // 2. Palabras del medio del alfabeto
         size_t middle = allWords.size() / 2;
-        for (size_t i = 0; i < 3 && (middle + i) < allWords.size(); i++) {
+        for (size_t i = 0; i < 3 and (middle + i) < allWords.size(); i++) {
             testQueries.push_back(allWords[middle + i]);
         }
 
         // 3. Palabras del final
         size_t startIdx = allWords.size() >= 3 ? allWords.size() - 3 : 0;
-        for (size_t i = startIdx; i < allWords.size() && testQueries.size() < 7;
-             i++) {
+        for (size_t i = startIdx;
+             i < allWords.size() and testQueries.size() < 7; i++) {
             testQueries.push_back(allWords[i]);
         }
 
@@ -831,75 +655,72 @@ void compareTrieTypes(const std::string& filename) {
         testQueries.push_back("__noexiste__");
     }
 
-    std::cout << "Probando con " << testQueries.size()
-              << " palabras del archivo:" << std::endl;
+    cout << "Probando con " << testQueries.size()
+         << " palabras del archivo:" << endl;
 
-    std::cout << std::left << std::setw(18) << "Palabra" << std::setw(18)
-              << "Standard (ns)" << std::setw(18) << "Radix (ns)" << "Resultado"
-              << std::endl;
-    std::cout << std::string(75, '-') << std::endl;
+    cout << left << setw(18) << "Palabra" << setw(18) << "Standard (ns)"
+         << setw(18) << "Radix (ns)" << "Resultado" << endl;
+    cout << string(75, '-') << endl;
 
     for (const auto& query : testQueries) {
         // Test Standard Trie
-        auto searchStart = std::chrono::high_resolution_clock::now();
-        bool foundStandard = standardTrie.search(query);
-        auto searchEnd = std::chrono::high_resolution_clock::now();
+        auto searchStart = chrono::high_resolution_clock::now();
+        bool foundStandard =.search(query);
+        auto searchEnd = chrono::high_resolution_clock::now();
         auto standardSearchTime =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(searchEnd -
-                                                                 searchStart);
+            chrono::duration_cast<chrono::nanoseconds>(searchEnd - searchStart);
 
         // Test Radix Trie
-        searchStart = std::chrono::high_resolution_clock::now();
+        searchStart = chrono::high_resolution_clock::now();
         bool foundRadix = radixTrie.search(query);
-        searchEnd = std::chrono::high_resolution_clock::now();
+        searchEnd = chrono::high_resolution_clock::now();
         auto radixSearchTime =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(searchEnd -
-                                                                 searchStart);
+            chrono::duration_cast<chrono::nanoseconds>(searchEnd - searchStart);
 
         // Truncar palabra si es muy larga para mantener alineación
-        std::string displayWord = query;
+        string displayWord = query;
         if (displayWord.length() > 17) {
             displayWord = displayWord.substr(0, 14) + "...";
         }
 
-        std::cout << std::left << std::setw(18) << displayWord << std::setw(18)
-                  << standardSearchTime.count() << std::setw(18)
-                  << radixSearchTime.count();
+        cout << left << setw(18) << displayWord << setw(18)
+             << standardSearchTime.count() << setw(18)
+             << radixSearchTime.count();
 
-        if (foundStandard && foundRadix) {
-            std::cout << "✅ Encontrada";
-        } else if (!foundStandard && !foundRadix) {
-            std::cout << "❌ No encontrada";
+        if (foundStandard and foundRadix) {
+            cout << "✅ Encontrada";
+        } else if (!foundStandard and !foundRadix) {
+            cout << "❌ No encontrada";
         } else {
-            std::cout << "⚠️  Inconsistencia";
+            cout << "⚠️  Inconsistencia";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 
     // Elegir qué trie usar para modo interactivo
-    std::cout << "\n¿Qué implementación quieres usar para búsqueda interactiva?"
-              << std::endl;
-    std::cout << "1. Standard Trie" << std::endl;
-    std::cout << "2. Radix Trie" << std::endl;
-    std::cout << "3. Salir" << std::endl;
-    std::cout << "Opción (1-3): ";
+    cout << "\n¿Qué implementación quieres usar para búsqueda interactiva?"
+         << endl;
+    cout << "1. Standard Trie" << endl;
+    cout << "2. Radix Trie" << endl;
+    cout << "3. Salir" << endl;
+    cout << "Opción (1-3): ";
 
     int choice;
-    std::cin >> choice;
-    std::cin.ignore();  // Limpiar el buffer
+    cin >> choice;
+    cin.ignore();  // Limpiar el buffer
 
     switch (choice) {
         case 1:
-            interactiveSearch(standardTrie, "Standard Trie");
+            interactiveSearch(, "Standard Trie");
             break;
         case 2:
             interactiveSearch(radixTrie, "Radix Trie");
             break;
         case 3:
-            std::cout << "¡Hasta luego!" << std::endl;
+            cout << "¡Hasta luego!" << endl;
             break;
         default:
-            std::cout << "Opción inválida. Saliendo..." << std::endl;
+            cout << "Opción inválida. Saliendo..." << endl;
             break;
     }
 }
@@ -909,9 +730,9 @@ void compareTrieTypes(const std::string& filename) {
 // ========================================
 
 int main(int argc, char* argv[]) {
-    std::cout << "PROYECTO: ÁRBOLES LEXICOGRÁFICOS EFICIENTES" << std::endl;
-    std::cout << "PARTE 1: CONSTRUCCIÓN DE TRIES" << std::endl;
-    std::cout << "=============================================" << std::endl;
+    cout << "PROYECTO: ÁRBOLES LEXICOGRÁFICOS EFICIENTES" << endl;
+    cout << "PARTE 1: CONSTRUCCIÓN DE TRIES" << endl;
+    cout << "=============================================" << endl;
 
     // Si no hay argumentos, mostrar ayuda
     if (argc == 1) {
@@ -920,22 +741,22 @@ int main(int argc, char* argv[]) {
     }
 
     // Procesar argumentos
-    std::string filename;
-    std::string mode = "compare";  // Por defecto comparar ambos
+    string filename;
+    string mode = "compare";  // Por defecto comparar ambos
 
     for (int i = 1; i < argc; i++) {
-        std::string arg = argv[i];
+        string arg = argv[i];
 
-        if (arg == "-h" || arg == "--help") {
+        if (arg == "-h" or arg == "--help") {
             showUsage(argv[0]);
             return 0;
-        } else if (arg == "-d" || arg == "--demo") {
+        } else if (arg == "-d" or arg == "--demo") {
             // Ejecutar demostración original
             demonstrateTrieOperations();
 
             // Crear un conjunto de palabras de prueba para benchmark
-            std::vector<std::string> testWords;
-            std::vector<std::string> baseWords = {
+            vector<string> testWords;
+            vector<string> baseWords = {
                 "algorithm", "data",        "structure",  "computer",
                 "science",   "programming", "software",   "hardware",
                 "network",   "database",    "artificial", "intelligence"};
@@ -948,47 +769,46 @@ int main(int argc, char* argv[]) {
 
             benchmarkTries(testWords);
             return 0;
-        } else if (arg == "-s" || arg == "--standard") {
+        } else if (arg == "-s" or arg == "--standard") {
             mode = "standard";
-        } else if (arg == "-r" || arg == "--radix") {
+        } else if (arg == "-r" or arg == "--radix") {
             mode = "radix";
-        } else if (arg == "-c" || arg == "--compare") {
+        } else if (arg == "-c" or arg == "--compare") {
             mode = "compare";
         } else if (arg[0] != '-') {
             filename = arg;
         } else {
-            std::cout << "Opción desconocida: " << arg << std::endl;
+            cout << "Opción desconocida: " << arg << endl;
             showUsage(argv[0]);
             return 1;
         }
     }
 
     if (filename.empty()) {
-        std::cout << "Error: Debes especificar un archivo o usar --demo"
-                  << std::endl;
+        cout << "Error: Debes especificar un archivo o usar --demo" << endl;
         showUsage(argv[0]);
         return 1;
     }
 
     // Verificar que el archivo existe
-    std::ifstream testFile(filename);
+    ifstream testFile(filename);
     if (!testFile.is_open()) {
-        std::cerr << "❌ Error: No se pudo abrir el archivo '" << filename
-                  << "'" << std::endl;
-        std::cerr << "   Verifica que:" << std::endl;
-        std::cerr << "   - El archivo existe" << std::endl;
-        std::cerr << "   - Tienes permisos de lectura" << std::endl;
-        std::cerr << "   - La ruta es correcta" << std::endl;
+        cerr << "❌ Error: No se pudo abrir el archivo '" << filename << "'"
+             << endl;
+        cerr << "   Verifica que:" << endl;
+        cerr << "   - El archivo existe" << endl;
+        cerr << "   - Tienes permisos de lectura" << endl;
+        cerr << "   - La ruta es correcta" << endl;
         return 1;
     }
     testFile.close();
 
-    std::cout << "\n📁 Archivo: " << filename << std::endl;
-    std::cout << "🔧 Modo: " << mode << std::endl;
+    cout << "\n📁 Archivo: " << filename << endl;
+    cout << "🔧 Modo: " << mode << endl;
 
     // Ejecutar según el modo seleccionado
     if (mode == "standard") {
-        processFileWithStandardTrie(filename);
+        processFileWith(filename);
     } else if (mode == "radix") {
         processFileWithRadixTrie(filename);
     } else if (mode == "compare") {
