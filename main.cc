@@ -108,20 +108,43 @@ int main() {
             cout << ">> Search word: ";
             string word;
             cin >> word;
-            list<int> lines = trie.buscar_word(word);
-            if (lines.empty()) {
-                cout << "Couldn't find the word '" << word << "'" << endl;
-            } else {
-                cout << "Word found in lines: ";
-                int count = 0;
-                for (int it : lines) {
-                    cout << it << "     ";
-                    ++count;
-                    if (count % 16 == 0) cout << endl;
+
+
+            if (trie.contienePalabra(word)) {
+                list<int> lines = trie.buscar_word(word);
+                if (lines.empty()) {
+                    cout << "Couldn't find the word '" << word << "'" << endl;
+                } else {
+                    cout << "Word found in lines: ";
+                    int count = 0;
+                    for (int it : lines) {
+                        cout << it << "     ";
+                        ++count;
+                        if (count % 16 == 0) cout << endl;
+                    }
+                    cout << endl << endl << "Total words founds: " << count << endl;
                 }
-                cout << endl << endl << "Total words founds: " << count << endl;
+                cout << "===================" << endl;
             }
-            cout << "===================" << endl;
+
+            else {
+                list<string> palabras = trie.completarPrefijo(word);
+                if (palabras.empty()) {
+                    cout << "Couldn't find the word '" << word << "'" << endl;
+                } else {
+                    cout << "Maybe you wanted to search: ";
+                    int count = 0;
+                    for (string it : palabras) {
+                        cout << it << "     ";
+                        ++count;
+                        if (count % 16 == 0) cout << endl;
+                    }
+                    cout << endl << endl << "Total words founds with the prefix " << word << ": " << count << endl;
+                }
+                cout << "===================" << endl;
+
+            }
+
         } else if (command == 'o') {
             cout << "Open file:" << endl;
             NodoTrie aux;
