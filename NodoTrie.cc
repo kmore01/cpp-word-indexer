@@ -74,4 +74,19 @@ NodoTrie* NodoTrie::obtener(string w) {
     }
 }
 
-unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
+unordered_map<char, NodoTrie*>& NodoTrie::getHijos() {
+    return hijos;
+}
+
+list<string> NodoTrie::completarPrefijo(string w) {
+    NodoTrie t = obtener(w);
+    list<string> ret;
+    if (t.hoja == true) {
+        ret.insert(ret.end(), w);
+    }
+    for (auto it = t.hijos.begin(); it != t.hijos.end(); ++it) {
+        list<string> aux = completarPrefijo(w + it->first);
+        ret.insert(ret.end(), aux.begin(), aux.end());
+    }
+    return ret;
+}

@@ -42,7 +42,9 @@ class NodoTrie {
 
     NodoTrie* obtener(string w);
 
-    unordered_map<char, NodoTrie*>& getHijos();
+    unordered_map<char, NodoTrie *> &getHijos();
+
+    list<string> completarPrefijo(string w);
 };
 
 #endif
