@@ -104,7 +104,7 @@ vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
     if (frase.empty()) return {};
 
     // 1. Buscar todas las ocurrencias de cada palabra
-    vector<vector<pair<int, int>>> ocurrenciasPalabras;
+    vector<vector<pair<int, int>>> ocurrenciasPalabras; // guarda para cada fila, la informacion de linPos de la palabra
     for (const string& palabra : frase) {
         vector<pair<int, int>> occs = buscar_word(palabra);
         if (occs.empty()) return {};  // Si falta una palabra
@@ -128,7 +128,7 @@ vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
 
             // Buscar en las ocurrencias de la palabra i
             for (const pair<int, int>& occ : ocurrenciasPalabras[i]) {
-                if (occ.first == linea && occ.second == posEsperada) {
+                if (occ.first == linea and occ.second == posEsperada) {
                     encontrada = true;
                     break;
                 }

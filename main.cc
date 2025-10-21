@@ -93,6 +93,103 @@ void show_commands() {
          << "   x: exit" << endl;
 }
 
+void searchCommand(NodoTrie &trie) {
+    cout << ">> Search word: ";
+    string words;
+    cin.ignore();
+    getline(cin, words);
+    stringstream ss(words);
+    string word;
+    vector<string> frase;
+    while (ss >> word) {
+        frase.push_back(word);
+    }
+    vector<pair<int, int>> lineaPos = trie.buscarFrase(frase);
+
+    if (not lineaPos.empty()) {
+        cout << "Word found in lines: ";
+        int count = 0;
+        for (int i = 0; i < lineaPos.size(); ++i) {
+            cout << lineaPos[i].first << "     ";
+            ++count;
+            if (count % 16 == 0) cout << endl;
+        }
+        cout << endl
+                << endl
+                << "Total words founds: " << count << endl;
+        cout << "===================" << endl;
+
+        if (frase.size() == 1) {
+            vector<string> palabras = trie.completarPrefijo(word);
+            if (not palabras.empty()) {
+                cout << "Maybe you wanted to search: ";
+                int count = 0;
+                for (string it : palabras) {
+                    cout << it << "     ";
+                    ++count;
+                    if (count % 16 == 0) cout << endl;
+                }
+                cout << endl
+                        << endl
+                        << "Total words founds with the prefix " << word
+                        << ": " << count << endl;
+    
+                cout << "===================" << endl;
+
+            }
+        }
+    } else {
+        cout << "Couldn't find the word '" << word << "'" << endl;
+        cout << "===================" << endl;
+        if (frase.size() == 1) {
+            vector<string> palabras = trie.completarPrefijo(word);
+            if (not palabras.empty()) {
+                cout << "Maybe you wanted to search: ";
+                int count = 0;
+                for (string it : palabras) {
+                    cout << it << "     ";
+                    ++count;
+                    if (count % 16 == 0) cout << endl;
+                }
+                cout << endl
+                        << endl
+                        << "Total words founds with the prefix " << word
+                        << ": " << count << endl;
+    
+                cout << "===================" << endl;
+            }
+
+        }
+    }
+}
+
+void openCommand(const vector<string> &lista, NodoTrie &trie, bool &valido) {
+    cout << "Open file:" << endl;
+    NodoTrie aux;
+    trie = aux;
+    valido = false;
+    readFile(valido, lista, trie);
+    cout << "=============================" << endl;
+    cout << "File was read correctly." << endl;
+}
+
+void searchApplication(const vector<string> &lista, NodoTrie &trie, bool &valido) {
+    char command;
+    cin >> command;
+    while (valido and command != 'x') {
+        if (command == 's') {
+            searchCommand(trie);
+        } else if (command == 'o') {
+            openCommand(lista, trie, valido);
+        } else if (command == 'h') {
+            show_commands();
+        }
+        cout << "enter the command: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin >> command;
+    }
+}
+
 int main() {
     char c;
     NodoTrie trie;
@@ -103,80 +200,5 @@ int main() {
     cout << "File was read correctly." << endl;
     // cout << ">>Press x to exit or press f to search a word: ";
     show_commands();
-    char command;
-    cin >> command;
-    while (valido and command != 'x') {
-        if (command == 's') {
-            cout << ">> Search word: ";
-            string word;
-            cin >> word;
-
-            if (trie.contienePalabra(word)) {
-                vector<pair<int, int>> lineaPos = trie.buscar_word(word);
-                if (lineaPos.empty()) {
-                    cout << "Couldn't find the word '" << word << "'" << endl;
-                } else {
-                    cout << "Word found in lines: ";
-                    int count = 0;
-                    for (int i = 0; i < lineaPos.size(); ++i) {
-                        cout << lineaPos[i].first << "     ";
-                        ++count;
-                        if (count % 16 == 0) cout << endl;
-                    }
-                    cout << endl
-                         << endl
-                         << "Total words founds: " << count << endl;
-                }
-                cout << "===================" << endl;
-
-                vector<string> palabras = trie.completarPrefijo(word);
-                if (not palabras.empty()) {
-                    cout << "Maybe you wanted to search: ";
-                    int count = 0;
-                    for (string it : palabras) {
-                        cout << it << "     ";
-                        ++count;
-                        if (count % 16 == 0) cout << endl;
-                    }
-                    cout << endl
-                         << endl
-                         << "Total words founds with the prefix " << word
-                         << ": " << count << endl;
-
-                    cout << "===================" << endl;
-                }
-            } else {
-                cout << "Couldn't find the word '" << word << "'" << endl;
-                cout << "===================" << endl;
-                vector<string> palabras = trie.completarPrefijo(word);
-                if (not palabras.empty()) {
-                    cout << "Maybe you wanted to search: ";
-                    int count = 0;
-                    for (string it : palabras) {
-                        cout << it << "     ";
-                        ++count;
-                        if (count % 16 == 0) cout << endl;
-                    }
-                    cout << endl
-                         << endl
-                         << "Total words founds with the prefix " << word
-                         << ": " << count << endl;
-
-                    cout << "===================" << endl;
-                }
-            }
-        } else if (command == 'o') {
-            cout << "Open file:" << endl;
-            NodoTrie aux;
-            trie = aux;
-            valido = false;
-            readFile(valido, lista, trie);
-            cout << "=============================" << endl;
-            cout << "File was read correctly." << endl;
-        } else if (command == 'h')
-            show_commands();
-        cout << "enter the command: ";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cin >> command;
-    }
+    searchApplication(lista, trie, valido);
 }
