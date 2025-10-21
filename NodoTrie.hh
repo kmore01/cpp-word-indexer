@@ -49,6 +49,8 @@ class NodoTrie {
 
     void completarDFS(NodoTrie* nodo, string& palabraActual,
                       vector<string>& resultados);
+
+    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
 };
 
 #endif

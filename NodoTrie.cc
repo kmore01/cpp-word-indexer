@@ -13,10 +13,9 @@ NodoTrie::~NodoTrie() {
 }
 
 void NodoTrie::insertar(char c) {
-    // hoja = false;
     auto it = hijos.find(c);
     if (it == hijos.end()) {
-        hijos[c] = new NodoTrie(true);
+        hijos[c] = new NodoTrie(false);
     }
 }
 
@@ -99,4 +98,51 @@ void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual,
         completarDFS(hijo, palabraActual, resultados);
         palabraActual.pop_back();  // Backtrack
     }
+}
+
+vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
+    if (frase.empty()) return {};
+    
+    // 1. Buscar todas las ocurrencias de cada palabra
+    vector<vector<pair<int, int>>> ocurrenciasPalabras;
+    for (const string& palabra : frase) {
+        vector<pair<int, int>> occs = buscar_word(palabra);
+        if (occs.empty()) return {};  // Si falta una palabra
+        ocurrenciasPalabras.push_back(occs);
+    }
+    
+    // 2. Buscar secuencias consecutivas
+    vector<pair<int, int>> resultados;
+    
+    // Para cada ocurrencia de la primera palabra
+    for (const pair<int, int>& occ1 : ocurrenciasPalabras[0]) {
+        int linea = occ1.first;
+        int posInicial = occ1.second;
+        bool fraseEncontrada = true;
+        
+        // Verificar que las siguientes palabras están en posiciones consecutivas
+        for (int i = 1; i < frase.size(); i++) {
+            int posEsperada = posInicial + i;
+            bool encontrada = false;
+            
+            // Buscar en las ocurrencias de la palabra i
+            for (const pair<int, int>& occ : ocurrenciasPalabras[i]) {
+                if (occ.first == linea && occ.second == posEsperada) {
+                    encontrada = true;
+                    break;
+                }
+            }
+            
+            if (!encontrada) {
+                fraseEncontrada = false;
+                break;
+            }
+        }
+        
+        if (fraseEncontrada) {
+            resultados.push_back({linea, posInicial});
+        }
+    }
+    
+    return resultados;
 }
