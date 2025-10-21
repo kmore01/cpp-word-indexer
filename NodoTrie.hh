@@ -28,7 +28,7 @@ class NodoTrie {
     void insertar(char c);
 
     // Insertar nuevo nodo hijo
-    void insertar_word(string w, int l);
+    void insertar_word(string w, int l, int p);
 
     // Insertar nuevo nodo hijo
     list<int> buscar_word(string w);

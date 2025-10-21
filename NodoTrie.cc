@@ -20,7 +20,7 @@ void NodoTrie::insertar(char c) {
     }
 }
 
-void NodoTrie::insertar_word(string w, int l) {
+void NodoTrie::insertar_word(string w, int l, int p) {
     NodoTrie* aux = this;  // empezamos desde la raiz
     for (char c : w) {
         NodoTrie* hijo = aux->obtener(c);

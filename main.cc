@@ -52,8 +52,10 @@ bool leerEntrada(const string& nombreArchivo, NodoTrie& t) {
     while (getline(archivo, linea)) {
         stringstream ss(linea);
         string word;
+        int pos = 0;
         while (ss >> word) {
-            t.insertar_word(word, numeroLinea);
+            t.insertar_word(word, numeroLinea, pos);
+            ++pos;
         }
         ++numeroLinea;
     }
