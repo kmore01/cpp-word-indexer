@@ -1,13 +1,9 @@
 #include "NodoTrie.hh"
 
 // Constructor
-NodoTrie::NodoTrie() {
-    hoja = false;
-}
+NodoTrie::NodoTrie() { hoja = false; }
 
-NodoTrie::NodoTrie(bool h) {
-    hoja = h;
-}
+NodoTrie::NodoTrie(bool h) { hoja = h; }
 
 NodoTrie::~NodoTrie() {
     for (auto& par : hijos) {
@@ -46,8 +42,15 @@ list<int> NodoTrie::buscar_word(string w) {
     return list<int>();  // lista vacía si no se encuentra
 }
 
-bool NodoTrie::esHoja() const {
-    return hoja;
+bool NodoTrie::esHoja() const { return hoja; }
+
+bool NodoTrie::contienePalabra(string w) {
+    NodoTrie* nodo = obtener(w);
+    if (nodo == NULL) {
+        return false;
+    } else {
+        return nodo->hoja;
+    }
 }
 
 NodoTrie* NodoTrie::obtener(char c) const {
@@ -71,6 +74,4 @@ NodoTrie* NodoTrie::obtener(string w) {
     }
 }
 
-unordered_map<char, NodoTrie*>& NodoTrie::getHijos() {
-    return hijos;
-}
+unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
