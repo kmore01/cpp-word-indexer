@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <list>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 using namespace std;
 
@@ -16,7 +16,7 @@ class NodoTrie {
    public:
     unordered_map<char, NodoTrie*> hijos;
     bool hoja = false;
-    vector<int> lineas;
+    vector<pair<int, int>> lineaPos;
     // Constructor
     NodoTrie();
 
@@ -32,7 +32,7 @@ class NodoTrie {
     void insertar_word(string w, int l, int p);
 
     // Insertar nuevo nodo hijo
-    vector<int> buscar_word(string w);
+    vector<pair<int, int>> buscar_word(string w);
 
     // Getters y setters
     bool esHoja() const;
@@ -47,7 +47,8 @@ class NodoTrie {
 
     vector<string> completarPrefijo(const string& w);
 
-    void completarDFS(NodoTrie* nodo, string& palabraActual, vector<string>& resultados);
+    void completarDFS(NodoTrie* nodo, string& palabraActual,
+                      vector<string>& resultados);
 };
 
 #endif

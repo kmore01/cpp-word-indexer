@@ -31,15 +31,15 @@ void NodoTrie::insertar_word(string w, int l, int p) {
         aux = hijo;  // avanzamos al hijo
     }
     aux->hoja = true;  // marcar nodo final como hoja
-    aux->lineas.push_back(l);
+    aux->lineaPos.push_back({l, p});
 }
 
-vector<int> NodoTrie::buscar_word(string w) {
+vector<pair<int, int>> NodoTrie::buscar_word(string w) {
     NodoTrie* word = obtener(w);
     if (word != NULL && word->hoja) {
-        return word->lineas;
+        return word->lineaPos;
     }
-    return vector<int>();  // lista vacía si no se encuentra
+    return vector<pair<int, int>>();  // lista vacía si no se encuentra
 }
 
 bool NodoTrie::esHoja() const { return hoja; }
@@ -79,23 +79,24 @@ unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
 vector<string> NodoTrie::completarPrefijo(const string& w) {
     vector<string> resultados;
     NodoTrie* nodoPrefijo = obtener(w);
-    
-    if (nodoPrefijo != nullptr) {
+
+    if (nodoPrefijo != NULL) {
         string prefijoActual = w;
         completarDFS(nodoPrefijo, prefijoActual, resultados);
     }
-    
+
     return resultados;
 }
 
-void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual, vector<string>& resultados) {
+void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual,
+                            vector<string>& resultados) {
     if (nodo->hoja) {
         resultados.push_back(palabraActual);
     }
-    
+
     for (auto& [letra, hijo] : nodo->hijos) {
-        palabraActual.push_back(letra);           // Modificar in-place
+        palabraActual.push_back(letra);  // Modificar in-place
         completarDFS(hijo, palabraActual, resultados);
-        palabraActual.pop_back();                 // Backtrack
+        palabraActual.pop_back();  // Backtrack
     }
 }

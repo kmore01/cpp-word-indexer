@@ -112,14 +112,14 @@ int main() {
             cin >> word;
 
             if (trie.contienePalabra(word)) {
-                vector<int> lines = trie.buscar_word(word);
-                if (lines.empty()) {
+                vector<pair<int, int>> lineaPos = trie.buscar_word(word);
+                if (lineaPos.empty()) {
                     cout << "Couldn't find the word '" << word << "'" << endl;
                 } else {
                     cout << "Word found in lines: ";
                     int count = 0;
-                    for (int it : lines) {
-                        cout << it << "     ";
+                    for (int i = 0; i < lineaPos.size(); ++i) {
+                        cout << lineaPos[i].first << "     ";
                         ++count;
                         if (count % 16 == 0) cout << endl;
                     }
