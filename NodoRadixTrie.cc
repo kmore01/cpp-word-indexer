@@ -1,30 +1,26 @@
-#include "NodoTrie.hh"
+#include "NodoRadixTrie.hh"
 
 // Constructor
-NodoTrie::NodoTrie() {
-    hoja = false;
-}
+NodoRadixTrie::NodoRadixTrie() { hoja = false; }
 
-NodoTrie::NodoTrie(bool h) {
-    hoja = h;
-}
+NodoRadixTrie::NodoRadixTrie(bool h) { hoja = h; }
 
-NodoTrie::~NodoTrie() {
+NodoRadixTrie::~NodoRadixTrie() {
     for (auto& par : hijos) {
         delete par.second;
     }
     hijos.clear();
 }
 
-void NodoTrie::insertar(char c) {
-    hoja = false;
-    auto it = hijos.find(c);
-    if (it == hijos.end()) {
-        hijos[c] = new NodoTrie(true);
+string NodoRadixTrie::prefijos(string s1, string s2) {
+    int i = 0, minLong = min(s1.length(), s2.length());
+    while (i < minLong && s1[i] == s2[i]) {
+        ++i;
     }
+    return s1.substr(0, i);
 }
 
-void NodoTrie::insertar_word(string w, int l) {
+void NodoTrie::insertar_word(string w, int l, int p) {
     NodoTrie* aux = this;  // empezamos desde la raiz
     for (char c : w) {
         NodoTrie* hijo = aux->obtener(c);
@@ -46,9 +42,7 @@ list<int> NodoTrie::buscar_word(string w) {
     return list<int>();  // lista vacía si no se encuentra
 }
 
-bool NodoTrie::esHoja() const {
-    return hoja;
-}
+bool NodoTrie::esHoja() const { return hoja; }
 
 NodoTrie* NodoTrie::obtener(char c) const {
     auto it = hijos.find(c);
@@ -71,6 +65,4 @@ NodoTrie* NodoTrie::obtener(string w) {
     }
 }
 
-unordered_map<char, NodoTrie*>& NodoTrie::getHijos() {
-    return hijos;
-}
+unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }

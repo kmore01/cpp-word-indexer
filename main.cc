@@ -148,8 +148,23 @@ int main() {
             } else {
                 cout << "Couldn't find the word '" << word << "'" << endl;
                 cout << "===================" << endl;
-            }
+                vector<string> palabras = trie.completarPrefijo(word);
+                if (not palabras.empty()) {
+                    cout << "Maybe you wanted to search: ";
+                    int count = 0;
+                    for (string it : palabras) {
+                        cout << it << "     ";
+                        ++count;
+                        if (count % 16 == 0) cout << endl;
+                    }
+                    cout << endl
+                         << endl
+                         << "Total words founds with the prefix " << word
+                         << ": " << count << endl;
 
+                    cout << "===================" << endl;
+                }
+            }
         } else if (command == 'o') {
             cout << "Open file:" << endl;
             NodoTrie aux;

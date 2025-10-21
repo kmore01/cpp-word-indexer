@@ -1,46 +1,54 @@
-#ifndef NODOTRIE_HH
-#define NODOTRIE_HH
+#ifndef NODORADIXTRIE_HH
+#define NODORADIXTRIE_HH
 
 #include <iostream>
 #include <list>
 #include <unordered_map>
+#include <vector>
 
 using namespace std;
 
-class NodoTrie {
+class NodoRadixTrie {
    private:
     // La clave del map es el valor del nodo. Por ejemplo, para acceder
     // al nodo con el char 'a' haremos hijos[a].
-    unordered_map<char, NodoTrie *> hijos;
-    bool hoja;
-    list<int> lineas;
 
    public:
+    unordered_map<string, NodoRadixTrie*> hijos;
+    bool hoja = false;
+    vector<pair<int, int>> lineaPos;
     // Constructor
-    NodoTrie();
+    NodoRadixTrie();
 
-    NodoTrie(bool h);
+    NodoRadixTrie(bool h);
 
     // Destructor
-    ~NodoTrie();
+    ~NodoRadixTrie();
 
     // Insertar nuevo nodo hijo
     void insertar(char c);
 
     // Insertar nuevo nodo hijo
-    void insertar_word(string w, int l);
+    void insertar_word(string w, int l, int p);
 
     // Insertar nuevo nodo hijo
-    list<int> buscar_word(string w);
+    vector<pair<int, int>> buscar_word(string w);
 
     // Getters y setters
     bool esHoja() const;
 
-    NodoTrie *obtener(char c) const;
+    bool contienePalabra(string w);
 
-    NodoTrie *obtener(string w);
+    NodoRadixTrie* obtener(char c) const;
 
-    unordered_map<char, NodoTrie *> &getHijos();
+    NodoRadixTrie* obtener(string w);
+
+    unordered_map<string, NodoRadixTrie*>& getHijos();
+
+    vector<string> completarPrefijo(const string& w);
+
+    void completarDFS(NodoRadixTrie* nodo, string& palabraActual,
+                      vector<string>& resultados);
 };
 
 #endif
