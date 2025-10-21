@@ -34,12 +34,12 @@ void NodoTrie::insertar_word(string w, int l, int p) {
     aux->lineas.push_back(l);
 }
 
-list<int> NodoTrie::buscar_word(string w) {
+vector<int> NodoTrie::buscar_word(string w) {
     NodoTrie* word = obtener(w);
     if (word != NULL && word->hoja) {
         return word->lineas;
     }
-    return list<int>();  // lista vacía si no se encuentra
+    return vector<int>();  // lista vacía si no se encuentra
 }
 
 bool NodoTrie::esHoja() const { return hoja; }
@@ -76,16 +76,16 @@ NodoTrie* NodoTrie::obtener(string w) {
 
 unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
 
-list<string> NodoTrie::completarPrefijo(string w) {
+vector<string> NodoTrie::completarPrefijo(string w) {
     NodoTrie* t = obtener(w);
-    list<string> ret;
+    vector<string> ret;
     if (t == NULL) {
         return ret;
     } else if (t->hoja == true) {
-        ret.insert(ret.end(), w);
+        ret.push_back(w);
     }
     for (auto it = t->hijos.begin(); it != t->hijos.end(); ++it) {
-        list<string> aux = completarPrefijo(w + it->first);
+        vector<string> aux = completarPrefijo(w + it->first);
         ret.insert(ret.end(), aux.begin(), aux.end());
     }
     return ret;

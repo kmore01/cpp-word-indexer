@@ -112,7 +112,7 @@ int main() {
             cin >> word;
 
             if (trie.contienePalabra(word)) {
-                list<int> lines = trie.buscar_word(word);
+                vector<int> lines = trie.buscar_word(word);
                 if (lines.empty()) {
                     cout << "Couldn't find the word '" << word << "'" << endl;
                 } else {
@@ -129,7 +129,7 @@ int main() {
                 }
                 cout << "===================" << endl;
 
-                list<string> palabras = trie.completarPrefijo(word);
+                vector<string> palabras = trie.completarPrefijo(word);
                 if (not palabras.empty()) {
                     cout << "Maybe you wanted to search: ";
                     int count = 0;
