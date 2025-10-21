@@ -126,13 +126,9 @@ int main() {
                          << "Total words founds: " << count << endl;
                 }
                 cout << "===================" << endl;
-            }
 
-            else {
                 list<string> palabras = trie.completarPrefijo(word);
-                if (palabras.empty()) {
-                    cout << "Couldn't find the word '" << word << "'" << endl;
-                } else {
+                if (not palabras.empty()) {
                     cout << "Maybe you wanted to search: ";
                     int count = 0;
                     for (string it : palabras) {
@@ -144,7 +140,11 @@ int main() {
                          << endl
                          << "Total words founds with the prefix " << word
                          << ": " << count << endl;
+
+                    cout << "===================" << endl;
                 }
+            } else {
+                cout << "Couldn't find the word '" << word << "'" << endl;
                 cout << "===================" << endl;
             }
 
