@@ -10,11 +10,11 @@
 
 using namespace std;
 
-vector<string> listarArchivosTxt(const string &directorio = ".") {
+vector<string> listarArchivosTxt(const string& directorio = ".") {
     vector<string> archivos;
 
     try {
-        for (const auto &entrada : filesystem::directory_iterator(directorio)) {
+        for (const auto& entrada : filesystem::directory_iterator(directorio)) {
             if (entrada.is_regular_file()) {
                 string extension = entrada.path().extension().string();
                 if (extension == ".txt" || extension == ".TXT") {
@@ -22,14 +22,14 @@ vector<string> listarArchivosTxt(const string &directorio = ".") {
                 }
             }
         }
-    } catch (const filesystem::filesystem_error &e) {
+    } catch (const filesystem::filesystem_error& e) {
         cout << "Error al leer el directorio: " << e.what() << endl;
     }
 
     return archivos;
 }
 
-void mostrarMenuArchivos(const vector<string> &archivos) {
+void mostrarMenuArchivos(const vector<string>& archivos) {
     cout << "=== AVAILABLE FILES ===" << endl;
     for (size_t i = 0; i < archivos.size(); ++i) {
         cout << i + 1 << ". " << archivos[i] << endl;
@@ -38,7 +38,7 @@ void mostrarMenuArchivos(const vector<string> &archivos) {
     cout << "=============================" << endl;
 }
 
-bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
+bool leerEntrada(const string& nombreArchivo, NodoTrie& t) {
     ifstream archivo(nombreArchivo);
     string linea;
     int numeroLinea = 1;
@@ -60,7 +60,7 @@ bool leerEntrada(const string &nombreArchivo, NodoTrie &t) {
     return true;
 }
 
-void readFile(bool &valido, const vector<string> &lista, NodoTrie &trie) {
+void readFile(bool& valido, const vector<string>& lista, NodoTrie& trie) {
     while (not valido) {
         mostrarMenuArchivos(lista);
         cout << ">> Select a file (number): ";
@@ -109,7 +109,6 @@ int main() {
             string word;
             cin >> word;
 
-
             if (trie.contienePalabra(word)) {
                 list<int> lines = trie.buscar_word(word);
                 if (lines.empty()) {
@@ -122,7 +121,9 @@ int main() {
                         ++count;
                         if (count % 16 == 0) cout << endl;
                     }
-                    cout << endl << endl << "Total words founds: " << count << endl;
+                    cout << endl
+                         << endl
+                         << "Total words founds: " << count << endl;
                 }
                 cout << "===================" << endl;
             }
@@ -139,10 +140,12 @@ int main() {
                         ++count;
                         if (count % 16 == 0) cout << endl;
                     }
-                    cout << endl << endl << "Total words founds with the prefix " << word << ": " << count << endl;
+                    cout << endl
+                         << endl
+                         << "Total words founds with the prefix " << word
+                         << ": " << count << endl;
                 }
                 cout << "===================" << endl;
-
             }
 
         } else if (command == 'o') {

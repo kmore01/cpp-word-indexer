@@ -13,7 +13,7 @@ NodoTrie::~NodoTrie() {
 }
 
 void NodoTrie::insertar(char c) {
-    hoja = false;
+    // hoja = false;
     auto it = hijos.find(c);
     if (it == hijos.end()) {
         hijos[c] = new NodoTrie(true);
@@ -74,17 +74,17 @@ NodoTrie* NodoTrie::obtener(string w) {
     }
 }
 
-unordered_map<char, NodoTrie*>& NodoTrie::getHijos() {
-    return hijos;
-}
+unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
 
 list<string> NodoTrie::completarPrefijo(string w) {
-    NodoTrie t = obtener(w);
+    NodoTrie* t = obtener(w);
     list<string> ret;
-    if (t.hoja == true) {
+    if (t == NULL) {
+        return ret;
+    } else if (t->hoja == true) {
         ret.insert(ret.end(), w);
     }
-    for (auto it = t.hijos.begin(); it != t.hijos.end(); ++it) {
+    for (auto it = t->hijos.begin(); it != t->hijos.end(); ++it) {
         list<string> aux = completarPrefijo(w + it->first);
         ret.insert(ret.end(), aux.begin(), aux.end());
     }
