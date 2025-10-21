@@ -76,17 +76,26 @@ NodoTrie* NodoTrie::obtener(string w) {
 
 unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
 
-vector<string> NodoTrie::completarPrefijo(string w) {
-    NodoTrie* t = obtener(w);
-    vector<string> ret;
-    if (t == NULL) {
-        return ret;
-    } else if (t->hoja == true) {
-        ret.push_back(w);
+vector<string> NodoTrie::completarPrefijo(const string& w) {
+    vector<string> resultados;
+    NodoTrie* nodoPrefijo = obtener(w);
+    
+    if (nodoPrefijo != nullptr) {
+        string prefijoActual = w;
+        completarDFS(nodoPrefijo, prefijoActual, resultados);
     }
-    for (auto it = t->hijos.begin(); it != t->hijos.end(); ++it) {
-        vector<string> aux = completarPrefijo(w + it->first);
-        ret.insert(ret.end(), aux.begin(), aux.end());
+    
+    return resultados;
+}
+
+void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual, vector<string>& resultados) {
+    if (nodo->hoja) {
+        resultados.push_back(palabraActual);
     }
-    return ret;
+    
+    for (auto& [letra, hijo] : nodo->hijos) {
+        palabraActual.push_back(letra);           // Modificar in-place
+        completarDFS(hijo, palabraActual, resultados);
+        palabraActual.pop_back();                 // Backtrack
+    }
 }

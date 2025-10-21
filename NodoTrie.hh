@@ -45,7 +45,9 @@ class NodoTrie {
 
     unordered_map<char, NodoTrie*>& getHijos();
 
-    vector<string> completarPrefijo(string w);
+    vector<string> completarPrefijo(const string& w);
+
+    void completarDFS(NodoTrie* nodo, string& palabraActual, vector<string>& resultados);
 };
 
 #endif
