@@ -16,6 +16,14 @@ class NodoRadixTrie {
     vector<pair<int, int>> lineaPos;
     static int nodos;
 
+    void calcularProfundidadesAux(int profundidadActual, int& contador,
+                                  long long& suma) const;
+
+    void calcularProfundidadMaximaAux(int profundidadActual,
+                                      int& maxProf) const;
+
+    void contarPalabrasAux(int& contador) const;
+
    public:
     // Constructor
     NodoRadixTrie();
@@ -54,6 +62,12 @@ class NodoRadixTrie {
     unordered_map<string, NodoRadixTrie*>& getHijos();
 
     size_t calcularMemoria() const;
+
+    double calcularProfundidadMedia() const;
+
+    int calcularProfundidadMaxima() const;
+
+    int contarPalabras() const;
 };
 
 #endif

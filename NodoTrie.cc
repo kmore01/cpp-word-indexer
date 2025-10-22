@@ -160,3 +160,25 @@ size_t NodoTrie::calcularMemoria() const {
     }
     return total;
 }
+
+void NodoTrie::calcularProfundidadesAux(int profundidadActual, int& contador,
+                                        long long& suma) const {
+    if (hoja) {
+        ++contador;
+        suma += profundidadActual;
+    }
+    for (const auto& par : hijos) {
+        if (par.second != NULL) {
+            par.second->calcularProfundidadesAux(profundidadActual + 1,
+                                                 contador, suma);
+        }
+    }
+}
+
+double NodoTrie::calcularProfundidadMedia() const {
+    int contador = 0;
+    long long suma = 0;
+    calcularProfundidadesAux(1, contador, suma);
+    if (contador == 0) return 0.0;
+    return static_cast<double>(suma) / contador;
+}

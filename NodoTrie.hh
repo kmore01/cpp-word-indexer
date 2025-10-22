@@ -17,12 +17,8 @@ class NodoTrie {
     vector<pair<int, int>> lineaPos;
     static int nodos;
 
-    // Convertir carácter a índice
-    int charToIndex(char c) const {
-        if (c >= 'a' && c <= 'z') return c - 'a';
-        if (c >= '0' && c <= '9') return 26 + (c - '0');
-        return -1;  // caracter invalido
-    }
+    void calcularProfundidadesAux(int profundidadActual, int& contador,
+                                  long long& suma) const;
 
    public:
     // Constructor
@@ -63,6 +59,8 @@ class NodoTrie {
     unordered_map<char, NodoTrie*>& getHijos();
 
     size_t calcularMemoria() const;
+
+    double calcularProfundidadMedia() const;
 };
 
 #endif

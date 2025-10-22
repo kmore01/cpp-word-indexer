@@ -269,3 +269,72 @@ size_t NodoRadixTrie::calcularMemoria() const {
     }
     return total;
 }
+
+void NodoRadixTrie::calcularProfundidadesAux(int profundidadActual,
+                                             int& contador,
+                                             long long& suma) const {
+    // Si este nodo es hoja (final de palabra)
+    if (hoja) {
+        ++contador;
+        suma += profundidadActual;
+    }
+
+    // Recorrer todos los hijos
+    for (const auto& par : hijos) {
+        if (par.second != nullptr) {
+            // Contar 1 por cada arista, NO la longitud del string
+            par.second->calcularProfundidadesAux(
+                profundidadActual + 1,  // Cambiar de +longitudArista a +1
+                contador, suma);
+        }
+    }
+}
+
+double NodoRadixTrie::calcularProfundidadMedia() const {
+    int contador = 0;
+    long long suma = 0;
+
+    calcularProfundidadesAux(1, contador, suma);
+
+    if (contador == 0) return 0.0;
+
+    return static_cast<double>(suma) / contador;
+}
+
+void NodoRadixTrie::calcularProfundidadMaximaAux(int profundidadActual,
+                                                 int& maxProf) const {
+    if (hoja) {
+        maxProf = max(maxProf, profundidadActual);
+    }
+
+    for (const auto& par : hijos) {
+        if (par.second != nullptr) {
+            par.second->calcularProfundidadMaximaAux(
+                profundidadActual + 1,  // Cambiar de +longitudArista a +1
+                maxProf);
+        }
+    }
+}
+
+int NodoRadixTrie::calcularProfundidadMaxima() const {
+    int maxProf = 0;
+    calcularProfundidadMaximaAux(0, maxProf);
+    return maxProf;
+}
+
+void NodoRadixTrie::contarPalabrasAux(int& contador) const {
+    if (hoja) {
+        ++contador;
+    }
+    for (const auto& par : hijos) {
+        if (par.second != nullptr) {
+            par.second->contarPalabrasAux(contador);
+        }
+    }
+}
+
+int NodoRadixTrie::contarPalabras() const {
+    int contador = 0;
+    contarPalabrasAux(contador);
+    return contador;
+}

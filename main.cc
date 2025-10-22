@@ -4,9 +4,9 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <list>
 #include <sstream>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include "NodoRadixTrie.hh"
@@ -14,15 +14,20 @@
 
 using namespace std;
 
+const string SEPARADOR = "==================================";
+
 string selectType() {
-    cout << ">> Seleccione el tipo de trie:" << endl;
-    cout << "   1. Normal trie" << endl;
-    cout << "   2. Radix trie" << endl;
+    cout << "Select the type of Trie to use:" << endl
+         << endl
+         << "[1] Normal Trie" << endl
+         << "[2] Radix Trie" << endl
+         << endl
+         << "Enter an option: ";
     int m;
     cin >> m;
     if (m == 1) return "normal";
     if (m == 2) return "radix";
-    cout << "Tipo inválido" << endl;
+    cout << "Invalid type" << endl;
     return selectType();
 }
 
@@ -46,12 +51,16 @@ vector<string> listarArchivosTxt(const string& directorio = ".") {
 }
 
 void mostrarMenuArchivos(const vector<string>& archivos) {
-    cout << "=== AVAILABLE FILES ===" << endl;
+    cout << SEPARADOR << endl;
+    cout << "Select a file from the list below:" << endl;
+    cout << endl;
+
     for (size_t i = 0; i < archivos.size(); ++i) {
-        cout << i + 1 << ". " << archivos[i] << endl;
+        cout << "[" << i + 1 << "] " << archivos[i] << endl;
     }
-    cout << "0. Enter name manually" << endl;
-    cout << "=============================" << endl;
+
+    cout << "[0] Enter name manually" << endl;
+    cout << endl;
 }
 
 string limpiarPalabra(const string& s) {
@@ -94,15 +103,16 @@ template <typename T>
 void readFile(bool& valido, const vector<string>& lista, T& trie) {
     while (not valido) {
         mostrarMenuArchivos(lista);
-        cout << ">> Select a file (number): ";
+        cout << "Enter an option: ";
         int i;
         cin >> i;
+        cout << SEPARADOR << endl;
         --i;
         if (i >= (int)lista.size())
-            cout << "error: index not available" << endl << endl;
+            cout << "Error: index not available" << endl << endl;
         else if (i >= 0) {
-            cout << "the file selected was '" << lista[i] << "'" << endl;
-            cout << "reading file '" << lista[i] << "'..." << endl;
+            cout << "The file selected was '" << lista[i] << "'" << endl;
+            cout << "Reading file '" << lista[i] << "'..." << endl;
             valido = leerEntrada(lista[i], trie);
         } else {
             cout << ">> File name: ";
@@ -115,11 +125,32 @@ void readFile(bool& valido, const vector<string>& lista, T& trie) {
 }
 
 void show_commands() {
-    cout << ">> Commands: " << endl;
-    cout << "   h: show commands  " << endl
-         << "   s: search a word  " << endl
-         << "   o: open new file  " << endl
-         << "   x: exit" << endl;
+    cout << "Available Commands:" << endl;
+    cout << endl;
+    cout << "[h] Show commands" << endl;
+    cout << "[s] Search a word" << endl;
+    cout << "[o] Open a new file" << endl;
+    cout << "[x] Exit" << endl;
+    cout << endl;
+    cout << "Enter an option: ";
+}
+
+void imprimirVector(const vector<string>& v, const string& w) {
+    if (not v.empty()) {
+        cout << "Maybe you wanted to search: ";
+        int count = 0;
+        for (const string& it : v) {
+            cout << it << "     ";
+            ++count;
+            if (count % 16 == 0) cout << endl;
+        }
+        cout << endl
+             << endl
+             << "Total words founds with the prefix " << w << ": " << count
+             << endl;
+
+        cout << SEPARADOR << endl;
+    }
 }
 
 template <typename T>
@@ -151,51 +182,23 @@ void searchCommand(T& trie) {
             if (count % 16 == 0) cout << endl;
         }
         cout << endl << endl << "Total words founds: " << count << endl;
-        cout << "===================" << endl;
+        cout << SEPARADOR << endl;
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
-            if (not palabras.empty()) {
-                cout << "Maybe you wanted to search: ";
-                int count = 0;
-                for (const string& it : palabras) {
-                    cout << it << "     ";
-                    ++count;
-                    if (count % 16 == 0) cout << endl;
-                }
-                cout << endl
-                     << endl
-                     << "Total words founds with the prefix " << word << ": "
-                     << count << endl;
-
-                cout << "===================" << endl;
-            }
+            imprimirVector(palabras, word);
         }
 
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
-        cout << "===================" << endl;
+        cout << SEPARADOR << endl;
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
-            if (not palabras.empty()) {
-                cout << "Maybe you wanted to search: ";
-                int count = 0;
-                for (const string& it : palabras) {
-                    cout << it << "     ";
-                    ++count;
-                    if (count % 16 == 0) cout << endl;
-                }
-                cout << endl
-                     << endl
-                     << "Total words founds with the prefix " << word << ": "
-                     << count << endl;
-
-                cout << "===================" << endl;
-            }
+            imprimirVector(palabras, word);
         }
     }
     // Mostrar tiempo en milisegundos
     cout << "Search took: " << duracion.count() << " ms" << endl;
-    cout << "===================" << endl;
+    cout << SEPARADOR << endl;
 }
 
 template <typename T>
@@ -204,8 +207,11 @@ void openCommand(const vector<string>& lista, T& trie, bool& valido) {
     trie = T();
     valido = false;
     readFile(valido, lista, trie);
-    cout << "=============================" << endl;
-    cout << "File was read correctly." << endl;
+    string tipo = "radix";
+    if (typeid(trie) == typeid(NodoTrie)) {
+        tipo = "normal";
+    }
+    mostrarEstadisticasTrie(trie, tipo);
 }
 
 template <typename T>
@@ -225,29 +231,36 @@ void searchApplication(const vector<string>& lista, T& trie, bool& valido) {
     }
 }
 
+template <typename T>
+void mostrarEstadisticasTrie(const T& trie, const string& tipo) {
+    cout << "File was read correctly." << endl;
+    cout << SEPARADOR << endl;
+    cout << "Total nodes created in the " << tipo
+         << " Trie: " << trie.getNodos() << endl;
+    size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
+    cout << "Memory used by the " << tipo << " Trie: " << memoriaMB << " MB"
+         << endl;
+    cout << "Average height of the " << tipo
+         << " Trie: " << trie.calcularProfundidadMedia() << endl;
+    cout << SEPARADOR << endl;
+}
+
+template <typename T>
+void ejecutarBusqueda(const string& tipoNombre, const vector<string>& lista) {
+    T trie;
+    bool valido = false;
+    readFile(valido, lista, trie);
+    mostrarEstadisticasTrie(trie, tipoNombre);
+    show_commands();
+    searchApplication(lista, trie, valido);
+}
+
 int main() {
     string type = selectType();
-    bool valido = false;
     vector<string> lista = listarArchivosTxt();
     if (type == "normal") {
-        NodoTrie trie;
-        readFile(valido, lista, trie);
-        cout << "=============================" << endl;
-        cout << "File was read correctly." << endl;
-        cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
-        size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
-        cout << "Memoria del Trie: " << memoriaMB << " MB" << endl;
-        show_commands();
-        searchApplication(lista, trie, valido);
+        ejecutarBusqueda<NodoTrie>("normal", lista);
     } else {
-        NodoRadixTrie trie;
-        readFile(valido, lista, trie);
-        cout << "=============================" << endl;
-        cout << "File was read correctly." << endl;
-        cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
-        size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
-        cout << "Memoria del Trie: " << memoriaMB << " MB" << endl;
-        show_commands();
-        searchApplication(lista, trie, valido);
+        ejecutarBusqueda<NodoRadixTrie>("radix", lista);
     }
 }
