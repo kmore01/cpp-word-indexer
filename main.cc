@@ -177,7 +177,7 @@ void searchCommand(NodoTrie& trie) {
 
 void openCommand(const vector<string>& lista, NodoTrie& trie, bool& valido) {
     cout << "Open file:" << endl;
-    trie.~NodoTrie();
+    trie = NodoTrie();
     valido = false;
     readFile(valido, lista, trie);
     cout << "=============================" << endl;
