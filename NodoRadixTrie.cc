@@ -87,13 +87,30 @@ void NodoRadixTrie::insertar_word(string w, int l, int p) {
 }
 
 vector<pair<int, int>> NodoRadixTrie::buscar_word(string w) {
+    // Caso base: si w está vacío y este nodo es hoja
+    if (w.empty()) {
+        if (hoja) {
+            return lineaPos;
+        }
+        return vector<pair<int, int>>();
+    }
+
     for (auto par : hijos) {
         string palabraHijo = par.first;
-        string prefijo = prefijoCom(palabraHijo, w);  // en comun
-        if (prefijo == palabraHijo) {
-            // lo que falta
-            string resto = palabraHijo.substr(prefijo.length());
-            return par.second->buscar_word(resto);
+        string prefijo = prefijoCom(palabraHijo, w);
+
+        if (not prefijo.empty()) {
+            // Si el prefijo es igual a la palabra del hijo
+            if (prefijo == palabraHijo) {
+                // Calcular el resto de W, no de palabraHijo
+                string resto = w.substr(prefijo.length());
+                return par.second->buscar_word(resto);
+            }
+            // Si el prefijo es igual a w pero no coincide completo con
+            // palabraHijo significa que w no está en el trie
+            if (prefijo == w) {
+                return vector<pair<int, int>>();
+            }
         }
     }
     return vector<pair<int, int>>();  // no encontrado
