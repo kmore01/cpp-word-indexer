@@ -103,15 +103,14 @@ void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual,
 vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
     if (frase.empty()) return {};
 
-    // 1. Buscar todas las ocurrencias de cada palabra
-    vector<vector<pair<int, int>>> ocurrenciasPalabras;
-    for (const string& palabra : frase) {
-        vector<pair<int, int>> occs = buscar_word(palabra);
+    // guardo todas las ocurrencias de cada palabra de la frase
+    vector<vector<pair<int, int>>> ocurrenciasPalabras(frase.size());
+    for (int i = 0; i < frase.size(); ++i) {
+        vector<pair<int, int>> occs = buscar_word(frase[i]);
         if (occs.empty()) return {};  // Si falta una palabra
-        ocurrenciasPalabras.push_back(occs);
+        ocurrenciasPalabras[i] = occs;
     }
 
-    // 2. Buscar secuencias consecutivas
     vector<pair<int, int>> resultados;
 
     // Para cada ocurrencia de la primera palabra
@@ -121,20 +120,20 @@ vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
         bool fraseEncontrada = true;
 
         // Verificar que las siguientes palabras están en posiciones
-        // consecutivas
+        // consecutivas en la misma linea
         for (int i = 1; i < frase.size(); i++) {
             int posEsperada = posInicial + i;
             bool encontrada = false;
 
             // Buscar en las ocurrencias de la palabra i
             for (const pair<int, int>& occ : ocurrenciasPalabras[i]) {
-                if (occ.first == linea && occ.second == posEsperada) {
+                if (occ.first == linea and occ.second == posEsperada) {
                     encontrada = true;
                     break;
                 }
             }
 
-            if (!encontrada) {
+            if (not encontrada) {
                 fraseEncontrada = false;
                 break;
             }
