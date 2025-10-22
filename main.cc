@@ -110,8 +110,6 @@ void show_commands() {
     cout << "   h: show commands  " << endl
          << "   s: search a word  " << endl
          << "   o: open new file  " << endl
-         << "   t: use trie       " << endl
-         << "   r: use radix trie " << endl
          << "   x: exit" << endl;
 }
 
@@ -145,7 +143,6 @@ void searchCommand(T& trie) {
         cout << endl << endl << "Total words founds: " << count << endl;
         cout << "===================" << endl;
 
-        /*
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
             if (not palabras.empty()) {
@@ -164,11 +161,11 @@ void searchCommand(T& trie) {
                 cout << "===================" << endl;
             }
         }
-            */
+
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
         cout << "===================" << endl;
-        /*
+
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
             if (not palabras.empty()) {
@@ -187,7 +184,6 @@ void searchCommand(T& trie) {
                 cout << "===================" << endl;
             }
         }
-            */
     }
     // Mostrar tiempo en milisegundos
     cout << "Search took: " << duracion.count() << " ms" << endl;
@@ -234,7 +230,6 @@ int main() {
         cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
         size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
         cout << "Memoria del Trie: " << memoriaMB << " MB" << endl;
-        // cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
         show_commands();
         searchApplication(lista, trie, valido);
     } else {
@@ -242,7 +237,9 @@ int main() {
         readFile(valido, lista, trie);
         cout << "=============================" << endl;
         cout << "File was read correctly." << endl;
-        // cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
+        cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
+        size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
+        cout << "Memoria del Trie: " << memoriaMB << " MB" << endl;
         show_commands();
         searchApplication(lista, trie, valido);
     }

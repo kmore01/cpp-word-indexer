@@ -1,9 +1,17 @@
 #include "NodoRadixTrie.hh"
 
-// Constructor
-NodoRadixTrie::NodoRadixTrie() { hoja = false; }
+int NodoRadixTrie::nodos = 0;
 
-NodoRadixTrie::NodoRadixTrie(bool h) { hoja = h; }
+// Constructor
+NodoRadixTrie::NodoRadixTrie() {
+    hoja = false;
+    ++nodos;
+}
+
+NodoRadixTrie::NodoRadixTrie(bool h) {
+    hoja = h;
+    ++nodos;
+}
 
 NodoRadixTrie::~NodoRadixTrie() {
     for (auto& par : hijos) {
@@ -18,6 +26,40 @@ string NodoRadixTrie::prefijoCom(string s1, string s2) {
         ++i;
     }
     return s1.substr(0, i);
+}
+
+NodoRadixTrie* NodoRadixTrie::obtener(string w) {
+    // Caso base: si w está vacío, devolvemos este nodo
+    if (w.empty()) {
+        return this;
+    }
+
+    // Buscar entre los hijos
+    for (auto& par : hijos) {
+        string palabraHijo = par.first;
+        string prefijo = prefijoCom(palabraHijo, w);
+
+        if (not prefijo.empty()) {
+            // Si el prefijo coincide exactamente con la palabra del hijo
+            if (prefijo == palabraHijo) {
+                // Calcular el resto de w y seguir recursivamente
+                string resto = w.substr(prefijo.length());
+                return par.second->obtener(resto);
+            }
+
+            // Si el prefijo es igual a w pero menor que palabraHijo
+            // ESTE ES EL CASO CRÍTICO PARA AUTOCOMPLETAR
+            // w = "bla", palabraHijo = "blanco"
+            // Debes retornar el nodo hijo porque desde ahí se autocompleta
+            if (prefijo == w && prefijo.length() < palabraHijo.length()) {
+                // Retornar el nodo hijo, pero ajustar la búsqueda
+                return par.second;
+            }
+        }
+    }
+
+    // No se encontró ningún hijo con prefijo común
+    return nullptr;
 }
 
 void NodoRadixTrie::insertar_word(string w, int l, int p) {
@@ -118,6 +160,8 @@ vector<pair<int, int>> NodoRadixTrie::buscar_word(string w) {
 
 bool NodoRadixTrie::esHoja() const { return hoja; }
 
+int NodoRadixTrie::getNodos() { return nodos; }
+
 unordered_map<string, NodoRadixTrie*>& NodoRadixTrie::getHijos() {
     return hijos;
 }
@@ -167,4 +211,101 @@ vector<pair<int, int>> NodoRadixTrie::buscarFrase(const vector<string>& frase) {
     }
 
     return resultados;
+}
+
+vector<string> NodoRadixTrie::completarPrefijo(const string& w) {
+    vector<string> resultados;
+
+    // Buscar el nodo y el camino hasta él
+    string prefijoActual = "";
+    NodoRadixTrie* nodo = this;
+    string resto = w;
+
+    while (!resto.empty() && nodo != nullptr) {
+        bool encontrado = false;
+
+        for (auto& par : nodo->hijos) {
+            string palabraHijo = par.first;
+            string prefijo = prefijoCom(palabraHijo, resto);
+
+            if (!prefijo.empty()) {
+                // Si el prefijo coincide exactamente con palabraHijo
+                if (prefijo == palabraHijo) {
+                    prefijoActual += palabraHijo;
+                    resto = resto.substr(prefijo.length());
+                    nodo = par.second;
+                    encontrado = true;
+                    break;
+                }
+                // Si encontramos que 'w' termina en medio de una arista
+                else if (prefijo == resto) {
+                    // Añadir toda la arista al prefijo
+                    prefijoActual += palabraHijo;
+                    nodo = par.second;
+                    resto = "";
+                    encontrado = true;
+                    break;
+                }
+            }
+        }
+
+        if (!encontrado) {
+            return resultados;  // No se encontró el prefijo
+        }
+    }
+
+    // Ahora hacer DFS desde este nodo
+    if (nodo != nullptr) {
+        completarDFS(nodo, prefijoActual, resultados);
+    }
+
+    return resultados;
+}
+
+void NodoRadixTrie::completarDFS(NodoRadixTrie* nodo, string& palabraActual,
+                                 vector<string>& resultados) {
+    if (nodo->hoja) {
+        resultados.push_back(palabraActual);
+    }
+
+    for (auto& [sufijo, hijo] : nodo->hijos) {
+        // Guardar el tamaño original para hacer backtrack correctamente
+        size_t tamañoOriginal = palabraActual.size();
+
+        // Añadir el sufijo completo (no solo un carácter)
+        palabraActual += sufijo;
+
+        completarDFS(hijo, palabraActual, resultados);
+
+        // Backtrack: restaurar al tamaño original
+        palabraActual.resize(tamañoOriginal);
+    }
+}
+
+size_t NodoRadixTrie::calcularMemoria() const {
+    size_t total = sizeof(NodoRadixTrie);  // tamaño base del nodo
+
+    // Memoria del vector lineaPos
+    total += lineaPos.capacity() * sizeof(pair<int, int>);
+
+    // Memoria del unordered_map (aproximado)
+    total += hijos.bucket_count() * sizeof(void*);  // buckets
+
+    // Para cada entrada en el map
+    for (const auto& par : hijos) {
+        // Memoria de la string (key)
+        total += sizeof(string);                       // objeto string
+        total += par.first.capacity() * sizeof(char);  // contenido de la string
+
+        // Memoria del puntero
+        total += sizeof(NodoRadixTrie*);
+
+        // Overhead del unordered_map por entrada
+        total += 16;
+
+        // Recursivo: memoria de los hijos
+        total += par.second->calcularMemoria();
+    }
+
+    return total;
 }

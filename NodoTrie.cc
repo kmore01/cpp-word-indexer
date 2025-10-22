@@ -175,24 +175,3 @@ size_t NodoTrie::calcularMemoria() const {
 
     return total;
 }
-
-/*
-
-
-
-
-
-
-
-
-    // Medición del tiempo
-    auto inicio = chrono::high_resolution_clock::now();
-    vector<pair<int, int>> lineaPos = trie.buscarFrase(frase);
-    auto fin = chrono::high_resolution_clock::now();
-    chrono::duration<double, milli> duracion = fin - inicio;
-
-
-    // Mostrar tiempo en milisegundos
-    cout << "Search took: " << duracion.count() << " ms" << endl;
-    cout << "===================" << endl;
-*/
