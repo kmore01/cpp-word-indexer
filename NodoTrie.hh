@@ -33,6 +33,15 @@ class NodoTrie {
     // Destructor
     ~NodoTrie();
 
+    vector<string> completarPrefijo(const string& w);
+
+    void completarDFS(NodoTrie* nodo, string& palabraActual,
+                      vector<string>& resultados);
+
+    NodoTrie* obtenerNodo(char c) const;
+
+    NodoTrie* obtenerNodo(string w);
+
     // Insertar nuevo nodo hijo
     void insertar(char c);
 
@@ -42,6 +51,8 @@ class NodoTrie {
     // Insertar nuevo nodo hijo
     vector<pair<int, int>> buscarPalabra(string w);
 
+    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
+
     // Getters y setters
     bool getHoja() const;
 
@@ -49,18 +60,7 @@ class NodoTrie {
 
     bool contienePalabra(string w);
 
-    NodoTrie* obtenerNodo(char c) const;
-
-    NodoTrie* obtenerNodo(string w);
-
     unordered_map<char, NodoTrie*>& getHijos();
-
-    vector<string> completarPrefijo(const string& w);
-
-    void completarDFS(NodoTrie* nodo, string& palabraActual,
-                      vector<string>& resultados);
-
-    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
 
     size_t calcularMemoria() const;
 };

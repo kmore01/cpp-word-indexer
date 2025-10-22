@@ -30,6 +30,9 @@ class NodoRadixTrie {
 
     vector<string> completarPrefijo(const string& w);
 
+    void completarPrefijoAux(const string& prefijoBuscado, string palabraActual,
+                             vector<string>& resultados);
+
     void completarDFS(NodoRadixTrie* nodo, string& palabraActual,
                       vector<string>& resultados);
 

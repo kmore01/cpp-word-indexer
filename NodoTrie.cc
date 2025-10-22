@@ -20,45 +20,25 @@ NodoTrie::~NodoTrie() {
     hijos.clear();
 }
 
-void NodoTrie::insertar(char c) {
-    auto it = hijos.find(c);
-    if (it == hijos.end()) {
-        hijos[c] = new NodoTrie();
+vector<string> NodoTrie::completarPrefijo(const string& w) {
+    vector<string> resultados;
+    NodoTrie* nodoPrefijo = obtenerNodo(w);
+    if (nodoPrefijo != NULL) {
+        string prefijoActual = w;
+        completarDFS(nodoPrefijo, prefijoActual, resultados);
     }
+    return resultados;
 }
 
-void NodoTrie::insertarPalabra(string w, int l, int p) {
-    NodoTrie* aux = this;  // empezamos desde la raiz
-    for (char c : w) {
-        NodoTrie* hijo = aux->obtenerNodo(c);
-        if (!hijo) {
-            aux->insertar(c);            // crear el hijo si no existe
-            hijo = aux->obtenerNodo(c);  // obtener el nuevo hijo
-        }
-        aux = hijo;  // avanzamos al hijo
+void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual,
+                            vector<string>& resultados) {
+    if (nodo->hoja) {
+        resultados.push_back(palabraActual);
     }
-    aux->hoja = true;  // marcar nodo final como hoja
-    aux->lineaPos.push_back({l, p});
-}
-
-vector<pair<int, int>> NodoTrie::buscarPalabra(string w) {
-    NodoTrie* word = obtenerNodo(w);
-    if (word != NULL && word->hoja) {
-        return word->lineaPos;
-    }
-    return vector<pair<int, int>>();  // lista vacía si no se encuentra
-}
-
-bool NodoTrie::getHoja() const { return hoja; }
-
-int NodoTrie::getNodos() { return nodos; }
-
-bool NodoTrie::contienePalabra(string w) {
-    NodoTrie* nodo = obtenerNodo(w);
-    if (nodo == NULL) {
-        return false;
-    } else {
-        return nodo->hoja;
+    for (auto& par : nodo->hijos) {
+        palabraActual.push_back(par.first);  // Modificar in-place
+        completarDFS(par.second, palabraActual, resultados);
+        palabraActual.pop_back();  // Backtrack
     }
 }
 
@@ -78,36 +58,38 @@ NodoTrie* NodoTrie::obtenerNodo(string w) {
     if (it == hijos.end()) {
         return NULL;
     } else {
-        string w2 = w.substr(1);             // desde el índice 1 hasta el final
-        return it->second->obtenerNodo(w2);  // Recursión en el hijo
+        string w2 = w.substr(1);             // desde el indice 1 hasta el final
+        return it->second->obtenerNodo(w2);  // Recursion en el hijo
     }
 }
 
-unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
-
-vector<string> NodoTrie::completarPrefijo(const string& w) {
-    vector<string> resultados;
-    NodoTrie* nodoPrefijo = obtenerNodo(w);
-
-    if (nodoPrefijo != NULL) {
-        string prefijoActual = w;
-        completarDFS(nodoPrefijo, prefijoActual, resultados);
+void NodoTrie::insertar(char c) {
+    auto it = hijos.find(c);
+    if (it == hijos.end()) {
+        hijos[c] = new NodoTrie();
     }
-
-    return resultados;
 }
 
-void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual,
-                            vector<string>& resultados) {
-    if (nodo->hoja) {
-        resultados.push_back(palabraActual);
+void NodoTrie::insertarPalabra(string w, int l, int p) {
+    NodoTrie* aux = this;  // empezamos desde la raiz
+    for (char c : w) {
+        NodoTrie* hijo = aux->obtenerNodo(c);
+        if (hijo == NULL) {
+            aux->insertar(c);            // crear el hijo si no existe
+            hijo = aux->obtenerNodo(c);  // obtener el nuevo hijo
+        }
+        aux = hijo;  // avanzamos al hijo
     }
+    aux->hoja = true;  // marcar nodo final como hoja
+    aux->lineaPos.push_back({l, p});
+}
 
-    for (auto& [letra, hijo] : nodo->hijos) {
-        palabraActual.push_back(letra);  // Modificar in-place
-        completarDFS(hijo, palabraActual, resultados);
-        palabraActual.pop_back();  // Backtrack
+vector<pair<int, int>> NodoTrie::buscarPalabra(string w) {
+    NodoTrie* palabra = obtenerNodo(w);
+    if (palabra != NULL && palabra->hoja) {
+        return palabra->lineaPos;
     }
+    return vector<pair<int, int>>();  // vector vacio si no se encuentra
 }
 
 vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
@@ -125,7 +107,7 @@ vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
         int linea = occ1.first;
         int posInicial = occ1.second;
         bool fraseEncontrada = true;
-        // Verificar que las siguientes palabras están en posiciones
+        // Verificar que las siguientes palabras estan en posiciones
         // consecutivas en la misma linea
         for (int i = 1; i < frase.size(); i++) {
             int posEsperada = posInicial + i;
@@ -149,21 +131,32 @@ vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
     return resultados;
 }
 
+bool NodoTrie::getHoja() const { return hoja; }
+
+int NodoTrie::getNodos() { return nodos; }
+
+bool NodoTrie::contienePalabra(string w) {
+    NodoTrie* nodo = obtenerNodo(w);
+    if (nodo == NULL) {
+        return false;
+    } else {
+        return nodo->hoja;
+    }
+}
+
+unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
+
 size_t NodoTrie::calcularMemoria() const {
     size_t total = sizeof(NodoTrie);  // tamaño base del nodo
-
     // Memoria del vector
     total += lineaPos.capacity() * sizeof(pair<int, int>);
-
     // Memoria del unordered_map (aproximado)
     total += hijos.bucket_count() * sizeof(void*);  // buckets
     total += hijos.size() *
              (sizeof(char) + sizeof(NodoTrie*) + 16);  // entries + overhead
-
     // Recursivo: memoria de los hijos
     for (const auto& par : hijos) {
         total += par.second->calcularMemoria();
     }
-
     return total;
 }

@@ -54,6 +54,15 @@ void mostrarMenuArchivos(const vector<string>& archivos) {
     cout << "=============================" << endl;
 }
 
+string limpiarPalabra(const string& s) {
+    string res;
+    for (char c : s) {
+        if (isalpha((unsigned char)c))  // solo letras
+            res += tolower((unsigned char)c);
+    }
+    return res;
+}
+
 template <typename T>
 bool leerEntrada(const string& nombreArchivo, T& t) {
     ifstream archivo(nombreArchivo);
@@ -69,11 +78,11 @@ bool leerEntrada(const string& nombreArchivo, T& t) {
         string word;
         int pos = 0;
         while (ss >> word) {
-            // Convertir la palabra a minúsculas
-            transform(word.begin(), word.end(), word.begin(),
-                      [](unsigned char c) { return tolower(c); });
-
-            t.insertarPalabra(word, numeroLinea, pos);
+            // Normalizar la palabra
+            word = limpiarPalabra(word);
+            if (not word.empty()) {
+                t.insertarPalabra(word, numeroLinea, pos);
+            }
             ++pos;
         }
         ++numeroLinea;
@@ -123,15 +132,16 @@ void searchCommand(T& trie) {
     string word;
     vector<string> frase;
     while (ss >> word) {
-        frase.push_back(word);
+        word = limpiarPalabra(word);
+        if (not word.empty()) {
+            frase.push_back(word);
+        }
     }
-
     // Medición del tiempo
     auto inicio = chrono::high_resolution_clock::now();
     vector<pair<int, int>> lineaPos = trie.buscarFrase(frase);
     auto fin = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duracion = fin - inicio;
-
     if (not lineaPos.empty()) {
         cout << "Word found in lines: ";
         int count = 0;
@@ -142,13 +152,12 @@ void searchCommand(T& trie) {
         }
         cout << endl << endl << "Total words founds: " << count << endl;
         cout << "===================" << endl;
-
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
             if (not palabras.empty()) {
                 cout << "Maybe you wanted to search: ";
                 int count = 0;
-                for (string it : palabras) {
+                for (const string& it : palabras) {
                     cout << it << "     ";
                     ++count;
                     if (count % 16 == 0) cout << endl;
@@ -165,13 +174,12 @@ void searchCommand(T& trie) {
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
         cout << "===================" << endl;
-
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
             if (not palabras.empty()) {
                 cout << "Maybe you wanted to search: ";
                 int count = 0;
-                for (string it : palabras) {
+                for (const string& it : palabras) {
                     cout << it << "     ";
                     ++count;
                     if (count % 16 == 0) cout << endl;
@@ -221,7 +229,6 @@ int main() {
     string type = selectType();
     bool valido = false;
     vector<string> lista = listarArchivosTxt();
-
     if (type == "normal") {
         NodoTrie trie;
         readFile(valido, lista, trie);
