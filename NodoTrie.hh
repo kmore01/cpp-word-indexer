@@ -17,6 +17,13 @@ class NodoTrie {
     vector<pair<int, int>> lineaPos;
     static int nodos;
 
+    // Convertir carácter a índice
+    int charToIndex(char c) const {
+        if (c >= 'a' && c <= 'z') return c - 'a';
+        if (c >= '0' && c <= '9') return 26 + (c - '0');
+        return -1;  // caracter invalido
+    }
+
    public:
     // Constructor
     NodoTrie();
@@ -54,6 +61,8 @@ class NodoTrie {
                       vector<string>& resultados);
 
     vector<pair<int, int>> buscarFrase(const vector<string>& frase);
+
+    size_t calcularMemoria() const;
 };
 
 #endif

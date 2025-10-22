@@ -156,3 +156,22 @@ vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
 
     return resultados;
 }
+
+size_t NodoTrie::calcularMemoria() const {
+    size_t total = sizeof(NodoTrie);  // tamaño base del nodo
+
+    // Memoria del vector
+    total += lineaPos.capacity() * sizeof(pair<int, int>);
+
+    // Memoria del unordered_map (aproximado)
+    total += hijos.bucket_count() * sizeof(void*);  // buckets
+    total += hijos.size() *
+             (sizeof(char) + sizeof(NodoTrie*) + 16);  // entries + overhead
+
+    // Recursivo: memoria de los hijos
+    for (const auto& par : hijos) {
+        total += par.second->calcularMemoria();
+    }
+
+    return total;
+}

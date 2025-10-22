@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
@@ -55,6 +57,9 @@ bool leerEntrada(const string& nombreArchivo, NodoTrie& t) {
         string word;
         int pos = 0;
         while (ss >> word) {
+            std::transform(word.begin(), word.end(), word.begin(),
+                           [](unsigned char c) { return std::tolower(c); });
+
             t.insertar_word(word, numeroLinea, pos);
             ++pos;
         }
@@ -197,7 +202,6 @@ void searchApplication(const vector<string>& lista, NodoTrie& trie,
 }
 
 int main() {
-    char c;
     NodoTrie trie;
     bool valido = false;
     vector<string> lista = listarArchivosTxt();
@@ -205,6 +209,8 @@ int main() {
     cout << "=============================" << endl;
     cout << "File was read correctly." << endl;
     cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
+    size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
+    cout << "Memoria del Trie: " << memoriaMB << " MB" << endl;
     show_commands();
     searchApplication(lista, trie, valido);
 }

@@ -40,6 +40,8 @@ class NodoRadixTrie {
     // bool contienePalabra(string w);
 
     unordered_map<string, NodoRadixTrie*>& getHijos();
+
+    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
 };
 
 #endif
