@@ -172,45 +172,6 @@ vector<pair<int, int>> NodoRadixTrie::buscarPalabra(const string& w) {
     return vector<pair<int, int>>();  // no encontrado
 }
 
-vector<pair<int, int>> NodoRadixTrie::buscarFrase(const vector<string>& frase) {
-    if (frase.empty()) return vector<pair<int, int>>();
-    // guardo todas las ocurrencias de cada palabra de la frase
-    vector<vector<pair<int, int>>> ocurrenciasPalabras(frase.size());
-    for (int i = 0; i < frase.size(); ++i) {
-        vector<pair<int, int>> occs = buscarPalabra(frase[i]);
-        if (occs.empty()) return {};  // Si falta una palabra
-        ocurrenciasPalabras[i] = occs;
-    }
-    vector<pair<int, int>> res;
-    // Para cada ocurrencia de la primera palabra
-    for (const pair<int, int>& occ1 : ocurrenciasPalabras[0]) {
-        int linea = occ1.first;
-        int posInicial = occ1.second;
-        bool fraseEncontrada = true;
-        // Verificar que las siguientes palabras estan en posiciones
-        // consecutivas en la misma linea
-        for (int i = 1; i < frase.size(); i++) {
-            int posEsperada = posInicial + i;
-            bool encontrada = false;
-            // Buscar en las ocurrencias de la palabra i
-            for (const pair<int, int>& occ : ocurrenciasPalabras[i]) {
-                if (occ.first == linea and occ.second == posEsperada) {
-                    encontrada = true;
-                    break;
-                }
-            }
-            if (not encontrada) {
-                fraseEncontrada = false;
-                break;
-            }
-        }
-        if (fraseEncontrada) {
-            res.push_back({linea, posInicial});
-        }
-    }
-    return res;
-}
-
 bool NodoRadixTrie::getHoja() const { return hoja; }
 
 int NodoRadixTrie::getNodos() { return nodos; }
