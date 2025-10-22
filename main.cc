@@ -96,7 +96,9 @@ void show_commands() {
 void searchCommand(NodoTrie &trie) {
     cout << ">> Search word: ";
     string words;
-    cin.ignore();
+    if (cin.peek() == '\n') {
+        cin.ignore();
+    }
     getline(cin, words);
     stringstream ss(words);
     string word;
