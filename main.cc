@@ -193,7 +193,7 @@ void searchCommand(T& trie) {
 template <typename T>
 void openCommand(const vector<string>& lista, T& trie, bool& valido) {
     cout << "Open file:" << endl;
-    trie.~T();
+    trie = T();
     valido = false;
     readFile(valido, lista, trie);
     cout << "=============================" << endl;
