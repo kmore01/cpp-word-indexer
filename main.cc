@@ -96,9 +96,7 @@ void show_commands() {
 void searchCommand(NodoTrie &trie) {
     cout << ">> Search word: ";
     string words;
-    if (cin.peek() == '\n') {
-        cin.ignore();
-    }
+    cin.ignore();
     getline(cin, words);
     stringstream ss(words);
     string word;
@@ -167,8 +165,7 @@ void searchCommand(NodoTrie &trie) {
 
 void openCommand(const vector<string> &lista, NodoTrie &trie, bool &valido) {
     cout << "Open file:" << endl;
-    NodoTrie aux;
-    trie = aux;
+    trie.~NodoTrie();
     valido = false;
     readFile(valido, lista, trie);
     cout << "=============================" << endl;
