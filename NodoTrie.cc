@@ -27,13 +27,13 @@ void NodoTrie::insertar(char c) {
     }
 }
 
-void NodoTrie::insertar_word(string w, int l, int p) {
+void NodoTrie::insertarPalabra(string w, int l, int p) {
     NodoTrie* aux = this;  // empezamos desde la raiz
     for (char c : w) {
-        NodoTrie* hijo = aux->obtener(c);
+        NodoTrie* hijo = aux->obtenerNodo(c);
         if (!hijo) {
-            aux->insertar(c);        // crear el hijo si no existe
-            hijo = aux->obtener(c);  // obtener el nuevo hijo
+            aux->insertar(c);            // crear el hijo si no existe
+            hijo = aux->obtenerNodo(c);  // obtener el nuevo hijo
         }
         aux = hijo;  // avanzamos al hijo
     }
@@ -41,20 +41,20 @@ void NodoTrie::insertar_word(string w, int l, int p) {
     aux->lineaPos.push_back({l, p});
 }
 
-vector<pair<int, int>> NodoTrie::buscar_word(string w) {
-    NodoTrie* word = obtener(w);
+vector<pair<int, int>> NodoTrie::buscarPalabra(string w) {
+    NodoTrie* word = obtenerNodo(w);
     if (word != NULL && word->hoja) {
         return word->lineaPos;
     }
     return vector<pair<int, int>>();  // lista vacía si no se encuentra
 }
 
-bool NodoTrie::esHoja() const { return hoja; }
+bool NodoTrie::getHoja() const { return hoja; }
 
 int NodoTrie::getNodos() { return nodos; }
 
 bool NodoTrie::contienePalabra(string w) {
-    NodoTrie* nodo = obtener(w);
+    NodoTrie* nodo = obtenerNodo(w);
     if (nodo == NULL) {
         return false;
     } else {
@@ -62,7 +62,7 @@ bool NodoTrie::contienePalabra(string w) {
     }
 }
 
-NodoTrie* NodoTrie::obtener(char c) const {
+NodoTrie* NodoTrie::obtenerNodo(char c) const {
     auto it = hijos.find(c);
     if (it != hijos.end()) {
         return it->second;
@@ -70,7 +70,7 @@ NodoTrie* NodoTrie::obtener(char c) const {
     return NULL;
 }
 
-NodoTrie* NodoTrie::obtener(string w) {
+NodoTrie* NodoTrie::obtenerNodo(string w) {
     // Caso base
     if (w.length() == 0) return this;
     // Caso recursivo
@@ -78,8 +78,8 @@ NodoTrie* NodoTrie::obtener(string w) {
     if (it == hijos.end()) {
         return NULL;
     } else {
-        string w2 = w.substr(1);         // desde el índice 1 hasta el final
-        return it->second->obtener(w2);  // Recursión en el hijo
+        string w2 = w.substr(1);             // desde el índice 1 hasta el final
+        return it->second->obtenerNodo(w2);  // Recursión en el hijo
     }
 }
 
@@ -87,7 +87,7 @@ unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
 
 vector<string> NodoTrie::completarPrefijo(const string& w) {
     vector<string> resultados;
-    NodoTrie* nodoPrefijo = obtener(w);
+    NodoTrie* nodoPrefijo = obtenerNodo(w);
 
     if (nodoPrefijo != NULL) {
         string prefijoActual = w;
@@ -111,30 +111,25 @@ void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual,
 }
 
 vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
-    if (frase.empty()) return {};
-
+    if (frase.empty()) return vector<pair<int, int>>();
     // guardo todas las ocurrencias de cada palabra de la frase
     vector<vector<pair<int, int>>> ocurrenciasPalabras(frase.size());
     for (int i = 0; i < frase.size(); ++i) {
-        vector<pair<int, int>> occs = buscar_word(frase[i]);
+        vector<pair<int, int>> occs = buscarPalabra(frase[i]);
         if (occs.empty()) return {};  // Si falta una palabra
         ocurrenciasPalabras[i] = occs;
     }
-
     vector<pair<int, int>> resultados;
-
     // Para cada ocurrencia de la primera palabra
     for (const pair<int, int>& occ1 : ocurrenciasPalabras[0]) {
         int linea = occ1.first;
         int posInicial = occ1.second;
         bool fraseEncontrada = true;
-
         // Verificar que las siguientes palabras están en posiciones
         // consecutivas en la misma linea
         for (int i = 1; i < frase.size(); i++) {
             int posEsperada = posInicial + i;
             bool encontrada = false;
-
             // Buscar en las ocurrencias de la palabra i
             for (const pair<int, int>& occ : ocurrenciasPalabras[i]) {
                 if (occ.first == linea and occ.second == posEsperada) {
@@ -142,18 +137,15 @@ vector<pair<int, int>> NodoTrie::buscarFrase(const vector<string>& frase) {
                     break;
                 }
             }
-
             if (not encontrada) {
                 fraseEncontrada = false;
                 break;
             }
         }
-
         if (fraseEncontrada) {
             resultados.push_back({linea, posInicial});
         }
     }
-
     return resultados;
 }
 

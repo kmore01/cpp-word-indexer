@@ -73,7 +73,7 @@ bool leerEntrada(const string& nombreArchivo, T& t) {
             transform(word.begin(), word.end(), word.begin(),
                       [](unsigned char c) { return tolower(c); });
 
-            t.insertar_word(word, numeroLinea, pos);
+            t.insertarPalabra(word, numeroLinea, pos);
             ++pos;
         }
         ++numeroLinea;

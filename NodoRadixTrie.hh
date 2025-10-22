@@ -2,7 +2,6 @@
 #define NODORADIXTRIE_HH
 
 #include <iostream>
-#include <list>
 #include <unordered_map>
 #include <vector>
 
@@ -27,29 +26,29 @@ class NodoRadixTrie {
     ~NodoRadixTrie();
 
     // Funcion que te devuelve el prefijo comun entre dos palabras
-    string prefijoCom(string s1, string s2);
-
-    NodoRadixTrie* obtener(string w);
-
-    // Insertar nuevo nodo hijo
-    void insertar_word(string w, int l, int p);
-
-    // Insertar nuevo nodo hijo
-    vector<pair<int, int>> buscar_word(string w);
-
-    // Getters y setters
-    bool esHoja() const;
-
-    static int getNodos();
-
-    unordered_map<string, NodoRadixTrie*>& getHijos();
-
-    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
+    string prefijoCom(const string& s1, const string& s2);
 
     vector<string> completarPrefijo(const string& w);
 
     void completarDFS(NodoRadixTrie* nodo, string& palabraActual,
                       vector<string>& resultados);
+
+    NodoRadixTrie* obtenerNodo(const string& w);
+
+    // Insertar nuevo nodo hijo
+    void insertarPalabra(const string& w, int l, int p);
+
+    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
+
+    // Insertar nuevo nodo hijo
+    vector<pair<int, int>> buscarPalabra(const string& w);
+
+    // Getters y setters
+    bool getHoja() const;
+
+    static int getNodos();
+
+    unordered_map<string, NodoRadixTrie*>& getHijos();
 
     size_t calcularMemoria() const;
 };

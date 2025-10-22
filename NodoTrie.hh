@@ -37,21 +37,21 @@ class NodoTrie {
     void insertar(char c);
 
     // Insertar nuevo nodo hijo
-    void insertar_word(string w, int l, int p);
+    void insertarPalabra(string w, int l, int p);
 
     // Insertar nuevo nodo hijo
-    vector<pair<int, int>> buscar_word(string w);
+    vector<pair<int, int>> buscarPalabra(string w);
 
     // Getters y setters
-    bool esHoja() const;
+    bool getHoja() const;
 
     static int getNodos();
 
     bool contienePalabra(string w);
 
-    NodoTrie* obtener(char c) const;
+    NodoTrie* obtenerNodo(char c) const;
 
-    NodoTrie* obtener(string w);
+    NodoTrie* obtenerNodo(string w);
 
     unordered_map<char, NodoTrie*>& getHijos();
 
