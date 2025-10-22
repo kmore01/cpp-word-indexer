@@ -9,9 +9,22 @@
 #include <string>
 #include <vector>
 
+#include "NodoRadixTrie.hh"
 #include "NodoTrie.hh"
 
 using namespace std;
+
+string selectType() {
+    cout << ">> Seleccione el tipo de trie:" << endl;
+    cout << "   1. Normal trie" << endl;
+    cout << "   2. Radix trie" << endl;
+    int m;
+    cin >> m;
+    if (m == 1) return "normal";
+    if (m == 2) return "radix";
+    cout << "Tipo inválido" << endl;
+    return selectType();
+}
 
 vector<string> listarArchivosTxt(const string& directorio = ".") {
     vector<string> archivos;
@@ -41,24 +54,24 @@ void mostrarMenuArchivos(const vector<string>& archivos) {
     cout << "=============================" << endl;
 }
 
-bool leerEntrada(const string& nombreArchivo, NodoTrie& t) {
+template <typename T>
+bool leerEntrada(const string& nombreArchivo, T& t) {
     ifstream archivo(nombreArchivo);
     string linea;
     int numeroLinea = 1;
-
-    if (!archivo.is_open()) {
+    if (not archivo.is_open()) {
         cout << "Error: The file '" << nombreArchivo << "' could not be opened"
              << endl;
         return false;
     }
-
     while (getline(archivo, linea)) {
         stringstream ss(linea);
         string word;
         int pos = 0;
         while (ss >> word) {
-            std::transform(word.begin(), word.end(), word.begin(),
-                           [](unsigned char c) { return std::tolower(c); });
+            // Convertir la palabra a minúsculas
+            transform(word.begin(), word.end(), word.begin(),
+                      [](unsigned char c) { return tolower(c); });
 
             t.insertar_word(word, numeroLinea, pos);
             ++pos;
@@ -68,7 +81,8 @@ bool leerEntrada(const string& nombreArchivo, NodoTrie& t) {
     return true;
 }
 
-void readFile(bool& valido, const vector<string>& lista, NodoTrie& trie) {
+template <typename T>
+void readFile(bool& valido, const vector<string>& lista, T& trie) {
     while (not valido) {
         mostrarMenuArchivos(lista);
         cout << ">> Select a file (number): ";
@@ -101,7 +115,8 @@ void show_commands() {
          << "   x: exit" << endl;
 }
 
-void searchCommand(NodoTrie& trie) {
+template <typename T>
+void searchCommand(T& trie) {
     cout << ">> Search word: ";
     string words;
     cin.ignore();
@@ -130,6 +145,7 @@ void searchCommand(NodoTrie& trie) {
         cout << endl << endl << "Total words founds: " << count << endl;
         cout << "===================" << endl;
 
+        /*
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
             if (not palabras.empty()) {
@@ -148,9 +164,11 @@ void searchCommand(NodoTrie& trie) {
                 cout << "===================" << endl;
             }
         }
+            */
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
         cout << "===================" << endl;
+        /*
         if (frase.size() == 1) {
             vector<string> palabras = trie.completarPrefijo(word);
             if (not palabras.empty()) {
@@ -169,23 +187,25 @@ void searchCommand(NodoTrie& trie) {
                 cout << "===================" << endl;
             }
         }
+            */
     }
     // Mostrar tiempo en milisegundos
     cout << "Search took: " << duracion.count() << " ms" << endl;
     cout << "===================" << endl;
 }
 
-void openCommand(const vector<string>& lista, NodoTrie& trie, bool& valido) {
+template <typename T>
+void openCommand(const vector<string>& lista, T& trie, bool& valido) {
     cout << "Open file:" << endl;
-    trie = NodoTrie();
+    trie.~T();
     valido = false;
     readFile(valido, lista, trie);
     cout << "=============================" << endl;
     cout << "File was read correctly." << endl;
 }
 
-void searchApplication(const vector<string>& lista, NodoTrie& trie,
-                       bool& valido) {
+template <typename T>
+void searchApplication(const vector<string>& lista, T& trie, bool& valido) {
     char command;
     cin >> command;
     while (valido and command != 'x') {
@@ -202,15 +222,28 @@ void searchApplication(const vector<string>& lista, NodoTrie& trie,
 }
 
 int main() {
-    NodoTrie trie;
+    string type = selectType();
     bool valido = false;
     vector<string> lista = listarArchivosTxt();
-    readFile(valido, lista, trie);
-    cout << "=============================" << endl;
-    cout << "File was read correctly." << endl;
-    cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
-    size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
-    cout << "Memoria del Trie: " << memoriaMB << " MB" << endl;
-    show_commands();
-    searchApplication(lista, trie, valido);
+
+    if (type == "normal") {
+        NodoTrie trie;
+        readFile(valido, lista, trie);
+        cout << "=============================" << endl;
+        cout << "File was read correctly." << endl;
+        cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
+        size_t memoriaMB = trie.calcularMemoria() / (1024 * 1024);
+        cout << "Memoria del Trie: " << memoriaMB << " MB" << endl;
+        // cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
+        show_commands();
+        searchApplication(lista, trie, valido);
+    } else {
+        NodoRadixTrie trie;
+        readFile(valido, lista, trie);
+        cout << "=============================" << endl;
+        cout << "File was read correctly." << endl;
+        // cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
+        show_commands();
+        searchApplication(lista, trie, valido);
+    }
 }
