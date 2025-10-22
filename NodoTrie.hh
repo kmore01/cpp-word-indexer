@@ -12,11 +12,12 @@ class NodoTrie {
    private:
     // La clave del map es el valor del nodo. Por ejemplo, para acceder
     // al nodo con el char 'a' haremos hijos[a].
-
-   public:
     unordered_map<char, NodoTrie*> hijos;
     bool hoja = false;
     vector<pair<int, int>> lineaPos;
+    static int nodos;
+
+   public:
     // Constructor
     NodoTrie();
 
@@ -36,6 +37,8 @@ class NodoTrie {
 
     // Getters y setters
     bool esHoja() const;
+
+    static int getNodos();
 
     bool contienePalabra(string w);
 

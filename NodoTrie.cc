@@ -1,9 +1,17 @@
 #include "NodoTrie.hh"
 
-// Constructor
-NodoTrie::NodoTrie() { hoja = false; }
+int NodoTrie::nodos = 0;
 
-NodoTrie::NodoTrie(bool h) { hoja = h; }
+// Constructor
+NodoTrie::NodoTrie() {
+    hoja = false;
+    ++nodos;
+}
+
+NodoTrie::NodoTrie(bool h) {
+    hoja = h;
+    ++nodos;
+}
 
 NodoTrie::~NodoTrie() {
     for (auto& par : hijos) {
@@ -42,6 +50,8 @@ vector<pair<int, int>> NodoTrie::buscar_word(string w) {
 }
 
 bool NodoTrie::esHoja() const { return hoja; }
+
+int NodoTrie::getNodos() { return nodos; }
 
 bool NodoTrie::contienePalabra(string w) {
     NodoTrie* nodo = obtener(w);

@@ -204,6 +204,7 @@ int main() {
     readFile(valido, lista, trie);
     cout << "=============================" << endl;
     cout << "File was read correctly." << endl;
+    cout << "Total nodes created in Trie: " << trie.getNodos() << endl;
     show_commands();
     searchApplication(lista, trie, valido);
 }
