@@ -38,10 +38,10 @@ class NodoRadixTrie {
     // Insertar nuevo nodo hijo
     void insertarPalabra(const string& w, int l, int p);
 
-    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
-
     // Insertar nuevo nodo hijo
     vector<pair<int, int>> buscarPalabra(const string& w);
+
+    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
 
     // Getters y setters
     bool getHoja() const;
