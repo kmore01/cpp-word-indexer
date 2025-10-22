@@ -1,3 +1,4 @@
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -69,7 +70,7 @@ void readFile(bool& valido, const vector<string>& lista, NodoTrie& trie) {
         int i;
         cin >> i;
         --i;
-        if (i >= lista.size())
+        if (i >= (int)lista.size())
             cout << "error: index not available" << endl << endl;
         else if (i >= 0) {
             cout << "the file selected was '" << lista[i] << "'" << endl;
@@ -87,13 +88,15 @@ void readFile(bool& valido, const vector<string>& lista, NodoTrie& trie) {
 
 void show_commands() {
     cout << ">> Commands: " << endl;
-    cout << "   h: show commands" << endl
-         << "   s: search a word" << endl
-         << "   o: open new file" << endl
+    cout << "   h: show commands  " << endl
+         << "   s: search a word  " << endl
+         << "   o: open new file  " << endl
+         << "   t: use trie       " << endl
+         << "   r: use radix trie " << endl
          << "   x: exit" << endl;
 }
 
-void searchCommand(NodoTrie &trie) {
+void searchCommand(NodoTrie& trie) {
     cout << ">> Search word: ";
     string words;
     cin.ignore();
@@ -104,7 +107,12 @@ void searchCommand(NodoTrie &trie) {
     while (ss >> word) {
         frase.push_back(word);
     }
+
+    // Medición del tiempo
+    auto inicio = chrono::high_resolution_clock::now();
     vector<pair<int, int>> lineaPos = trie.buscarFrase(frase);
+    auto fin = chrono::high_resolution_clock::now();
+    chrono::duration<double, milli> duracion = fin - inicio;
 
     if (not lineaPos.empty()) {
         cout << "Word found in lines: ";
@@ -114,9 +122,7 @@ void searchCommand(NodoTrie &trie) {
             ++count;
             if (count % 16 == 0) cout << endl;
         }
-        cout << endl
-                << endl
-                << "Total words founds: " << count << endl;
+        cout << endl << endl << "Total words founds: " << count << endl;
         cout << "===================" << endl;
 
         if (frase.size() == 1) {
@@ -130,12 +136,11 @@ void searchCommand(NodoTrie &trie) {
                     if (count % 16 == 0) cout << endl;
                 }
                 cout << endl
-                        << endl
-                        << "Total words founds with the prefix " << word
-                        << ": " << count << endl;
-    
-                cout << "===================" << endl;
+                     << endl
+                     << "Total words founds with the prefix " << word << ": "
+                     << count << endl;
 
+                cout << "===================" << endl;
             }
         }
     } else {
@@ -152,18 +157,20 @@ void searchCommand(NodoTrie &trie) {
                     if (count % 16 == 0) cout << endl;
                 }
                 cout << endl
-                        << endl
-                        << "Total words founds with the prefix " << word
-                        << ": " << count << endl;
-    
+                     << endl
+                     << "Total words founds with the prefix " << word << ": "
+                     << count << endl;
+
                 cout << "===================" << endl;
             }
-
         }
     }
+    // Mostrar tiempo en milisegundos
+    cout << "Search took: " << duracion.count() << " ms" << endl;
+    cout << "===================" << endl;
 }
 
-void openCommand(const vector<string> &lista, NodoTrie &trie, bool &valido) {
+void openCommand(const vector<string>& lista, NodoTrie& trie, bool& valido) {
     cout << "Open file:" << endl;
     trie.~NodoTrie();
     valido = false;
@@ -172,7 +179,8 @@ void openCommand(const vector<string> &lista, NodoTrie &trie, bool &valido) {
     cout << "File was read correctly." << endl;
 }
 
-void searchApplication(const vector<string> &lista, NodoTrie &trie, bool &valido) {
+void searchApplication(const vector<string>& lista, NodoTrie& trie,
+                       bool& valido) {
     char command;
     cin >> command;
     while (valido and command != 'x') {
@@ -184,7 +192,6 @@ void searchApplication(const vector<string> &lista, NodoTrie &trie, bool &valido
             show_commands();
         }
         cout << "enter the command: ";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin >> command;
     }
 }
@@ -197,7 +204,6 @@ int main() {
     readFile(valido, lista, trie);
     cout << "=============================" << endl;
     cout << "File was read correctly." << endl;
-    // cout << ">>Press x to exit or press f to search a word: ";
     show_commands();
     searchApplication(lista, trie, valido);
 }

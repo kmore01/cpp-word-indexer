@@ -25,8 +25,8 @@ class NodoRadixTrie {
     // Destructor
     ~NodoRadixTrie();
 
-    // Insertar nuevo nodo hijo
-    void insertar(char c);
+    // Funcion que te devuelve el prefijo comun entre dos palabras
+    string prefijoCom(string s1, string s2);
 
     // Insertar nuevo nodo hijo
     void insertar_word(string w, int l, int p);
@@ -37,18 +37,9 @@ class NodoRadixTrie {
     // Getters y setters
     bool esHoja() const;
 
-    bool contienePalabra(string w);
-
-    NodoRadixTrie* obtener(char c) const;
-
-    NodoRadixTrie* obtener(string w);
+    // bool contienePalabra(string w);
 
     unordered_map<string, NodoRadixTrie*>& getHijos();
-
-    vector<string> completarPrefijo(const string& w);
-
-    void completarDFS(NodoRadixTrie* nodo, string& palabraActual,
-                      vector<string>& resultados);
 };
 
 #endif
