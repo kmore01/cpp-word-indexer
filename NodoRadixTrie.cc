@@ -22,7 +22,7 @@ NodoRadixTrie::~NodoRadixTrie() {
 
 string NodoRadixTrie::prefijoCom(const string& s1, const string& s2) {
     int i = 0, minLong = min(s1.length(), s2.length());
-    while (i < minLong && s1[i] == s2[i]) {
+    while (i < minLong and s1[i] == s2[i]) {
         ++i;
     }
     return s1.substr(0, i);
@@ -39,7 +39,6 @@ int NodoRadixTrie::partition(vector<pair<string, int>>& vec, int left,
                              int right) {
     int pivotValue = vec[right].second;
     int idx = left;
-
     for (int j = left; j < right; j++) {
         if (vec[j].second >= pivotValue) {  // Orden descendente
             swap(vec[idx], vec[j]);
@@ -52,12 +51,10 @@ int NodoRadixTrie::partition(vector<pair<string, int>>& vec, int left,
 
 pair<string, int> NodoRadixTrie::encontrarIesimoMayor(
     vector<pair<string, int>>& vec, int i) {
-    if (i < 0 || i >= vec.size()) {
+    if (i < 0 or i >= vec.size()) {
         return {};
     }
-
     int left = 0, right = vec.size() - 1;
-
     while (left <= right) {
         int pivotIndex = partition(vec, left, right);
 
@@ -69,7 +66,6 @@ pair<string, int> NodoRadixTrie::encontrarIesimoMayor(
             right = pivotIndex - 1;  // Buscar en la izquierda
         }
     }
-
     return vec[i];
 }
 

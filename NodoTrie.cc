@@ -119,7 +119,7 @@ void NodoTrie::insertarPalabra(string w, int l, int p) {
 vector<pair<int, int>> NodoTrie::buscarPalabra(string w, int& nv) {
     nv = 0;
     NodoTrie* palabra = obtenerNodo(w, nv);
-    if (palabra != NULL && palabra->hoja) {
+    if (palabra != NULL and palabra->hoja) {
         return palabra->lineaPos;
     }
     return vector<pair<int, int>>();  // vector vacio si no se encuentra
