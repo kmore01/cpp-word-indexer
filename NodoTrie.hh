@@ -1,6 +1,7 @@
 #ifndef NODOTRIE_HH
 #define NODOTRIE_HH
 
+#include <climits>
 #include <iostream>
 #include <list>
 #include <unordered_map>
@@ -20,6 +21,12 @@ class NodoTrie {
     void calcularProfundidadesAux(int profundidadActual, int& contador,
                                   long long& suma) const;
 
+    int indexLessOcurr(const vector<pair<string, int>>& v);
+
+    int contiene(const vector<pair<string, int>>& v, const string& w);
+
+    vector<string> toVectorString(const vector<pair<string, int>>& v);
+
    public:
     // Constructor
     NodoTrie();
@@ -31,8 +38,13 @@ class NodoTrie {
 
     vector<string> completarPrefijo(const string& w, int& nv);
 
+    vector<string> completarPrefijo2(const string& w, int& nv);
+
     void completarDFS(NodoTrie* nodo, string palabraActual,
                       vector<string>& resultados, int& nv);
+
+    void completarDFS2(NodoTrie* nodo, string palabraActual,
+                       vector<pair<string, int>>& resultados, int& nv);
 
     NodoTrie* obtenerNodo(char c) const;
 

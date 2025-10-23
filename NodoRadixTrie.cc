@@ -35,6 +35,13 @@ vector<string> NodoRadixTrie::completarPrefijo(const string& w, int& nv) {
     return res;
 }
 
+vector<string> NodoRadixTrie::completarPrefijo2(const string& w, int& nv) {
+    vector<string> res;
+    nv = 0;
+    completarPrefijoAux(w, "", res, nv);
+    return res;
+}
+
 void NodoRadixTrie::completarPrefijoAux(const string& prefijoBuscado,
                                         string palabraActual,
                                         vector<string>& resultados, int& nv) {

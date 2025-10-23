@@ -30,9 +30,20 @@ vector<string> NodoTrie::completarPrefijo(const string& w, int& nv) {
     return resultados;
 }
 
+vector<string> NodoTrie::completarPrefijo2(const string& w, int& nv) {
+    // inicializacion necesaria
+    vector<pair<string, int>> resultados(5, {"", -1});
+    NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
+    if (nodoPrefijo != NULL) {
+        completarDFS2(nodoPrefijo, w, resultados, nv);
+        --nv;  // nodo prefijo 2 veces
+    }
+    return toVectorString(resultados);
+}
+
 void NodoTrie::completarDFS(NodoTrie* nodo, string palabraActual,
                             vector<string>& resultados, int& nv) {
-    if (resultados.size() == 5) {
+    if (resultados.size() < 5) {
         ++nv;
         if (nodo->hoja) {
             resultados.push_back(palabraActual);
@@ -40,6 +51,25 @@ void NodoTrie::completarDFS(NodoTrie* nodo, string palabraActual,
         for (auto& par : nodo->hijos) {
             completarDFS(par.second, palabraActual + par.first, resultados, nv);
         }
+    }
+}
+
+void NodoTrie::completarDFS2(NodoTrie* nodo, string palabraActual,
+                             vector<pair<string, int>>& resultados, int& nv) {
+    ++nv;
+    if (nodo->hoja) {
+        int ocurrencias = nodo->lineaPos.size();
+        int idx = contiene(resultados, palabraActual);
+        if (idx == -1) {  // creo que no hace falta pero por si acaso
+            int idx2 = indexLessOcurr(resultados);
+            if (resultados[idx2].second == -1 or
+                ocurrencias > resultados[idx2].second) {
+                resultados[idx2] = {palabraActual, ocurrencias};
+            }
+        }
+    }
+    for (auto& par : nodo->hijos) {
+        completarDFS2(par.second, palabraActual + par.first, resultados, nv);
     }
 }
 
@@ -171,6 +201,38 @@ void NodoTrie::calcularProfundidadesAux(int profundidadActual, int& contador,
                                                  contador, suma);
         }
     }
+}
+
+int NodoTrie::indexLessOcurr(const vector<pair<string, int>>& v) {
+    int n = v.size(), idx = -1, less = INT_MAX;
+    for (int i = 0; i < n; ++i) {
+        pair<string, int> aux = v[i];
+        if (aux.second < less) {
+            idx = i;
+            less = aux.second;
+        }
+    }
+    return idx;
+}
+
+int NodoTrie::contiene(const vector<pair<string, int>>& v, const string& w) {
+    int n = v.size();
+    for (int i = 0; i < n; ++i) {
+        pair<string, int> aux = v[i];
+        if (aux.first == w) {
+            return i;
+        }
+    }
+    return -1;  // v no contiene w
+}
+
+vector<string> NodoTrie::toVectorString(const vector<pair<string, int>>& v) {
+    vector<string> resultado;
+    resultado.reserve(v.size());  // Pre-reservar espacio
+    for (const auto& par : v) {
+        resultado.push_back(par.first);
+    }
+    return resultado;
 }
 
 double NodoTrie::calcularProfundidadMedia() const {

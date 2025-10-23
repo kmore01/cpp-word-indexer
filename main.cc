@@ -195,7 +195,7 @@ void searchCommand(T& trie) {
         cout << SEPARADOR << endl;
         if (frase.size() == 1) {
             int nodosAux = 0;
-            vector<string> palabras = trie.completarPrefijo(word, nodosAux);
+            vector<string> palabras = trie.completarPrefijo2(word, nodosAux);
             nodosVisitados += nodosAux;
             imprimirVector(palabras, word);
         }
