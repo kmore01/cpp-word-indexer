@@ -22,26 +22,23 @@ NodoTrie::~NodoTrie() {
 
 vector<string> NodoTrie::completarPrefijo(const string& w, int& nv) {
     vector<string> resultados;
-    nv = 0;
     NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
     if (nodoPrefijo != NULL) {
-        string prefijoActual = w;
-        completarDFS(nodoPrefijo, prefijoActual, resultados, nv);
+        completarDFS(nodoPrefijo, w, resultados, nv);
         --nv;  // nodo prefijo 2 veces
     }
+    
     return resultados;
 }
 
-void NodoTrie::completarDFS(NodoTrie* nodo, string& palabraActual,
+void NodoTrie::completarDFS(NodoTrie* nodo, string palabraActual,
                             vector<string>& resultados, int& nv) {
     ++nv;
     if (nodo->hoja) {
         resultados.push_back(palabraActual);
     }
     for (auto& par : nodo->hijos) {
-        palabraActual.push_back(par.first);  // Modificar in-place
-        completarDFS(par.second, palabraActual, resultados, nv);
-        palabraActual.pop_back();  // Backtrack
+        completarDFS(par.second, palabraActual + par.first, resultados, nv);
     }
 }
 

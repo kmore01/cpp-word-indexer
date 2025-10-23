@@ -31,7 +31,7 @@ class NodoTrie {
 
     vector<string> completarPrefijo(const string& w, int& nv);
 
-    void completarDFS(NodoTrie* nodo, string& palabraActual,
+    void completarDFS(NodoTrie* nodo, string palabraActual,
                       vector<string>& resultados, int& nv);
 
     NodoTrie* obtenerNodo(char c) const;
