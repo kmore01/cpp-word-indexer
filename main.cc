@@ -27,7 +27,9 @@ string selectType() {
     cin >> m;
     if (m == 1) return "normal";
     if (m == 2) return "radix";
-    cout << "Invalid type" << endl;
+    cout << "Invalid option. Please enter 1 or 2." << endl;
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     return selectType();
 }
 
@@ -104,8 +106,16 @@ void readFile(bool& valido, const vector<string>& lista, T& trie) {
     while (not valido) {
         mostrarMenuArchivos(lista);
         cout << "Enter an option: ";
+        string input;
+        cin >> input;
         int i;
-        cin >> i;
+        try {
+            i = stoi(input);
+        } catch (...) {  // generico
+            cout << SEPARADOR << endl;
+            cout << "Invalid input. Please enter a valid number." << endl;
+            continue;
+        }
         cout << SEPARADOR << endl;
         --i;
         if (i >= (int)lista.size())

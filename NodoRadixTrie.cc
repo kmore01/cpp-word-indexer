@@ -122,7 +122,7 @@ void NodoRadixTrie::insertarPalabra(const string& w, int l, int p) {
         lineaPos.push_back({l, p});
         return;
     }
-    for (auto par : hijos) {
+    for (auto& par : hijos) {
         string palabraHijo = par.first;
         string prefijo = prefijoCom(palabraHijo, w);  // en comun
         if (not prefijo.empty()) {                    // Tienen prefijo en comun

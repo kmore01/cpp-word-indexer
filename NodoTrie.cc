@@ -27,7 +27,7 @@ vector<string> NodoTrie::completarPrefijo(const string& w, int& nv) {
         completarDFS(nodoPrefijo, w, resultados, nv);
         --nv;  // nodo prefijo 2 veces
     }
-    
+
     return resultados;
 }
 
