@@ -293,7 +293,6 @@ void NodoRadixTrie::calcularProfundidadesAux(int profundidadActual,
         ++contador;
         suma += profundidadActual;
     }
-
     // Recorrer todos los hijos
     for (const auto& par : hijos) {
         if (par.second != nullptr) {
@@ -308,11 +307,8 @@ void NodoRadixTrie::calcularProfundidadesAux(int profundidadActual,
 double NodoRadixTrie::calcularProfundidadMedia() const {
     int contador = 0;
     long long suma = 0;
-
     calcularProfundidadesAux(1, contador, suma);
-
     if (contador == 0) return 0.0;
-
     return static_cast<double>(suma) / contador;
 }
 
@@ -321,7 +317,6 @@ void NodoRadixTrie::calcularProfundidadMaximaAux(int profundidadActual,
     if (hoja) {
         maxProf = max(maxProf, profundidadActual);
     }
-
     for (const auto& par : hijos) {
         if (par.second != nullptr) {
             par.second->calcularProfundidadMaximaAux(

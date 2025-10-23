@@ -27,18 +27,19 @@ vector<string> NodoTrie::completarPrefijo(const string& w, int& nv) {
         completarDFS(nodoPrefijo, w, resultados, nv);
         --nv;  // nodo prefijo 2 veces
     }
-
     return resultados;
 }
 
 void NodoTrie::completarDFS(NodoTrie* nodo, string palabraActual,
                             vector<string>& resultados, int& nv) {
-    ++nv;
-    if (nodo->hoja) {
-        resultados.push_back(palabraActual);
-    }
-    for (auto& par : nodo->hijos) {
-        completarDFS(par.second, palabraActual + par.first, resultados, nv);
+    if (resultados.size() == 5) {
+        ++nv;
+        if (nodo->hoja) {
+            resultados.push_back(palabraActual);
+        }
+        for (auto& par : nodo->hijos) {
+            completarDFS(par.second, palabraActual + par.first, resultados, nv);
+        }
     }
 }
 

@@ -35,7 +35,6 @@ string selectType() {
 
 vector<string> listarArchivosTxt(const string& directorio = ".") {
     vector<string> archivos;
-
     try {
         for (const auto& entrada : filesystem::directory_iterator(directorio)) {
             if (entrada.is_regular_file()) {
@@ -48,7 +47,6 @@ vector<string> listarArchivosTxt(const string& directorio = ".") {
     } catch (const filesystem::filesystem_error& e) {
         cout << "Error al leer el directorio: " << e.what() << endl;
     }
-
     return archivos;
 }
 
@@ -56,11 +54,9 @@ void mostrarMenuArchivos(const vector<string>& archivos) {
     cout << SEPARADOR << endl;
     cout << "Select a file from the list below:" << endl;
     cout << endl;
-
     for (size_t i = 0; i < archivos.size(); ++i) {
         cout << "[" << i + 1 << "] " << archivos[i] << endl;
     }
-
     cout << "[0] Enter name manually" << endl;
     cout << endl;
 }
@@ -230,12 +226,13 @@ void searchApplication(const vector<string>& lista, T& trie, bool& valido) {
     while (valido and command != 'x') {
         if (command == 's') {
             searchCommand(trie);
+            cout << "Enter an option: ";
         } else if (command == 'o') {
             openCommand(lista, trie, valido);
-        } else if (command == 'h') {
+            cout << "Enter an option: ";
+        } else {
             show_commands();
         }
-        cout << "enter the command: ";
         cin >> command;
     }
 }
