@@ -190,12 +190,31 @@ void searchCommand(T& trie) {
         }
         cout << endl << endl << "Total words founds: " << count << endl;
         cout << SEPARADOR << endl;
+        // Autocompletado
+        if (frase.size() == 1) {
+            int nodosAux = 0;
+            // Se puede cambiar el metodo de busca
+
+            // int n = 5;  // prefijos
+            // vector<string> palabras = trie.completarPrefijo2(word, nodosAux,
+            // n);
+            vector<string> palabras = trie.completarPrefijo(word, nodosAux);
+
+            nodosVisitados += nodosAux;
+            imprimirVector(palabras, word);
+        }
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
         cout << SEPARADOR << endl;
         if (frase.size() == 1) {
             int nodosAux = 0;
-            vector<string> palabras = trie.completarPrefijo2(word, nodosAux);
+            // Se puede cambiar el metodo de busca
+
+            // int n = 5;  // prefijos
+            // vector<string> palabras = trie.completarPrefijo2(word, nodosAux,
+            // n);
+
+            vector<string> palabras = trie.completarPrefijo(word, nodosAux);
             nodosVisitados += nodosAux;
             imprimirVector(palabras, word);
         }

@@ -35,25 +35,72 @@ vector<string> NodoRadixTrie::completarPrefijo(const string& w, int& nv) {
     return res;
 }
 
-vector<string> NodoRadixTrie::completarPrefijo2(const string& w, int& nv) {
-    vector<string> res;
-    nv = 0;
-    completarPrefijoAux(w, "", res, nv);
-    return res;
+int NodoRadixTrie::partition(vector<pair<string, int>>& vec, int left,
+                             int right) {
+    int pivotValue = vec[right].second;
+    int idx = left;
+
+    for (int j = left; j < right; j++) {
+        if (vec[j].second >= pivotValue) {  // Orden descendente
+            swap(vec[idx], vec[j]);
+            idx++;
+        }
+    }
+    swap(vec[idx], vec[right]);
+    return idx;
 }
 
-void NodoRadixTrie::completarPrefijoAux(const string& prefijoBuscado,
-                                        string palabraActual,
-                                        vector<string>& resultados, int& nv) {
+pair<string, int> NodoRadixTrie::encontrarIesimoMayor(
+    vector<pair<string, int>>& vec, int i) {
+    if (i < 0 || i >= vec.size()) {
+        return {};
+    }
+
+    int left = 0, right = vec.size() - 1;
+
+    while (left <= right) {
+        int pivotIndex = partition(vec, left, right);
+
+        if (pivotIndex == i) {
+            return vec[i];  // Encontramos el i-ésimo mayor
+        } else if (pivotIndex < i) {
+            left = pivotIndex + 1;  // Buscar en la derecha
+        } else {
+            right = pivotIndex - 1;  // Buscar en la izquierda
+        }
+    }
+
+    return vec[i];
+}
+
+vector<string> NodoRadixTrie::completarPrefijo2(const string& w, int& nv,
+                                                int n) {
+    vector<pair<string, int>> res;
+    vector<string> ret(n);
+    nv = 0;
+    completarPrefijoAux2(w, "", res, nv);
+    for (int i = 0; i < n; ++i) {
+        string aux = encontrarIesimoMayor(res, i).first;
+        ret[i] = aux;
+    }
+    return ret;
+}
+
+void NodoRadixTrie::completarPrefijoAux2(const string& prefijoBuscado,
+                                         string palabraActual,
+                                         vector<pair<string, int>>& resultados,
+                                         int& nv) {
     ++nv;
     // Si ya consumimos todo el prefijo, recolectar todas las palabras
     if (prefijoBuscado.empty()) {
         if (hoja) {
-            resultados.push_back(palabraActual);
+            resultados.push_back({palabraActual, lineaPos.size()});
         }
-        for (auto& par : hijos) {
+        for (auto& par : hijos) {  //
             string nuevaPalabra = palabraActual + par.first;
-            par.second->completarPrefijoAux("", nuevaPalabra, resultados, nv);
+            par.second->completarPrefijoAux2(
+                "", nuevaPalabra, resultados,
+                nv);  // string vacio porque ya tenemos el prefijo comun
         }
         return;
     }
@@ -64,14 +111,52 @@ void NodoRadixTrie::completarPrefijoAux(const string& prefijoBuscado,
             if (prefijo == palabraHijo) {
                 // El edge completo coincide, seguir buscando
                 string resto = prefijoBuscado.substr(prefijo.length());
-                par.second->completarPrefijoAux(
+                par.second->completarPrefijoAux2(
                     resto, palabraActual + palabraHijo, resultados, nv);
             } else if (prefijo == prefijoBuscado) {
                 // El prefijo buscado está contenido en este edge
                 // Recolectar todo desde aquí
                 string nuevaPalabra = palabraActual + palabraHijo;
+                par.second->completarPrefijoAux2("", nuevaPalabra, resultados,
+                                                 nv);
+            }
+        }
+    }
+}
+
+void NodoRadixTrie::completarPrefijoAux(const string& prefijoBuscado,
+                                        string palabraActual,
+                                        vector<string>& resultados, int& nv) {
+    if (resultados.size() < 5) {
+        ++nv;
+        // Si ya consumimos todo el prefijo, recolectar todas las palabras
+        if (prefijoBuscado.empty()) {
+            if (hoja) {
+                resultados.push_back(palabraActual);
+            }
+            for (auto& par : hijos) {
+                string nuevaPalabra = palabraActual + par.first;
                 par.second->completarPrefijoAux("", nuevaPalabra, resultados,
                                                 nv);
+            }
+            return;
+        }
+        for (auto& par : hijos) {
+            string palabraHijo = par.first;
+            string prefijo = prefijoCom(palabraHijo, prefijoBuscado);
+            if (not prefijo.empty()) {
+                if (prefijo == palabraHijo) {
+                    // El edge completo coincide, seguir buscando
+                    string resto = prefijoBuscado.substr(prefijo.length());
+                    par.second->completarPrefijoAux(
+                        resto, palabraActual + palabraHijo, resultados, nv);
+                } else if (prefijo == prefijoBuscado) {
+                    // El prefijo buscado está contenido en este edge
+                    // Recolectar todo desde aquí
+                    string nuevaPalabra = palabraActual + palabraHijo;
+                    par.second->completarPrefijoAux("", nuevaPalabra,
+                                                    resultados, nv);
+                }
             }
         }
     }

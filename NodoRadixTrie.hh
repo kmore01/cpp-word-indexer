@@ -38,10 +38,19 @@ class NodoRadixTrie {
 
     vector<string> completarPrefijo(const string& w, int& nv);
 
-    vector<string> completarPrefijo2(const string& w, int& nv);
+    pair<string, int> encontrarIesimoMayor(vector<pair<string, int>>& vec,
+                                           int i);
+
+    int partition(vector<pair<string, int>>& vec, int left, int right);
+
+    vector<string> completarPrefijo2(const string& w, int& nv, int n);
 
     void completarPrefijoAux(const string& prefijoBuscado, string palabraActual,
                              vector<string>& resultados, int& nv);
+
+    void completarPrefijoAux2(const string& prefijoBuscado,
+                              string palabraActual,
+                              vector<pair<string, int>>& resultados, int& nv);
 
     void completarDFS(NodoRadixTrie* nodo, string& palabraActual,
                       vector<string>& resultados, int& nv);

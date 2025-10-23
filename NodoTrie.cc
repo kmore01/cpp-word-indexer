@@ -30,9 +30,9 @@ vector<string> NodoTrie::completarPrefijo(const string& w, int& nv) {
     return resultados;
 }
 
-vector<string> NodoTrie::completarPrefijo2(const string& w, int& nv) {
+vector<string> NodoTrie::completarPrefijo2(const string& w, int& nv, int n) {
     // inicializacion necesaria
-    vector<pair<string, int>> resultados(5, {"", -1});
+    vector<pair<string, int>> resultados(n, {"", -1});
     NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
     if (nodoPrefijo != NULL) {
         completarDFS2(nodoPrefijo, w, resultados, nv);
