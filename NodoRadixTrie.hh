@@ -36,14 +36,14 @@ class NodoRadixTrie {
     // Funcion que te devuelve el prefijo comun entre dos palabras
     string prefijoCom(const string& s1, const string& s2);
 
-    vector<string> completarPrefijo(const string& w, int& nv);
+    vector<string> contarPalabrasPrefijo(const string& w, int& nv);
 
     pair<string, int> encontrarIesimoMayor(vector<pair<string, int>>& vec,
                                            int i);
 
     int partition(vector<pair<string, int>>& vec, int left, int right);
 
-    vector<string> completarPrefijo2(const string& w, int& nv, int n);
+    vector<string> obtenerTop5MasFrecuentes(const string& w, int& nv);
 
     void completarPrefijoAux(const string& prefijoBuscado, string palabraActual,
                              vector<string>& resultados, int& nv);

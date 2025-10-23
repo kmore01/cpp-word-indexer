@@ -141,6 +141,37 @@ void show_commands() {
     cout << "Enter an option: ";
 }
 
+template <typename T>
+void imprimirAutocompletado(T& trie, const string& w, int& nodosVisitados) {
+    // Primero obtener TODAS las palabras para contar
+    int nodosAux1 = 0;
+    vector<string> todasPalabras = trie.contarPalabrasPrefijo(w, nodosAux1);
+    
+    if (not todasPalabras.empty()) {
+        int totalPalabras = todasPalabras.size();
+        
+        // Ahora obtener las 5 más frecuentes
+        int nodosAux2 = 0;
+        vector<string> top5 = trie.obtenerTop5MasFrecuentes(w, nodosAux2);
+        
+        cout << "Total words found with the prefix '" << w << "': " << totalPalabras << endl;
+        cout << "Top 5 most frequent words:" << endl << endl;
+        
+        int count = 0;
+        for (const string& it : top5) {
+            if (not it.empty()) {
+                cout << it << "     ";
+                ++count;
+                if (count % 5 == 0) cout << endl;
+            }
+        }
+        if (count % 5 != 0) cout << endl;
+        
+        nodosVisitados += nodosAux1 + nodosAux2;
+        cout << SEPARADOR << endl;
+    }
+}
+
 void imprimirVector(const vector<string>& v, const string& w) {
     if (not v.empty()) {
         cout << "Maybe you wanted to search: ";
@@ -192,31 +223,13 @@ void searchCommand(T& trie) {
         cout << SEPARADOR << endl;
         // Autocompletado
         if (frase.size() == 1) {
-            int nodosAux = 0;
-            // Se puede cambiar el metodo de busca
-
-            // int n = 5;  // prefijos
-            // vector<string> palabras = trie.completarPrefijo2(word, nodosAux,
-            // n);
-            vector<string> palabras = trie.completarPrefijo(word, nodosAux);
-
-            nodosVisitados += nodosAux;
-            imprimirVector(palabras, word);
+            imprimirAutocompletado(trie, word, nodosVisitados);
         }
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
         cout << SEPARADOR << endl;
         if (frase.size() == 1) {
-            int nodosAux = 0;
-            // Se puede cambiar el metodo de busca
-
-            // int n = 5;  // prefijos
-            // vector<string> palabras = trie.completarPrefijo2(word, nodosAux,
-            // n);
-
-            vector<string> palabras = trie.completarPrefijo(word, nodosAux);
-            nodosVisitados += nodosAux;
-            imprimirVector(palabras, word);
+            imprimirAutocompletado(trie, word, nodosVisitados);
         }
     }
     // Mostrar tiempo en milisegundos

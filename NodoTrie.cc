@@ -20,7 +20,7 @@ NodoTrie::~NodoTrie() {
     hijos.clear();
 }
 
-vector<string> NodoTrie::completarPrefijo(const string& w, int& nv) {
+vector<string> NodoTrie::contarPalabrasPrefijo(const string& w, int& nv) {
     vector<string> resultados;
     NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
     if (nodoPrefijo != NULL) {
@@ -28,10 +28,11 @@ vector<string> NodoTrie::completarPrefijo(const string& w, int& nv) {
         --nv;  // nodo prefijo 2 veces
     }
     return resultados;
-}
+} 
 
-vector<string> NodoTrie::completarPrefijo2(const string& w, int& nv, int n) {
-    // inicializacion necesaria
+vector<string> NodoTrie::obtenerTop5MasFrecuentes(const string& w, int& nv) {
+    // inicializacion necesaria - siempre 5 palabras
+    int n = 5;
     vector<pair<string, int>> resultados(n, {"", -1});
     NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
     if (nodoPrefijo != NULL) {
@@ -43,14 +44,12 @@ vector<string> NodoTrie::completarPrefijo2(const string& w, int& nv, int n) {
 
 void NodoTrie::completarDFS(NodoTrie* nodo, string palabraActual,
                             vector<string>& resultados, int& nv) {
-    if (resultados.size() < 5) {
-        ++nv;
-        if (nodo->hoja) {
-            resultados.push_back(palabraActual);
-        }
-        for (auto& par : nodo->hijos) {
-            completarDFS(par.second, palabraActual + par.first, resultados, nv);
-        }
+    ++nv;
+    if (nodo->hoja) {
+        resultados.push_back(palabraActual);
+    }
+    for (auto& par : nodo->hijos) {
+        completarDFS(par.second, palabraActual + par.first, resultados, nv);
     }
 }
 

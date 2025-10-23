@@ -28,7 +28,7 @@ string NodoRadixTrie::prefijoCom(const string& s1, const string& s2) {
     return s1.substr(0, i);
 }
 
-vector<string> NodoRadixTrie::completarPrefijo(const string& w, int& nv) {
+vector<string> NodoRadixTrie::contarPalabrasPrefijo(const string& w, int& nv) {
     vector<string> res;
     nv = 0;
     completarPrefijoAux(w, "", res, nv);
@@ -69,8 +69,9 @@ pair<string, int> NodoRadixTrie::encontrarIesimoMayor(
     return vec[i];
 }
 
-vector<string> NodoRadixTrie::completarPrefijo2(const string& w, int& nv,
-                                                int n) {
+vector<string> NodoRadixTrie::obtenerTop5MasFrecuentes(const string& w, int& nv) {
+    // Siempre retornar las 5 más frecuentes
+    int n = 5;
     vector<pair<string, int>> res;
     vector<string> ret(n);
     nv = 0;

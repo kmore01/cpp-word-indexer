@@ -36,9 +36,9 @@ class NodoTrie {
     // Destructor
     ~NodoTrie();
 
-    vector<string> completarPrefijo(const string& w, int& nv);
+    vector<string> contarPalabrasPrefijo(const string& w, int& nv);
 
-    vector<string> completarPrefijo2(const string& w, int& nv, int n);
+    vector<string> obtenerTop5MasFrecuentes(const string& w, int& nv);
 
     void completarDFS(NodoTrie* nodo, string palabraActual,
                       vector<string>& resultados, int& nv);
