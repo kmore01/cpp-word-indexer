@@ -32,7 +32,6 @@ vector<string> NodoRadixTrie::completarPrefijo(const string& w, int& nv) {
     vector<string> res;
     nv = 0;
     completarPrefijoAux(w, "", res, nv);
-    --nv;
     return res;
 }
 
@@ -183,8 +182,7 @@ void NodoRadixTrie::insertarPalabra(const string& w, int l, int p) {
 }
 
 vector<pair<int, int>> NodoRadixTrie::buscarPalabra(const string& w, int& nv) {
-    nv = 0;
-    // Caso base: si w esta vacio y es hoja
+    //  Caso base: si w esta vacio y es hoja
     if (w.empty()) {
         ++nv;
         if (hoja) {

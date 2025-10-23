@@ -170,7 +170,7 @@ void searchCommand(T& trie) {
     }
     // Medición del tiempo
     auto inicio = chrono::high_resolution_clock::now();
-    int nodosVisitados;
+    int nodosVisitados = 0;
     vector<pair<int, int>> lineaPos = trie.buscarFrase(frase, nodosVisitados);
     auto fin = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duracion = fin - inicio;
