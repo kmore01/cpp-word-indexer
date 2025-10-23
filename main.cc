@@ -155,7 +155,7 @@ void imprimirVector(const vector<string>& v, const string& w) {
 
 template <typename T>
 void searchCommand(T& trie) {
-    cout << ">> Search word: ";
+    cout << "Enter the word you want to search: ";
     string words;
     cin.ignore();
     getline(cin, words);
@@ -170,7 +170,8 @@ void searchCommand(T& trie) {
     }
     // Medición del tiempo
     auto inicio = chrono::high_resolution_clock::now();
-    vector<pair<int, int>> lineaPos = trie.buscarFrase(frase);
+    int nodosVisitados;
+    vector<pair<int, int>> lineaPos = trie.buscarFrase(frase, nodosVisitados);
     auto fin = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> duracion = fin - inicio;
     if (not lineaPos.empty()) {
@@ -183,21 +184,19 @@ void searchCommand(T& trie) {
         }
         cout << endl << endl << "Total words founds: " << count << endl;
         cout << SEPARADOR << endl;
-        if (frase.size() == 1) {
-            vector<string> palabras = trie.completarPrefijo(word);
-            imprimirVector(palabras, word);
-        }
-
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
         cout << SEPARADOR << endl;
         if (frase.size() == 1) {
-            vector<string> palabras = trie.completarPrefijo(word);
+            int nodosAux = 0;
+            vector<string> palabras = trie.completarPrefijo(word, nodosAux);
+            nodosVisitados += nodosAux;
             imprimirVector(palabras, word);
         }
     }
     // Mostrar tiempo en milisegundos
     cout << "Search took: " << duracion.count() << " ms" << endl;
+    cout << "Visited nodes: " << nodosVisitados << endl;
     cout << SEPARADOR << endl;
 }
 

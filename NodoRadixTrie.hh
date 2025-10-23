@@ -36,23 +36,23 @@ class NodoRadixTrie {
     // Funcion que te devuelve el prefijo comun entre dos palabras
     string prefijoCom(const string& s1, const string& s2);
 
-    vector<string> completarPrefijo(const string& w);
+    vector<string> completarPrefijo(const string& w, int& nv);
 
     void completarPrefijoAux(const string& prefijoBuscado, string palabraActual,
-                             vector<string>& resultados);
+                             vector<string>& resultados, int& nv);
 
     void completarDFS(NodoRadixTrie* nodo, string& palabraActual,
-                      vector<string>& resultados);
+                      vector<string>& resultados, int& nv);
 
-    NodoRadixTrie* obtenerNodo(const string& w);
+    NodoRadixTrie* obtenerNodo(const string& w, int& nv);
 
     // Insertar nuevo nodo hijo
     void insertarPalabra(const string& w, int l, int p);
 
     // Insertar nuevo nodo hijo
-    vector<pair<int, int>> buscarPalabra(const string& w);
+    vector<pair<int, int>> buscarPalabra(const string& w, int& nv);
 
-    vector<pair<int, int>> buscarFrase(const vector<string>& frase);
+    vector<pair<int, int>> buscarFrase(const vector<string>& frase, int& nv);
 
     // Getters y setters
     bool getHoja() const;

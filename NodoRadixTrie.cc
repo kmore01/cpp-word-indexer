@@ -28,15 +28,18 @@ string NodoRadixTrie::prefijoCom(const string& s1, const string& s2) {
     return s1.substr(0, i);
 }
 
-vector<string> NodoRadixTrie::completarPrefijo(const string& w) {
+vector<string> NodoRadixTrie::completarPrefijo(const string& w, int& nv) {
     vector<string> res;
-    completarPrefijoAux(w, "", res);
+    nv = 0;
+    completarPrefijoAux(w, "", res, nv);
+    --nv;
     return res;
 }
 
 void NodoRadixTrie::completarPrefijoAux(const string& prefijoBuscado,
                                         string palabraActual,
-                                        vector<string>& resultados) {
+                                        vector<string>& resultados, int& nv) {
+    ++nv;
     // Si ya consumimos todo el prefijo, recolectar todas las palabras
     if (prefijoBuscado.empty()) {
         if (hoja) {
@@ -44,7 +47,7 @@ void NodoRadixTrie::completarPrefijoAux(const string& prefijoBuscado,
         }
         for (auto& par : hijos) {
             string nuevaPalabra = palabraActual + par.first;
-            par.second->completarPrefijoAux("", nuevaPalabra, resultados);
+            par.second->completarPrefijoAux("", nuevaPalabra, resultados, nv);
         }
         return;
     }
@@ -56,19 +59,21 @@ void NodoRadixTrie::completarPrefijoAux(const string& prefijoBuscado,
                 // El edge completo coincide, seguir buscando
                 string resto = prefijoBuscado.substr(prefijo.length());
                 par.second->completarPrefijoAux(
-                    resto, palabraActual + palabraHijo, resultados);
+                    resto, palabraActual + palabraHijo, resultados, nv);
             } else if (prefijo == prefijoBuscado) {
                 // El prefijo buscado está contenido en este edge
                 // Recolectar todo desde aquí
                 string nuevaPalabra = palabraActual + palabraHijo;
-                par.second->completarPrefijoAux("", nuevaPalabra, resultados);
+                par.second->completarPrefijoAux("", nuevaPalabra, resultados,
+                                                nv);
             }
         }
     }
 }
 
 void NodoRadixTrie::completarDFS(NodoRadixTrie* nodo, string& palabraActual,
-                                 vector<string>& resultados) {
+                                 vector<string>& resultados, int& nv) {
+    ++nv;
     // Caso base: el nodo es hoja
     if (nodo->hoja) {
         resultados.push_back(palabraActual);
@@ -77,13 +82,14 @@ void NodoRadixTrie::completarDFS(NodoRadixTrie* nodo, string& palabraActual,
         size_t tamañoOriginal = palabraActual.size();
         // Ponerle el sufijo completo
         palabraActual += par.first;
-        completarDFS(par.second, palabraActual, resultados);
+        completarDFS(par.second, palabraActual, resultados, nv);
         // Backtracking
         palabraActual.resize(tamañoOriginal);
     }
 }
 
-NodoRadixTrie* NodoRadixTrie::obtenerNodo(const string& w) {
+NodoRadixTrie* NodoRadixTrie::obtenerNodo(const string& w, int& nv) {
+    ++nv;
     // Caso base: w vacio
     if (w.empty()) {
         return this;
@@ -97,7 +103,7 @@ NodoRadixTrie* NodoRadixTrie::obtenerNodo(const string& w) {
             if (prefijo == palabraHijo) {
                 // Seguir recursivamente
                 string resto = w.substr(prefijo.length());
-                return par.second->obtenerNodo(resto);
+                return par.second->obtenerNodo(resto, nv);
             }
             // Para el autocompletado
             // w = bla, palabraHijo = blanco, prefijo = bla
@@ -176,14 +182,17 @@ void NodoRadixTrie::insertarPalabra(const string& w, int l, int p) {
     hijos[w] = nodo;
 }
 
-vector<pair<int, int>> NodoRadixTrie::buscarPalabra(const string& w) {
+vector<pair<int, int>> NodoRadixTrie::buscarPalabra(const string& w, int& nv) {
+    nv = 0;
     // Caso base: si w esta vacio y es hoja
     if (w.empty()) {
+        ++nv;
         if (hoja) {
             return lineaPos;
         }
         return vector<pair<int, int>>();
     }
+    ++nv;
     for (auto& par : hijos) {
         string palabraHijo = par.first;
         string prefijo = prefijoCom(palabraHijo, w);
@@ -191,7 +200,11 @@ vector<pair<int, int>> NodoRadixTrie::buscarPalabra(const string& w) {
             // w = blanco, palabraHijo = bla, prefijo = bla
             if (prefijo == palabraHijo) {
                 string resto = w.substr(prefijo.length());
-                return par.second->buscarPalabra(resto);
+                int nvHijo = 0;
+                vector<pair<int, int>> res =
+                    par.second->buscarPalabra(resto, nvHijo);
+                nv += nvHijo;
+                return res;
             }
             // w = bla, palabraHijo = blanco, prefijo = bla
             if (prefijo == w) {
@@ -202,12 +215,16 @@ vector<pair<int, int>> NodoRadixTrie::buscarPalabra(const string& w) {
     return vector<pair<int, int>>();  // no encontrado
 }
 
-vector<pair<int, int>> NodoRadixTrie::buscarFrase(const vector<string>& frase) {
+vector<pair<int, int>> NodoRadixTrie::buscarFrase(const vector<string>& frase,
+                                                  int& nv) {
+    nv = 0;
     if (frase.empty()) return vector<pair<int, int>>();
     // guardo todas las ocurrencias de cada palabra de la frase
     vector<vector<pair<int, int>>> ocurrenciasPalabras(frase.size());
     for (int i = 0; i < frase.size(); ++i) {
-        vector<pair<int, int>> occs = buscarPalabra(frase[i]);
+        int aux = 0;
+        vector<pair<int, int>> occs = buscarPalabra(frase[i], aux);
+        nv += aux;
         if (occs.empty()) return {};  // Si falta una palabra
         ocurrenciasPalabras[i] = occs;
     }
