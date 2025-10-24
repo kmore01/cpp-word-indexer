@@ -42,7 +42,7 @@ int selectPrefixAlgorithm() {
          << "Enter an option: ";
     int m;
     cin >> m;
-    return m;
+    if (m == 1 or m == 2) return m;
     cout << "Invalid option. Please enter 1 or 2." << endl;
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
