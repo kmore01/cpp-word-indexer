@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.10.22)  24 OCT 2025 00:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.10.22)  24 OCT 2025 21:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -765,26 +765,26 @@ LaTeX Info: Redefining \% on input line 11.
 )
 \openout1 = `informe_nuevo.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Info: Redefining \. on input line 28.
-LaTeX Info: Redefining \% on input line 28.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Info: Redefining \. on input line 36.
+LaTeX Info: Redefining \% on input line 36.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -811,7 +811,7 @@ e
 Package pgfplots notification 'compat/show suggested version=true': document ha
 s been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
 
-Package hyperref Info: Link coloring OFF on input line 28.
+Package hyperref Info: Link coloring OFF on input line 36.
 (./informe_nuevo.out) (./informe_nuevo.out)
 \@outlinefile=\write4
 \openout4 = `informe_nuevo.out'.
@@ -825,15 +825,15 @@ Package hyperref Info: Link coloring OFF on input line 28.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(71.13188pt, 455.24411pt, 71.13188pt)
-* v-part:(T,H,B)=(71.13188pt, 702.78308pt, 71.13188pt)
+* h-part:(L,W,R)=(89.62709pt, 418.25368pt, 89.6271pt)
+* v-part:(T,H,B)=(101.40665pt, 591.5302pt, 152.11pt)
 * \paperwidth=597.50787pt
 * \paperheight=845.04684pt
-* \textwidth=455.24411pt
-* \textheight=702.78308pt
-* \oddsidemargin=-1.1381pt
-* \evensidemargin=-1.1381pt
-* \topmargin=-38.1381pt
+* \textwidth=418.25368pt
+* \textheight=591.5302pt
+* \oddsidemargin=17.3571pt
+* \evensidemargin=17.3571pt
+* \topmargin=-7.86334pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=11.0pt
@@ -853,43 +853,60 @@ Package hyperref Info: Link coloring OFF on input line 28.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 31.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 39.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 31.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 39.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
+)
+Overfull \hbox (54.64664pt too wide) in paragraph at lines 39--39
+ [][] 
+ []
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
-Overfull \hbox (9.00461pt too wide) in paragraph at lines 142--143
+
+Overfull \hbox (2.12938pt too wide) in paragraph at lines 41--42
+\OT1/cmr/bx/n/10 est^^Sandar \OT1/cmr/m/n/10 y el \OT1/cmr/bx/n/10 ra-dix trie 
+\OT1/cmr/m/n/10 (com-pri-mi-do). Mien-tras el pri-me-ro re-pre-sen-ta ca-da car
+^^Sacter
+ []
+
+[1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (46.18848pt too wide) in paragraph at lines 94--95
+\OT1/cmr/m/n/10.95 ma-pea ca-rac-te-res in-di-vi-dua-les a sus no-dos hi-jos. E
+n el ra-dix trie, se uti-li-za \OT1/cmtt/m/n/10.95 unordered[]map<string,
+ []
+
+[2] [3]
+Overfull \hbox (45.99504pt too wide) in paragraph at lines 146--147
 []\OT1/cmr/m/n/10.95 El n^^Sume-ro to-tal de pa-la-bras que co-mien-zan con ese
  pre-fi-jo (usan-do \OT1/cmtt/m/n/10.95 contarPalabrasPrefijo\OT1/cmr/m/n/10.95
  ) 
  []
 
-[3]
-Package pgfplots info on input line 219: Using 'lua backend=false' for axis: x 
-coord trafo unsupported.
- [4]
-Package pgfplots info on input line 286: Using 'lua backend=false' for axis: x 
-coord trafo unsupported.
- [5] [6] [7] [8]
-Underfull \hbox (badness 10000) in paragraph at lines 541--543
-[]\OT1/cmr/m/n/10.95 GeeksforGeeks. \OT1/cmr/m/it/10.95 Trie | (In-sert and Sea
-rch)\OT1/cmr/m/n/10.95 . []$\OT1/cmtt/m/n/10.95 https : / / www . geeksforgeeks
- . org /
+
+Overfull \hbox (0.46101pt too wide) in paragraph at lines 147--148
+[]\OT1/cmr/m/n/10.95 Las 5 pa-la-bras m^^Sas fre-cuen-tes con ese pre-fi-jo (us
+an-do \OT1/cmtt/m/n/10.95 obtenerTop5MasFrecuentes\OT1/cmr/m/n/10.95 ) 
  []
 
-[9]
-Underfull \hbox (badness 10000) in paragraph at lines 545--547
-[]\OT1/cmr/m/n/10.95 GeeksforGeeks. \OT1/cmr/m/it/10.95 Ra-dix Tree (Com-pact T
-rie)\OT1/cmr/m/n/10.95 . []$\OT1/cmtt/m/n/10.95 https : / / www . geeksforgeeks
- . org /
+[4]
+Package pgfplots info on input line 223: Using 'lua backend=false' for axis: x 
+coord trafo unsupported.
+ [5]
+Package pgfplots info on input line 290: Using 'lua backend=false' for axis: x 
+coord trafo unsupported.
+ [6] [7] [8] [9]
+Underfull \hbox (badness 2050) in paragraph at lines 555--557
+[]\OT1/cmr/m/n/10.95 TopCoder. \OT1/cmr/m/it/10.95 Using Tries\OT1/cmr/m/n/10.9
+5 . []$\OT1/cmtt/m/n/10.95 https : / / www . topcoder . com / thrive / articles
+ / Using %
  []
 
 [10] (./informe_nuevo.aux
@@ -904,29 +921,29 @@ Package rerunfilecheck Info: File `informe_nuevo.out' has not changed.
 (rerunfilecheck)             Checksum: 1757B3E88EF13CBDE76824AC25659459;4286.
  ) 
 Here is how much of TeX's memory you used:
- 34222 strings out of 476047
- 789273 string characters out of 5792074
- 1945975 words of memory out of 5000000
- 55676 multiletter control sequences out of 15000+600000
- 568609 words of font info for 77 fonts, out of 8000000 for 9000
+ 34223 strings out of 476047
+ 789314 string characters out of 5792074
+ 1943975 words of memory out of 5000000
+ 55680 multiletter control sequences out of 15000+600000
+ 568910 words of font info for 78 fonts, out of 8000000 for 9000
  85 hyphenation exceptions out of 8191
- 84i,19n,93p,734b,2351s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,19n,93p,886b,2351s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on informe_nuevo.pdf (10 pages, 201426 bytes).
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on informe_nuevo.pdf (10 pages, 200145 bytes).
 PDF statistics:
- 284 PDF objects out of 1000 (max. 8388607)
- 243 compressed objects within 3 object streams
- 68 named destinations out of 1000 (max. 500000)
+ 281 PDF objects out of 1000 (max. 8388607)
+ 240 compressed objects within 3 object streams
+ 65 named destinations out of 1000 (max. 500000)
  213 words of extra memory for PDF output out of 10000 (max. 10000000)
 

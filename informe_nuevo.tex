@@ -15,14 +15,22 @@
 \usepackage{subcaption}
 \usepackage{multirow}
 
-\geometry{a4paper, margin=2.5cm}
+\title{\textbf{Arbres Lexicogràfics Eficients: Informe}}
 
-\title{\textbf{Árboles Lexicográficos Eficientes}\\
-\large Estudio Comparativo de Trie Estándar y Radix Trie}
-
-\author{Enzo Miquel, Guillem Revuelta, Kevin Moreno y Jiahao Wang\\
-Q1 2025-2026}
-
+\author{
+\large
+\textsc{Grau A -- Q1 Curs 2025-2026}\\[2mm] 
+\normalsize Departament de Ciències de la Computació \\
+\normalsize Universitat Politècnica de Catalunya \\[1cm]
+%\normalsize \href{mailto:alg@cs.upc.edu}{{\tt alg@cs.upc.edu}}
+%
+\begin{tabular}{cc}
+{\textsc{Kevin Moreno}} & {\textsc{Jiahao Wang}} \\
+\normalsize \texttt{kevin.moreno.hidalgo@estudiantat.upc.edu} & \normalsize \texttt{jiahao.wang@estudiantat.upc.edu} \\[4mm]
+{\textsc{Enzo Miquel}} & {\textsc{Guillem Revuelta}} \\
+\normalsize \texttt{enzo.miquel@estudiantat.upc.edu} & \normalsize \texttt{guillem.revuelta@estudiantat.upc.edu} \\
+\end{tabular}
+}
 \date{}
 
 \begin{document}
@@ -30,16 +38,12 @@ Q1 2025-2026}
 \maketitle
 
 \begin{abstract}
-Este trabajo presenta un estudio comparativo de dos implementaciones de árboles lexicográficos (tries): el trie estándar y el radix trie (trie comprimido). Se analizan las características estructurales de cada implementación, su complejidad algorítmica y su rendimiento experimental utilizando conjuntos de datos de diferentes tamaños. Los resultados muestran que el radix trie reduce el uso de memoria significativamente, mientras mantiene tiempos de construcción competitivos. Se implementaron operaciones fundamentales como inserción, búsqueda exacta, búsqueda por prefijo y autocompletado, evaluando su rendimiento en textos de diversa naturaleza.
+El proyecto compara dos implementaciones de árboles lexicográficos: el \textbf{trie estándar} y el \textbf{radix trie} (comprimido). Mientras el primero representa cada carácter en un nodo, el segundo agrupa cadenas lineales en aristas para optimizar el espacio. Ambas estructuras permiten inserción, búsqueda y autocompletado eficientes. El objetivo es evaluar su rendimiento en términos de memoria y tiempo de ejecución mediante métricas cuantificables como el número de nodos y los tiempos de operación.
 \end{abstract}
 
 \section{Introducción}
 
-Los árboles lexicográficos, o tries, son estructuras de datos especializadas para el almacenamiento y búsqueda eficiente de cadenas de caracteres. A diferencia de otras estructuras como árboles binarios de búsqueda o tablas hash, los tries organizan los datos basándose en los prefijos compartidos entre las cadenas, donde cada nodo representa un carácter (o cadena de caracteres en el caso de tries comprimidos) y la posición del nodo en el árbol determina la clave asociada.
-
-Estas estructuras son especialmente eficientes en aplicaciones que requieren operaciones basadas en prefijos, tales como: análisis y autocompletado de textos, motores de búsqueda, entre otros.
-
-El objetivo de este proyecto es implementar y comparar dos variantes de tries: el trie estándar, que representa la forma más directa de la estructura, y el radix trie (también conocido como Patricia trie o trie comprimido), que optimiza el uso de espacio mediante la compresión de cadenas lineales de nodos.
+Los árboles lexicográficos son estructuras de datos especializadas para el almacenamiento y búsqueda eficiente de cadenas de caracteres. Los tries organizan los datos basándose en los prefijos compartidos entre las cadenas, donde cada nodo representa un carácter (o cadena de caracteres en el caso de el radix trie) y la posición del nodo en el árbol determina la clave asociada. Estas estructuras son especialmente eficientes en aplicaciones que requieren operaciones basadas en prefijos, como por ejemplo en análisis y autocompletado de textos, motores de búsqueda, entre otros casos. El objetivo de este proyecto es implementar y comparar variantes de tries: el trie estándar, que representa la forma más directa de la estructura, y el radix trie, que optimiza el uso de espacio aplicando la compresión de cadenas lineales de nodos.
 
 \section{Fundamentos Teóricos}
 
@@ -49,8 +53,8 @@ El trie estándar es la implementación más directa de un árbol lexicográfico
 
 \textbf{Definición 2.1 (Trie Estándar).} Un trie estándar es un árbol $T = (V, E)$ donde cada nodo $v \in V$ almacena:
 \begin{itemize}
-    \item Un mapa de caracteres a nodos hijos: $children : \Sigma \rightarrow V$
-    \item Un indicador booleano $isEndOfWord$ que marca el fin de una palabra
+    \item Un mapa de caracteres a nodos hijos: $hijos : \Sigma \rightarrow V$
+    \item Un indicador booleano $hoja$ que marca el fin de una palabra
     \item Información adicional (números de línea y posiciones)
 \end{itemize}
 
@@ -65,7 +69,7 @@ El trie estándar es la implementación más directa de un árbol lexicográfico
 
 El radix trie optimiza el uso de espacio comprimiendo cadenas de nodos con un solo hijo en una única arista etiquetada.
 
-\textbf{Definición 2.2 (Radix Trie).} Un radix trie es una versión comprimida del trie estándar donde las aristas pueden estar etiquetadas con cadenas de caracteres en lugar de caracteres individuales. Se cumple que cada nodo interno (excepto posiblemente la raíz) tiene al menos dos hijos o es un nodo terminal.
+\textbf{Definición 2.2 (Radix Trie).} Un radix trie es una versión comprimida del trie estándar donde las aristas pueden estar etiquetadas con cadenas de caracteres en lugar de caracteres individuales.
 
 \textbf{Complejidad:}
 \begin{itemize}
@@ -78,16 +82,16 @@ El radix trie optimiza el uso de espacio comprimiendo cadenas de nodos con un so
 
 \subsection{Decisiones de Diseño}
 
-Ambas implementaciones utilizan C++14 con las siguientes características comunes:
+Ambas implementaciones utilizan C++17 con las siguientes características comunes:
 
 \begin{itemize}
     \item \texttt{unordered\_map} para mapeo eficiente de caracteres (o cadenas) a nodos hijos
-    \item Almacenamiento de números de línea y posiciones para localización de palabras
+    \item Almacenamiento de números de línea y posiciones para la búsqueda de palabras
     \item Interfaz uniforme para ambas estructuras
     \item Contador estático de nodos para análisis de memoria
 \end{itemize}
 
-En el trie estándar, cada nodo contiene un \texttt{unordered\_map<char, NodoTrie*>} que mapea caracteres individuales a sus nodos hijos. En el radix trie, se utiliza \texttt{unordered\_map<string, NodoRadixTrie*>} para permitir que las aristas estén etiquetadas con cadenas completas.
+En el trie estándar, cada nodo contiene un \texttt{unordered\_map<char, NodoTrie*>} que mapea caracteres individuales a sus nodos hijos. En el radix trie, se utiliza \texttt{unordered\_map<string, NodoRadixTrie*>} para permitir que las aristas estén etiquetadas con cadenas de caracteres.
 
 \subsection{Operaciones Implementadas}
 
@@ -111,7 +115,7 @@ La inserción varía según la estructura:
 Ambas estructuras soportan:
 \begin{itemize}
     \item Búsqueda exacta de palabras
-    \item Búsqueda de prefijos
+    \item Búsqueda de prefijos 
     \item Recuperación de líneas y posiciones donde aparece una palabra
     \item Autocompletado (palabras con un prefijo dado)
 \end{itemize}
@@ -120,7 +124,7 @@ La búsqueda en el trie estándar procede carácter por carácter, mientras que 
 
 \subsubsection{Búsqueda de Frases}
 
-Se implementó funcionalidad para buscar frases de múltiples palabras. El sistema:
+Se implementó una funcionalidad para buscar frases (múltiples palabras). El sistema:
 \begin{enumerate}
     \item Busca la primera palabra de la frase
     \item Verifica que las palabras siguientes aparezcan en las posiciones consecutivas correctas
@@ -132,9 +136,9 @@ Se implementó funcionalidad para buscar frases de múltiples palabras. El siste
 Dado un prefijo, el sistema puede sugerir palabras completas mediante un recorrido DFS (Depth-First Search) desde el nodo correspondiente al prefijo. Se implementaron dos funciones complementarias:
 
 \begin{itemize}
-    \item \texttt{contarPalabrasPrefijo(prefijo)}: Retorna todas las palabras que tienen el prefijo dado, realizando un recorrido completo del subárbol. Esta función se utiliza para obtener el número total de palabras con un prefijo específico, proporcionando información cuantitativa al usuario.
+    \item \texttt{contarPalabrasPrefijo(prefijo)}: Retorna todas las palabras que tienen el prefijo dado, realizando un recorrido completo del subárbol.
     
-    \item \texttt{obtenerTop5MasFrecuentes(prefijo)}: Retorna las 5 palabras más frecuentes (por número de ocurrencias en el texto) que tienen el prefijo dado. Utiliza un algoritmo de selección basado en quickselect para encontrar las palabras con mayor número de apariciones de forma eficiente, sin necesidad de ordenar todas las palabras.
+    \item \texttt{obtenerTop5MasFrecuentes(prefijo)}: Retorna las 5 palabras más frecuentes que tienen el prefijo dado. En el standard trie usa un algoritmo inventado por nosotros mismos. En el radix trie se utiliza un algoritmo de selección basado en quickselect. En el mejor caso es O(n) y en el peor $O(n^2)$.
 \end{itemize}
 
 En la aplicación final, al buscar una palabra, el sistema combina ambas funciones para mostrar:
@@ -143,14 +147,14 @@ En la aplicación final, al buscar una palabra, el sistema combina ambas funcion
     \item Las 5 palabras más frecuentes con ese prefijo (usando \texttt{obtenerTop5MasFrecuentes})
 \end{enumerate}
 
-Esta combinación proporciona al usuario tanto información cuantitativa (cuántas opciones hay) como cualitativa (cuáles son las más relevantes por frecuencia de uso en el texto), ofreciendo una experiencia de autocompletado más completa e informativa.
+Esta combinación proporciona al usuario tanto información cuantitativa como cualitativa, ofreciendo una experiencia de autocompletado más completa e informativa.
 
 \section{Resultados Experimentales}
 
 \subsection{Configuración Experimental}
 
 \begin{itemize}
-    \item \textbf{Compilación}: g++ con flags \texttt{-std=c++14 -O2}
+    \item \textbf{Compilación}: g++ con flags \texttt{-O2}
 \end{itemize}
 
 \textbf{Conjuntos de Datos:}
@@ -470,34 +474,37 @@ Este comportamiento demuestra que la eficiencia espacial no siempre implica mejo
 
 \subsection{Trade-offs entre las implementaciones}
 
-\textbf{Ventajas del Trie Estándar:}
-\begin{itemize}
-    \item Búsquedas más rápidas debido a su simplicidad
-    \item Implementación más directa y fácil de depurar
-    \item Operaciones de inserción más simples
-\end{itemize}
+\begin{table}[H]
+\centering
+\caption{Ventajas y Desventajas de Trie Estándar y Radix Trie}
+\label{tab:ventajas_desventajas}
+\begin{tabular}{|p{6.5cm}|p{6.5cm}|}
+\hline
+\textbf{Ventajas} & \textbf{Desventajas} \\
+\hline
+\multicolumn{2}{|c|}{\textbf{Trie Estándar}} \\
+\hline
+Búsquedas más rápidas debido a su simplicidad estructural. &
+Alto consumo de memoria (más del doble que el Radix Trie). \\
+Implementación más directa y fácil de depurar. &
+Mayor número de nodos a recorrer. \\
+Operaciones de inserción más simples. &
+Menos eficiente para conjuntos de datos muy grandes. \\
+\hline
+\multicolumn{2}{|c|}{\textbf{Radix Trie}} \\
+\hline
+Reducción significativa del uso de memoria (53–58\%). &
+Búsquedas ligeramente más lentas por comparaciones de cadenas. \\
+Menor número total de nodos en la estructura. &
+Implementación más compleja (división de nodos). \\
+Mejor escalabilidad para grandes vocabularios. &
+Mayor \emph{overhead} en operaciones con cadenas. \\
+Construcción más rápida en promedio. & \\
+\hline
+\end{tabular}
+\end{table}
 
-\textbf{Desventajas del Trie Estándar:}
-\begin{itemize}
-    \item Alto consumo de memoria (más del doble que Radix Trie)
-    \item Mayor número de nodos a recorrer
-    \item Menos eficiente para datasets muy grandes
-\end{itemize}
 
-\textbf{Ventajas del Radix Trie:}
-\begin{itemize}
-    \item Reducción significativa de memoria (53-58\%)
-    \item Menos nodos totales en la estructura
-    \item Mejor escalabilidad para grandes vocabularios
-    \item Construcción más rápida en promedio
-\end{itemize}
-
-\textbf{Desventajas del Radix Trie:}
-\begin{itemize}
-    \item Búsquedas ligeramente más lentas debido a comparaciones de strings
-    \item Implementación más compleja (división de nodos)
-    \item Mayor overhead en operaciones de string
-\end{itemize}
 
 \subsection{Escenarios Óptimos}
 
@@ -511,15 +518,14 @@ Este comportamiento demuestra que la eficiencia espacial no siempre implica mejo
 
 Este trabajo presenta una comparación exhaustiva de dos implementaciones de tries, cada una con características únicas:
 
-\begin{enumerate}
-    \item El \textbf{trie estándar} ofrece búsquedas rápidas debido a su simplicidad estructural, a costa de mayor uso de memoria. Es la opción preferida cuando el rendimiento en búsquedas individuales es prioritario.
-    
-    \item El \textbf{radix trie} logra una reducción consistente del 53-58\% en número de nodos, siendo ideal para aplicaciones con restricciones de memoria o vocabularios muy grandes. Su tiempo de construcción es generalmente mejor que el trie estándar.
-    
-    \item Los experimentos revelan que la eficiencia de una estructura de datos depende fuertemente del contexto de uso. No existe una solución universalmente óptima; la elección debe basarse en los requisitos específicos de la aplicación: disponibilidad de memoria, frecuencia de búsquedas vs. construcción, y tamaño del vocabulario.
-    
-    \item La implementación en C++ con \texttt{unordered\_map} proporciona un buen balance entre eficiencia y facilidad de implementación para ambas estructuras.
-\end{enumerate}
+
+    \begin{itemize}
+    \item El \textbf{trie estándar} prioriza la velocidad de búsqueda a costa de un mayor consumo de memoria.
+    \item El \textbf{radix trie} reduce entre un 53–58\% el número de nodos, ofreciendo mejor uso de memoria y tiempos de construcción más eficientes.
+    \item La elección entre ambas estructuras depende del contexto y los recursos disponibles, ya que no existe una solución universalmente óptima.
+    \item La implementación en C++ mediante \texttt{unordered\_map} logra un equilibrio adecuado entre eficiencia y simplicidad.
+\end{itemize}
+
 
 El proyecto demuestra la importancia de considerar múltiples factores al elegir estructuras de datos: tiempo de ejecución, uso de memoria, complejidad de implementación y características del conjunto de datos. Ambas implementaciones tienen su lugar en diferentes escenarios de uso.
 
