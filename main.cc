@@ -37,7 +37,7 @@ int selectPrefixAlgorithm() {
     cout << "Select the autocomplete preference:" << endl
          << endl
          << "[1] First found" << endl
-         << "[2] most frequent" << endl
+         << "[2] Most frequent" << endl
          << endl
          << "Enter an option: ";
     int m;
@@ -158,27 +158,29 @@ void show_commands() {
 }
 
 template <typename T>
-void imprimirAutocompletado(T& trie, const string& w, int& nodosVisitados, int op) {
+void imprimirAutocompletado(T& trie, const string& w, int& nodosVisitados,
+                            int op) {
     // Primero obtener TODAS las palabras para contar
     int nodosAux1 = 0;
     vector<string> todasPalabras = trie.contarPalabrasPrefijo(w, nodosAux1);
-    
+
     if (not todasPalabras.empty()) {
         int totalPalabras = todasPalabras.size();
-        
+
         // Ahora obtener las 5 más frecuentes
         int nodosAux2 = 0;
         vector<string> top5;
         if (op == 1) {
             top5 = trie.contarPalabrasPrefijo(w, nodosAux2);
-            if (top5.size() > 5)top5.erase(top5.begin() + 5, top5.end());
-        }
-        else top5 = trie.obtenerTop5MasFrecuentes(w, nodosAux2);
+            if (top5.size() > 5) top5.erase(top5.begin() + 5, top5.end());
+        } else
+            top5 = trie.obtenerTop5MasFrecuentes(w, nodosAux2);
 
-        
-        cout << "Total words found with the prefix '" << w << "': " << totalPalabras << endl;
-        cout << "Top " << top5.size() << " most frequent words:" << endl << endl;
-        
+        cout << "Total words found with the prefix '" << w
+             << "': " << totalPalabras << endl;
+        cout << "Top " << top5.size() << " most frequent words:" << endl
+             << endl;
+
         int count = 0;
         for (const string& it : top5) {
             if (not it.empty()) {
@@ -188,7 +190,7 @@ void imprimirAutocompletado(T& trie, const string& w, int& nodosVisitados, int o
             }
         }
         if (count % 5 != 0) cout << endl;
-        
+
         nodosVisitados += nodosAux1 + nodosAux2;
         cout << SEPARADOR << endl;
     }
@@ -274,7 +276,8 @@ void openCommand(const vector<string>& lista, T& trie, bool& valido) {
 }
 
 template <typename T>
-void searchApplication(const vector<string>& lista, T& trie, bool& valido, int op) {
+void searchApplication(const vector<string>& lista, T& trie, bool& valido,
+                       int op) {
     char command;
     cin >> command;
     while (valido and command != 'x') {
@@ -306,7 +309,8 @@ void mostrarEstadisticasTrie(const T& trie, const string& tipo) {
 }
 
 template <typename T>
-void ejecutarBusqueda(const string& tipoNombre, const vector<string>& lista, int op) {
+void ejecutarBusqueda(const string& tipoNombre, const vector<string>& lista,
+                      int op) {
     T trie;
     bool valido = false;
     readFile(valido, lista, trie);
