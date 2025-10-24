@@ -33,6 +33,22 @@ string selectType() {
     return selectType();
 }
 
+int selectPrefixAlgorithm() {
+    cout << "Select the autocomplete preference:" << endl
+         << endl
+         << "[1] First found" << endl
+         << "[2] most frequent" << endl
+         << endl
+         << "Enter an option: ";
+    int m;
+    cin >> m;
+    return m;
+    cout << "Invalid option. Please enter 1 or 2." << endl;
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    return selectPrefixAlgorithm();
+}
+
 vector<string> listarArchivosTxt(const string& directorio = ".") {
     vector<string> archivos;
     try {
@@ -142,7 +158,7 @@ void show_commands() {
 }
 
 template <typename T>
-void imprimirAutocompletado(T& trie, const string& w, int& nodosVisitados) {
+void imprimirAutocompletado(T& trie, const string& w, int& nodosVisitados, int op) {
     // Primero obtener TODAS las palabras para contar
     int nodosAux1 = 0;
     vector<string> todasPalabras = trie.contarPalabrasPrefijo(w, nodosAux1);
@@ -152,10 +168,16 @@ void imprimirAutocompletado(T& trie, const string& w, int& nodosVisitados) {
         
         // Ahora obtener las 5 más frecuentes
         int nodosAux2 = 0;
-        vector<string> top5 = trie.obtenerTop5MasFrecuentes(w, nodosAux2);
+        vector<string> top5;
+        if (op == 1) {
+            top5 = trie.contarPalabrasPrefijo(w, nodosAux2);
+            if (top5.size() > 5)top5.erase(top5.begin() + 5, top5.end());
+        }
+        else top5 = trie.obtenerTop5MasFrecuentes(w, nodosAux2);
+
         
         cout << "Total words found with the prefix '" << w << "': " << totalPalabras << endl;
-        cout << "Top 5 most frequent words:" << endl << endl;
+        cout << "Top " << top5.size() << " most frequent words:" << endl << endl;
         
         int count = 0;
         for (const string& it : top5) {
@@ -191,7 +213,7 @@ void imprimirVector(const vector<string>& v, const string& w) {
 }
 
 template <typename T>
-void searchCommand(T& trie) {
+void searchCommand(T& trie, int op) {
     cout << "Enter the word you want to search: ";
     string words;
     cin.ignore();
@@ -223,13 +245,13 @@ void searchCommand(T& trie) {
         cout << SEPARADOR << endl;
         // Autocompletado
         if (frase.size() == 1) {
-            imprimirAutocompletado(trie, word, nodosVisitados);
+            imprimirAutocompletado(trie, word, nodosVisitados, op);
         }
     } else {
         cout << "Couldn't find the word '" << word << "'" << endl;
         cout << SEPARADOR << endl;
         if (frase.size() == 1) {
-            imprimirAutocompletado(trie, word, nodosVisitados);
+            imprimirAutocompletado(trie, word, nodosVisitados, op);
         }
     }
     // Mostrar tiempo en milisegundos
@@ -252,12 +274,12 @@ void openCommand(const vector<string>& lista, T& trie, bool& valido) {
 }
 
 template <typename T>
-void searchApplication(const vector<string>& lista, T& trie, bool& valido) {
+void searchApplication(const vector<string>& lista, T& trie, bool& valido, int op) {
     char command;
     cin >> command;
     while (valido and command != 'x') {
         if (command == 's') {
-            searchCommand(trie);
+            searchCommand(trie, op);
             cout << "Enter an option: ";
         } else if (command == 'o') {
             openCommand(lista, trie, valido);
@@ -284,21 +306,22 @@ void mostrarEstadisticasTrie(const T& trie, const string& tipo) {
 }
 
 template <typename T>
-void ejecutarBusqueda(const string& tipoNombre, const vector<string>& lista) {
+void ejecutarBusqueda(const string& tipoNombre, const vector<string>& lista, int op) {
     T trie;
     bool valido = false;
     readFile(valido, lista, trie);
     mostrarEstadisticasTrie(trie, tipoNombre);
     show_commands();
-    searchApplication(lista, trie, valido);
+    searchApplication(lista, trie, valido, op);
 }
 
 int main() {
     string type = selectType();
+    int op = selectPrefixAlgorithm();
     vector<string> lista = listarArchivosTxt();
     if (type == "normal") {
-        ejecutarBusqueda<NodoTrie>("normal", lista);
+        ejecutarBusqueda<NodoTrie>("normal", lista, op);
     } else {
-        ejecutarBusqueda<NodoRadixTrie>("radix", lista);
+        ejecutarBusqueda<NodoRadixTrie>("radix", lista, op);
     }
 }

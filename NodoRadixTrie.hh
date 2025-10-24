@@ -16,6 +16,7 @@ class NodoRadixTrie {
     vector<pair<int, int>> lineaPos;
     static int nodos;
 
+    
     void calcularProfundidadesAux(int profundidadActual, int& contador,
                                   long long& suma) const;
 
@@ -33,7 +34,6 @@ class NodoRadixTrie {
     // Destructor
     ~NodoRadixTrie();
 
-    // Funcion que te devuelve el prefijo comun entre dos palabras
     string prefijoCom(const string& s1, const string& s2);
 
     vector<string> contarPalabrasPrefijo(const string& w, int& nv);

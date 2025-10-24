@@ -18,9 +18,12 @@ class NodoTrie {
     vector<pair<int, int>> lineaPos;
     static int nodos;
 
+    // calcula la profundidad del arbol, el contador sirve para calcular el numero total de palabras 
+    // diferentes y suma al acabar la funcion indica la profundidad total del trie.
     void calcularProfundidadesAux(int profundidadActual, int& contador,
                                   long long& suma) const;
 
+    // devuelve el indice de la palabra con menos ocurrecias (se usa en la funcion de completarprefijos2)
     int indexLessOcurr(const vector<pair<string, int>>& v);
 
     int contiene(const vector<pair<string, int>>& v, const string& w);
