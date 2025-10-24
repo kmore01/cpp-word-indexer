@@ -58,7 +58,7 @@ El trie estándar es la implementación más directa de un árbol lexicográfico
 \begin{itemize}
     \item \textbf{Inserción}: $O(m)$ donde $m$ es la longitud de la palabra
     \item \textbf{Búsqueda}: $O(m)$
-    \item \textbf{Espacio}: $O(ALPHABET\_SIZE \times N \times M)$ en el peor caso, donde $N$ es el número de palabras y $M$ la longitud promedio
+    \item \textbf{Espacio}: $O(\Sigma \times N)$ en el peor caso, donde $\Sigma$ es el numero de letras del alfabeto y $N$ es el número de nodos
 \end{itemize}
 
 \subsection{Radix Trie (Trie Comprimido)}
@@ -69,9 +69,9 @@ El radix trie optimiza el uso de espacio comprimiendo cadenas de nodos con un so
 
 \textbf{Complejidad:}
 \begin{itemize}
-    \item \textbf{Inserción}: $O(m)$ con operaciones adicionales de división de nodos
+    \item \textbf{Inserción}: $O(m)$ donde $m$ es la longitud de la clave
     \item \textbf{Búsqueda}: $O(m)$
-    \item \textbf{Espacio}: $O(N)$ nodos, significativamente menor que el trie estándar
+    \item \textbf{Espacio}: $O(N \times M)$ donde $N$ es el numero de claves y $M$ la longitud maxima de las cadenas de las hojas
 \end{itemize}
 
 \section{Implementación}
