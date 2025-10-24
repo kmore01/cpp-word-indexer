@@ -39,7 +39,7 @@ Los árboles lexicográficos, o tries, son estructuras de datos especializadas p
 
 Estas estructuras son especialmente eficientes en aplicaciones que requieren operaciones basadas en prefijos, tales como: análisis y autocompletado de textos, motores de búsqueda, entre otros.
 
-El objetivo de este proyecto es implementar y comparar dos variantes de tries: el trie estándar, que representa la forma más directa de la estructura, y el radix trie (también conocido como Patricia trie o trie comprimido), que optimiza el uso de espacio mediante la compresión de cadenas lineales de nodos.
+El objetivo de este proyecto es implementar y comparar dos variantes de tries: el trie estándar, que representa la forma más directa de la estructura, y el radix trie, que optimiza el uso de espacio mediante la compresión de cadenas lineales de nodos.
 
 \section{Fundamentos Teóricos}
 
@@ -78,7 +78,7 @@ El radix trie optimiza el uso de espacio comprimiendo cadenas de nodos con un so
 
 \subsection{Decisiones de Diseño}
 
-Ambas implementaciones utilizan C++14 con las siguientes características comunes:
+Ambas implementaciones utilizan C++ con las siguientes características comunes:
 
 \begin{itemize}
     \item \texttt{unordered\_map} para mapeo eficiente de caracteres (o cadenas) a nodos hijos
