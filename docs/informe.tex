@@ -1,0 +1,564 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+
+\title{\textbf{Arbres Lexicogràfics Eficients: Informe}}
+
+\author{
+\large
+\textsc{Grau A -- Q1 Curs 2025-2026}\\[2mm] 
+\normalsize Departament de Ciències de la Computació \\
+\normalsize Universitat Politècnica de Catalunya \\[1cm]
+%\normalsize \href{mailto:alg@cs.upc.edu}{{\tt alg@cs.upc.edu}}
+%
+\begin{tabular}{cc}
+{\textsc{Kevin Moreno}} & {\textsc{Jiahao Wang}} \\
+\normalsize \texttt{kevin.moreno.hidalgo@estudiantat.upc.edu} & \normalsize \texttt{jiahao.wang@estudiantat.upc.edu} \\[4mm]
+{\textsc{Enzo Miquel}} & {\textsc{Guillem Revuelta}} \\
+\normalsize \texttt{enzo.miquel@estudiantat.upc.edu} & \normalsize \texttt{guillem.revuelta@estudiantat.upc.edu} \\
+\end{tabular}
+}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+El proyecto compara dos implementaciones de árboles lexicográficos: el \textbf{trie estándar} y el \textbf{radix trie} (comprimido). Mientras el primero representa cada carácter en un nodo, el segundo agrupa cadenas lineales en aristas para optimizar el espacio. Ambas estructuras permiten inserción, búsqueda y autocompletado eficientes. El objetivo es evaluar su rendimiento en términos de memoria y tiempo de ejecución mediante métricas cuantificables como el número de nodos y los tiempos de operación.
+\end{abstract}
+
+\section{Introducción}
+
+Los árboles lexicográficos son estructuras de datos especializadas para el almacenamiento y búsqueda eficiente de cadenas de caracteres. Los tries organizan los datos basándose en los prefijos compartidos entre las cadenas, donde cada nodo representa un carácter (o cadena de caracteres en el caso de el radix trie) y la posición del nodo en el árbol determina la clave asociada. Estas estructuras son especialmente eficientes en aplicaciones que requieren operaciones basadas en prefijos, como por ejemplo en análisis y autocompletado de textos, motores de búsqueda, entre otros casos. El objetivo de este proyecto es implementar y comparar variantes de tries: el trie estándar, que representa la forma más directa de la estructura, y el radix trie, que optimiza el uso de espacio aplicando la compresión de cadenas lineales de nodos.
+
+\section{Fundamentos Teóricos}
+
+\subsection{Trie Estándar}
+
+El trie estándar es la implementación más directa de un árbol lexicográfico. Cada nodo representa un carácter y contiene referencias a sus hijos.
+
+\textbf{Definición 2.1 (Trie Estándar).} Un trie estándar es un árbol $T = (V, E)$ donde cada nodo $v \in V$ almacena:
+\begin{itemize}
+    \item Un mapa de caracteres a nodos hijos: $hijos : \Sigma \rightarrow V$
+    \item Un indicador booleano $hoja$ que marca el fin de una palabra
+    \item Información adicional (números de línea y posiciones)
+\end{itemize}
+
+\textbf{Complejidad:}
+\begin{itemize}
+    \item \textbf{Inserción}: $O(m)$ donde $m$ es la longitud de la palabra
+    \item \textbf{Búsqueda}: $O(m)$
+    \item \textbf{Espacio}: $O(ALPHABET\_SIZE \times N \times M)$ en el peor caso, donde $N$ es el número de palabras y $M$ la longitud promedio
+\end{itemize}
+
+\subsection{Radix Trie (Trie Comprimido)}
+
+El radix trie optimiza el uso de espacio comprimiendo cadenas de nodos con un solo hijo en una única arista etiquetada.
+
+\textbf{Definición 2.2 (Radix Trie).} Un radix trie es una versión comprimida del trie estándar donde las aristas pueden estar etiquetadas con cadenas de caracteres en lugar de caracteres individuales.
+
+\textbf{Complejidad:}
+\begin{itemize}
+    \item \textbf{Inserción}: $O(m)$ con operaciones adicionales de división de nodos
+    \item \textbf{Búsqueda}: $O(m)$
+    \item \textbf{Espacio}: $O(N)$ nodos, significativamente menor que el trie estándar
+\end{itemize}
+
+\section{Implementación}
+
+\subsection{Decisiones de Diseño}
+
+Ambas implementaciones utilizan C++17 con las siguientes características comunes:
+
+\begin{itemize}
+    \item \texttt{unordered\_map} para mapeo eficiente de caracteres (o cadenas) a nodos hijos
+    \item Almacenamiento de números de línea y posiciones para la búsqueda de palabras
+    \item Interfaz uniforme para ambas estructuras
+    \item Contador estático de nodos para análisis de memoria
+\end{itemize}
+
+En el trie estándar, cada nodo contiene un \texttt{unordered\_map<char, NodoTrie*>} que mapea caracteres individuales a sus nodos hijos. En el radix trie, se utiliza \texttt{unordered\_map<string, NodoRadixTrie*>} para permitir que las aristas estén etiquetadas con cadenas de caracteres.
+
+\subsection{Operaciones Implementadas}
+
+\subsubsection{Inserción}
+
+La inserción varía según la estructura:
+
+\begin{itemize}
+    \item \textbf{Standard Trie}: Recorre carácter por carácter, creando nodos según sea necesario. Cada carácter de la palabra genera o utiliza un nodo existente.
+    
+    \item \textbf{Radix Trie}: Compara etiquetas de aristas utilizando la función de prefijo común. Cuando encuentra divergencias, divide nodos existentes para crear nuevas ramificaciones. Esto requiere:
+    \begin{enumerate}
+        \item Calcular el prefijo común entre la cadena a insertar y las etiquetas existentes
+        \item Dividir nodos cuando sea necesario
+        \item Crear nuevas aristas con las porciones restantes
+    \end{enumerate}
+\end{itemize}
+
+\subsubsection{Búsqueda}
+
+Ambas estructuras soportan:
+\begin{itemize}
+    \item Búsqueda exacta de palabras
+    \item Búsqueda de prefijos 
+    \item Recuperación de líneas y posiciones donde aparece una palabra
+    \item Autocompletado (palabras con un prefijo dado)
+\end{itemize}
+
+La búsqueda en el trie estándar procede carácter por carácter, mientras que en el radix trie se comparan cadenas completas en cada paso, lo que puede requerir comparaciones de subcadenas.
+
+\subsubsection{Búsqueda de Frases}
+
+Se implementó una funcionalidad para buscar frases (múltiples palabras). El sistema:
+\begin{enumerate}
+    \item Busca la primera palabra de la frase
+    \item Verifica que las palabras siguientes aparezcan en las posiciones consecutivas correctas
+    \item Retorna las líneas donde aparece la frase completa
+\end{enumerate}
+
+\subsubsection{Autocompletado}
+
+Dado un prefijo, el sistema puede sugerir palabras completas mediante un recorrido DFS (Depth-First Search) desde el nodo correspondiente al prefijo. Se implementaron dos funciones complementarias:
+
+\begin{itemize}
+    \item \texttt{contarPalabrasPrefijo(prefijo)}: Retorna todas las palabras que tienen el prefijo dado, realizando un recorrido completo del subárbol.
+    
+    \item \texttt{obtenerTop5MasFrecuentes(prefijo)}: Retorna las 5 palabras más frecuentes que tienen el prefijo dado. En el standard trie usa un algoritmo inventado por nosotros mismos. En el radix trie se utiliza un algoritmo de selección basado en quickselect. En el mejor caso es O(n) y en el peor $O(n^2)$.
+\end{itemize}
+
+En la aplicación final, al buscar una palabra, el sistema combina ambas funciones para mostrar:
+\begin{enumerate}
+    \item El número total de palabras que comienzan con ese prefijo (usando \texttt{contarPalabrasPrefijo})
+    \item Las 5 palabras más frecuentes con ese prefijo (usando \texttt{obtenerTop5MasFrecuentes})
+\end{enumerate}
+
+Esta combinación proporciona al usuario tanto información cuantitativa como cualitativa, ofreciendo una experiencia de autocompletado más completa e informativa.
+
+\section{Resultados Experimentales}
+
+\subsection{Configuración Experimental}
+
+\begin{itemize}
+    \item \textbf{Compilación}: g++ con flags \texttt{-O2}
+\end{itemize}
+
+\textbf{Conjuntos de Datos:}
+\begin{itemize}
+    \item \texttt{alice.txt}: 3,235 palabras únicas
+    \item \texttt{moby.txt}: 18,209 palabras únicas
+    \item \texttt{alpha.txt}: 370,105 palabras únicas
+\end{itemize}
+
+\subsection{Métricas de Construcción}
+
+La Tabla \ref{tab:construccion} muestra los resultados de construcción para diferentes archivos.
+
+\begin{table}[H]
+\centering
+\caption{Comparación de métricas de construcción}
+\label{tab:construccion}
+\begin{tabular}{|l|l|r|r|}
+\hline
+\textbf{Archivo} & \textbf{Métrica} & \textbf{Standard} & \textbf{Radix} \\
+\hline
+\multirow{4}{*}{\texttt{alice.txt}} 
+    & Tiempo (ms) & 8 & 5 \\
+    & Nodos & 9,766 & 4,083 \\
+    & Palabras & 3,235 & 3,235 \\
+    & Profundidad & 40 & 40 \\
+\hline
+\multirow{4}{*}{\texttt{moby.txt}} 
+    & Tiempo (ms) & 63 & 44 \\
+    & Nodos & 55,292 & 22,762 \\
+    & Palabras & 18,209 & 18,209 \\
+    & Profundidad & 26 & 26 \\
+\hline
+\multirow{4}{*}{\texttt{alpha.txt}} 
+    & Tiempo (ms) & 224 & 170 \\
+    & Nodos & 1,027,810 & 478,058 \\
+    & Palabras & 370,105 & 370,105 \\
+    & Profundidad & 31 & 31 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Análisis de Eficiencia Espacial}
+
+La Figura \ref{fig:nodos} muestra la reducción de nodos del Radix Trie respecto al Standard Trie.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    bar width=25pt,
+    width=0.95\textwidth,
+    height=8cm,
+    ylabel={Número de Nodos},
+    symbolic x coords={alice.txt, moby.txt, alpha.txt},
+    xtick=data,
+    x tick label style={rotate=15, anchor=east},
+    legend style={at={(0.5,-0.15)}, anchor=north, legend columns=2},
+    ymin=0,
+    ymajorgrids=true,
+    grid style=dashed,
+    nodes near coords,
+    nodes near coords align={vertical},
+    every node near coord/.append style={font=\tiny},
+]
+
+\addplot[fill=blue!60] coordinates {
+    (alice.txt, 9766)
+    (moby.txt, 55292)
+    (alpha.txt, 1027810)
+};
+
+\addplot[fill=red!60] coordinates {
+    (alice.txt, 4083)
+    (moby.txt, 22762)
+    (alpha.txt, 478058)
+};
+
+\legend{Standard Trie, Radix Trie}
+\end{axis}
+\end{tikzpicture}
+\caption{Comparación del número de nodos por estructura}
+\label{fig:nodos}
+\end{figure}
+
+\textbf{Observaciones:}
+\begin{itemize}
+    \item El Radix Trie reduce el uso de nodos entre 53-58\% consistentemente en todos los datasets
+    \item Con \texttt{alice.txt}, el Radix Trie usa 4,083 nodos frente a 9,766 del Standard
+    \item Con \texttt{moby.txt}, el Radix Trie usa 22,762 nodos frente a 55,292 del Standard
+    \item La reducción se mantiene estable incluso con datasets grandes (370k palabras)
+    \item Con \texttt{alpha.txt}, el Radix Trie usa solo 478,058 nodos frente a 1,027,810 del Standard
+    \item La profundidad media se mantiene igual en ambas estructuras
+\end{itemize}
+
+\subsection{Análisis de Rendimiento Temporal}
+
+\begin{table}[H]
+\centering
+\caption{Mejora de tiempo de construcción respecto a Standard Trie}
+\label{tab:tiempos_mejora}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Archivo} & \textbf{Radix (\%)} \\
+\hline
+alice.txt & +37.5 \\
+moby.txt & +30.2 \\
+alpha.txt & +24.1 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    bar width=25pt,
+    width=0.9\textwidth,
+    height=7cm,
+    ylabel={Tiempo de Construcción (ms)},
+    symbolic x coords={alice.txt, moby.txt, alpha.txt},
+    xtick=data,
+    x tick label style={rotate=15, anchor=east},
+    legend style={at={(0.5,-0.2)}, anchor=north, legend columns=2},
+    ymin=0,
+    ymajorgrids=true,
+    grid style=dashed,
+    nodes near coords,
+    nodes near coords align={vertical},
+    every node near coord/.append style={font=\small},
+]
+
+\addplot[fill=blue!60] coordinates {
+    (alice.txt, 8)
+    (moby.txt, 63)
+    (alpha.txt, 224)
+};
+
+\addplot[fill=red!60] coordinates {
+    (alice.txt, 5)
+    (moby.txt, 44)
+    (alpha.txt, 170)
+};
+
+\legend{Standard Trie, Radix Trie}
+\end{axis}
+\end{tikzpicture}
+\caption{Comparación de tiempos de construcción}
+\label{fig:tiempos}
+\end{figure}
+
+\textbf{Observaciones sobre escalabilidad:}
+\begin{itemize}
+    \item El Radix Trie mantiene su ventaja temporal en todos los tamaños
+    \item Con datasets grandes (alpha.txt), el Radix Trie es consistentemente más rápido
+    \item Los tiempos escalan de forma aproximadamente lineal con el tamaño del vocabulario
+\end{itemize}
+
+\subsection{Benchmark de Búsquedas}
+
+Se realizaron búsquedas de palabras representativas en cada archivo. Las Tablas \ref{tab:busquedas_moby} y \ref{tab:busquedas_alpha} muestran tiempos promedio en nanosegundos.
+
+\begin{table}[H]
+\centering
+\caption{Tiempos de búsqueda promedio (nanosegundos) - moby.txt}
+\label{tab:busquedas_moby}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Palabra} & \textbf{Standard} & \textbf{Radix} \\
+\hline
+1 & 424 & 750 \\
+10 & 214 & 884 \\
+100 & 224 & 730 \\
+leaped & 827 & 271 \\
+leaping & 254 & 295 \\
+leaps & 122 & 172 \\
+zoned & 950 & 2,084 \\
+(no existe) & 60 & 55 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Tiempos de búsqueda promedio (nanosegundos) - words\_alpha.txt}
+\label{tab:busquedas_alpha}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Palabra} & \textbf{Standard} & \textbf{Radix} \\
+\hline
+algorithm & 456 & 823 \\
+computer & 312 & 645 \\
+structure & 589 & 892 \\
+programming & 734 & 1,156 \\
+data & 198 & 421 \\
+tree & 234 & 387 \\
+zygomorphic & 1,245 & 1,893 \\
+(no existe) & 75 & 68 \\
+\hline
+\textbf{Promedio} & \textbf{480} & \textbf{786} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Análisis:}
+\begin{itemize}
+    \item El Standard Trie es generalmente más rápido en búsquedas (promedio: 480ns vs 786ns)
+    \item El Radix Trie tiene overhead en la comparación de etiquetas de aristas
+    \item Para palabras inexistentes, ambos tries tienen rendimiento similar
+    \item La diferencia de rendimiento se mantiene consistente entre datasets pequeños (moby.txt) y grandes (words\_alpha.txt)
+    \item Palabras más largas (como "zygomorphic") muestran mayor diferencia de tiempo
+\end{itemize}
+
+\section{Estructuras de Datos Visualizadas}
+
+\subsection{Standard Trie}
+
+La Figura \ref{fig:standard_trie} muestra la estructura de un trie estándar con las palabras \textit{cat}, \textit{can}, \textit{car}, \textit{dog}, \textit{do}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    level distance=1.5cm,
+    level 1/.style={sibling distance=4cm},
+    level 2/.style={sibling distance=2cm},
+    level 3/.style={sibling distance=1.5cm},
+    every node/.style={circle, draw, minimum size=0.8cm}
+]
+
+\node[fill=gray!20] {root}
+    child {
+        node {c}
+        child {
+            node {a}
+            child {
+                node[double] {n}
+            }
+            child {
+                node[double] {t}
+            }
+            child {
+                node[double] {r}
+            }
+        }
+    }
+    child {
+        node {d}
+        child {
+            node[double] {o}
+            child {
+                node[double] {g}
+            }
+        }
+    };
+\end{tikzpicture}
+\caption{Trie estándar - cada nodo representa un carácter. Nodos con doble borde marcan fin de palabra}
+\label{fig:standard_trie}
+\end{figure}
+
+\subsection{Radix Trie}
+
+La Figura \ref{fig:radix_trie} muestra cómo el radix trie comprime prefijos comunes.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    level distance=1.8cm,
+    level 1/.style={sibling distance=5cm},
+    level 2/.style={sibling distance=2.5cm},
+    every node/.style={circle, draw, minimum size=1cm}
+]
+
+\node[fill=gray!20] {root}
+    child {
+        node {ca}
+        child {
+            node[double] {n}
+        }
+        child {
+            node[double] {t}
+        }
+        child {
+            node[double] {r}
+        }
+    }
+    child {
+        node[double] {do}
+        child {
+            node[double] {g}
+        }
+    };
+\end{tikzpicture}
+\caption{Radix trie - compresión de prefijos. El prefijo común ``ca'' se almacena una sola vez}
+\label{fig:radix_trie}
+\end{figure}
+
+\textbf{Palabras almacenadas}: \textit{cat}, \textit{can}, \textit{car}, \textit{do}, \textit{dog}
+
+\textbf{Compresión}: El prefijo común ``ca'' se almacena en un único nodo, y ``do'' también se comprime, reduciendo el número total de nodos de 11 (trie estándar) a 7 (radix trie).
+
+\section{Análisis y Discusión}
+
+\subsection{¿Por qué Standard Trie puede ser más rápido en búsquedas?}
+
+Un resultado interesante es que el Standard Trie frecuentemente supera al Radix Trie en velocidad de búsqueda individual, a pesar de tener más nodos. Las razones incluyen:
+
+\begin{enumerate}
+    \item \textbf{Operaciones más simples}: Comparar un solo carácter vs. recorrer y comparar cadenas completas
+    \item \textbf{Mejor localidad de caché}: Accesos más predecibles a memoria
+    \item \textbf{Menos indirecciones}: No requiere acceder a las etiquetas de aristas almacenadas como strings
+    \item \textbf{Branch prediction}: Caminos más predecibles para el procesador
+\end{enumerate}
+
+Este comportamiento demuestra que la eficiencia espacial no siempre implica mejor rendimiento temporal, y que el overhead de comparar cadenas en el radix trie puede superar los beneficios de tener menos nodos.
+
+\subsection{Trade-offs entre las implementaciones}
+
+\begin{table}[H]
+\centering
+\caption{Ventajas y Desventajas de Trie Estándar y Radix Trie}
+\label{tab:ventajas_desventajas}
+\begin{tabular}{|p{6.5cm}|p{6.5cm}|}
+\hline
+\textbf{Ventajas} & \textbf{Desventajas} \\
+\hline
+\multicolumn{2}{|c|}{\textbf{Trie Estándar}} \\
+\hline
+Búsquedas más rápidas debido a su simplicidad estructural. &
+Alto consumo de memoria (más del doble que el Radix Trie). \\
+Implementación más directa y fácil de depurar. &
+Mayor número de nodos a recorrer. \\
+Operaciones de inserción más simples. &
+Menos eficiente para conjuntos de datos muy grandes. \\
+\hline
+\multicolumn{2}{|c|}{\textbf{Radix Trie}} \\
+\hline
+Reducción significativa del uso de memoria (53–58\%). &
+Búsquedas ligeramente más lentas por comparaciones de cadenas. \\
+Menor número total de nodos en la estructura. &
+Implementación más compleja (división de nodos). \\
+Mejor escalabilidad para grandes vocabularios. &
+Mayor \emph{overhead} en operaciones con cadenas. \\
+Construcción más rápida en promedio. & \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Escenarios Óptimos}
+
+\begin{itemize}
+    \item \textbf{Standard Trie}: Ideal cuando la velocidad de búsqueda es crítica y la memoria no es un factor limitante. Útil para aplicaciones en tiempo real con vocabularios pequeños o medianos.
+    
+    \item \textbf{Radix Trie}: Cuando se necesita minimizar el uso de memoria o trabajar con vocabularios muy grandes. Excelente para sistemas con restricciones de memoria o cuando el costo de almacenamiento es importante.
+\end{itemize}
+
+\section{Conclusiones}
+
+Este trabajo presenta una comparación exhaustiva de dos implementaciones de tries, cada una con características únicas:
+
+
+    \begin{itemize}
+    \item El \textbf{trie estándar} prioriza la velocidad de búsqueda a costa de un mayor consumo de memoria.
+    \item El \textbf{radix trie} reduce entre un 53–58\% el número de nodos, ofreciendo mejor uso de memoria y tiempos de construcción más eficientes.
+    \item La elección entre ambas estructuras depende del contexto y los recursos disponibles, ya que no existe una solución universalmente óptima.
+    \item La implementación en C++ mediante \texttt{unordered\_map} logra un equilibrio adecuado entre eficiencia y simplicidad.
+\end{itemize}
+
+
+El proyecto demuestra la importancia de considerar múltiples factores al elegir estructuras de datos: tiempo de ejecución, uso de memoria, complejidad de implementación y características del conjunto de datos. Ambas implementaciones tienen su lugar en diferentes escenarios de uso.
+
+\begin{thebibliography}{9}
+
+\bibitem{sedgewick}
+Robert Sedgewick y Kevin Wayne. \textit{Algorithms}. Section 5.3: Tries. 
+\url{https://algs4.cs.princeton.edu/lectures/keynote/52Tries.pdf}
+
+\bibitem{wiki_trie}
+Wikipedia. \textit{Trie}. 
+\url{https://en.wikipedia.org/wiki/Trie}
+
+\bibitem{wiki_radix}
+Wikipedia. \textit{Radix tree}. 
+\url{https://en.wikipedia.org/wiki/Radix_tree}
+
+\bibitem{geeks_trie}
+GeeksforGeeks. \textit{Trie | (Insert and Search)}. 
+\url{https://www.geeksforgeeks.org/trie-insert-and-search/}
+
+\bibitem{geeks_radix}
+GeeksforGeeks. \textit{Radix Tree (Compact Trie)}. 
+\url{https://www.geeksforgeeks.org/radix-tree/}
+
+\bibitem{topcoder}
+TopCoder. \textit{Using Tries}. 
+\url{https://www.topcoder.com/thrive/articles/Using%20Tries}
+
+\bibitem{brilliant}
+Brilliant.org. \textit{Tries}. 
+\url{https://brilliant.org/wiki/tries/}
+
+\end{thebibliography}
+
+\end{document}

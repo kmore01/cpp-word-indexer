@@ -1,0 +1,30 @@
+# Build
+build/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+*.o
+*.obj
+*.a
+*.so
+*.exe
+*.out
+
+# Datasets: solo se versiona la muestra de ejemplo
+data/*
+!data/alice.txt
+
+# LaTeX
+*.aux
+*.log
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Editores y sistema
+.vscode/
+.idea/
+*.swp
+.DS_Store
