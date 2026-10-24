@@ -104,21 +104,25 @@ nodos del subárbol del prefijo.
 ## Requisitos
 
 - Compilador con C++17 y `std::filesystem`: GCC 9+ o Clang 10+.
-- CMake 3.16+ (recomendado) **o** `make` para la alternativa ligera.
+- `make` (para la compilación rápida) **o** CMake 3.16+.
 - Sistema tipo Unix (Linux/macOS). En Windows se recomienda WSL o MSYS2.
+
+Si no tienes CMake instalado, instálalo según tu sistema:
+
+```bash
+# Fedora / RHEL
+sudo dnf install cmake
+
+# Debian / Ubuntu
+sudo apt install cmake
+
+# macOS (Homebrew)
+brew install cmake
+```
 
 ## Compilación
 
-### CMake (recomendado)
-
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
-```
-
-El ejecutable se genera en `build/word_indexer`.
-
-### Make
+### Make (recomendado si no tienes CMake)
 
 ```bash
 make -j
@@ -129,6 +133,18 @@ El ejecutable se genera en `build/word_indexer`. Para limpiar:
 ```bash
 make clean
 ```
+
+### CMake
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+```
+
+El ejecutable se genera en `build/word_indexer`.
+
+> No mezcles ambos sistemas de compilación sobre el mismo directorio `build/`:
+> ejecuta `make clean` (o `rm -rf build`) antes de cambiar de uno a otro.
 
 ## Ejecución
 
