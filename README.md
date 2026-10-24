@@ -83,6 +83,8 @@ nodos del subárbol del prefijo.
 ├── README.md
 ├── .clang-format               # Estilo de código reproducible
 ├── .gitignore
+├── .github/
+│   └── workflows/ci.yml        # Compilación y pruebas en GitHub Actions
 ├── include/
 │   └── trie/
 │       ├── NodoTrie.hpp        # Interfaz del trie estándar
@@ -92,7 +94,8 @@ nodos del subárbol del prefijo.
 │   ├── NodoRadixTrie.cpp       # Implementación del radix trie
 │   └── main.cpp                # Interfaz de consola y orquestación
 ├── tests/
-│   └── test_tries.cpp          # Pruebas de humo sobre la API pública
+│   ├── test_tries.cpp          # Pruebas de humo sobre la API pública
+│   └── test_cli_eof.sh         # Regresión de EOF e índices inválidos
 ├── data/
 │   └── alice.txt               # Corpus de ejemplo
 └── docs/
@@ -238,9 +241,14 @@ O con el Makefile:
 make test
 ```
 
+`make test` ejecuta además `tests/test_cli_eof.sh`, que comprueba que el
+programa termina correctamente con la entrada cerrada (EOF), rechaza índices
+inválidos y completa una búsqueda real con ambos tries. La misma batería se
+ejecuta en CI (`.github/workflows/ci.yml`) con CMake y CTest.
+
 Las pruebas insertan palabras y frases en ambos tries y verifican búsquedas,
-posiciones, recuento por prefijo y top-5 usando únicamente la API pública. No
-modifican la lógica de las estructuras.
+posiciones, recuento por prefijo, top-5 y reutilización tras `clear()` usando
+únicamente la API pública. No modifican la lógica de las estructuras.
 
 ## Resultados experimentales
 
@@ -259,11 +267,16 @@ análisis detallado en [`docs/InformeEquip27.pdf`](docs/InformeEquip27.pdf).
 ## Limitaciones conocidas
 
 - `getNodos()` devuelve el contador acumulado de nodos creados en el proceso,
-  no el número de nodos vivos tras liberar memoria.
+  no el número de nodos vivos: al recargar un fichero el contador sigue
+  creciendo, aunque `clear()` libera la memoria anterior.
+- Los nodos no son copiables (`NodoTrie` y `NodoRadixTrie` tienen la copia
+  deshabilitada); se usan por referencia.
+- Al cargar un fichero, las palabras se guardan por líneas; una frase solo
+  coincide si sus palabras son consecutivas en la misma línea.
+- La entrada se procesa de forma interactiva: si el flujo de entrada se cierra
+  (EOF), el programa termina sin bloquearse.
 - `calcularMemoria()` es una **estimación** basada en `sizeof` y en el número de
   buckets; no mide el asignador real.
-- Las clases gestionan sus hijos con punteros crudos y no definen operaciones de
-  copia; están pensadas para usarse por referencia.
 - El corpus incluido es solo una muestra. Para reproducir los experimentos con
   corpus mayores, añade los `.txt` correspondientes (no se versionan).
 

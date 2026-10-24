@@ -29,6 +29,15 @@ if(BUILD_TESTING)
     add_executable(trie_tests tests/test_tries.cpp)
     target_link_libraries(trie_tests PRIVATE trie)
     add_test(NAME trie_tests COMMAND trie_tests)
+    if(UNIX)
+        add_test(
+            NAME cli_eof
+            COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_cli_eof.sh
+                    $<TARGET_FILE:word_indexer>
+                    ${CMAKE_CURRENT_SOURCE_DIR}/data/alice.txt
+        )
+        set_tests_properties(cli_eof PROPERTIES TIMEOUT 30)
+    endif()
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         target_compile_options(trie_tests PRIVATE -Wall -Wextra -Wpedantic)
     endif()

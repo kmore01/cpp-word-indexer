@@ -1,4 +1,5 @@
 #include <cctype>
+#include <charconv>
 #include <chrono>
 #include <cstddef>
 #include <filesystem>
@@ -7,7 +8,7 @@
 #include <limits>
 #include <sstream>
 #include <string>
-#include <typeinfo>
+#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -16,41 +17,71 @@
 
 namespace {
 
-const std::string SEPARADOR = "==================================";
+constexpr const char* SEPARADOR = "==================================";
 
-// Pregunta al usuario qué implementación de trie quiere utilizar.
+// Pregunta al usuario qué implementación de trie quiere utilizar. Devuelve
+// una cadena vacía si la entrada se cierra (EOF).
 std::string selectType() {
-    std::cout << "Select the type of Trie to use:" << std::endl
-              << std::endl
-              << "[1] Normal Trie" << std::endl
-              << "[2] Radix Trie" << std::endl
-              << std::endl
-              << "Enter an option: ";
-    int m;
-    std::cin >> m;
-    if (m == 1) return "normal";
-    if (m == 2) return "radix";
-    std::cout << "Invalid option. Please enter 1 or 2." << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    return selectType();
+    while (true) {
+        std::cout << "Select the type of Trie to use:" << std::endl
+                  << std::endl
+                  << "[1] Normal Trie" << std::endl
+                  << "[2] Radix Trie" << std::endl
+                  << std::endl
+                  << "Enter an option: ";
+        int m = 0;
+        if (!(std::cin >> m)) {
+            if (std::cin.eof()) {
+                std::cout << std::endl
+                          << "Input closed. Exiting." << std::endl;
+                return {};
+            }
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid option. Please enter 1 or 2." << std::endl;
+            continue;
+        }
+        if (m == 1) return "normal";
+        if (m == 2) return "radix";
+        std::cout << "Invalid option. Please enter 1 or 2." << std::endl;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
 }
 
-// Pregunta cómo debe resolverse el autocompletado.
+// Pregunta cómo debe resolverse el autocompletado. Devuelve -1 si la entrada
+// se cierra (EOF).
 int selectPrefixAlgorithm() {
-    std::cout << "Select the autocomplete preference:" << std::endl
-              << std::endl
-              << "[1] First found" << std::endl
-              << "[2] Most frequent" << std::endl
-              << std::endl
-              << "Enter an option: ";
-    int m;
-    std::cin >> m;
-    if (m == 1 || m == 2) return m;
-    std::cout << "Invalid option. Please enter 1 or 2." << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    return selectPrefixAlgorithm();
+    while (true) {
+        std::cout << "Select the autocomplete preference:" << std::endl
+                  << std::endl
+                  << "[1] First found" << std::endl
+                  << "[2] Most frequent" << std::endl
+                  << std::endl
+                  << "Enter an option: ";
+        int m = 0;
+        if (!(std::cin >> m)) {
+            if (std::cin.eof()) {
+                std::cout << std::endl
+                          << "Input closed. Exiting." << std::endl;
+                return -1;
+            }
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid option. Please enter 1 or 2." << std::endl;
+            continue;
+        }
+        if (m == 1 || m == 2) return m;
+        std::cout << "Invalid option. Please enter 1 or 2." << std::endl;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+}
+
+// Lee un entero validando que se consuma toda la cadena.
+bool parseNumero(const std::string& texto, int& valor) {
+    const char* inicio = texto.data();
+    const char* fin = inicio + texto.size();
+    const auto resultado = std::from_chars(inicio, fin, valor);
+    return resultado.ec == std::errc() && resultado.ptr == fin;
 }
 
 // Lista los ficheros .txt del directorio indicado (por defecto, el actual).
@@ -122,42 +153,59 @@ bool leerEntrada(const std::string& nombreArchivo, T& t) {
         }
         ++numeroLinea;
     }
+    if (archivo.bad()) {
+        std::cout << "Error reading the file '" << nombreArchivo << "'"
+                  << std::endl;
+        return false;
+    }
     return true;
 }
 
-// Muestra el menú de ficheros hasta que se consigue leer uno válido.
+// Muestra el menú de ficheros hasta que se consigue leer uno válido. Si la
+// entrada se cierra, deja `valido` a false y el programa termina.
 template <typename T>
 void readFile(bool& valido, const std::vector<std::string>& lista, T& trie) {
     while (!valido) {
         mostrarMenuArchivos(lista);
         std::cout << "Enter an option: ";
         std::string input;
-        std::cin >> input;
-        int i;
-        try {
-            i = std::stoi(input);
-        } catch (...) {
+        if (!(std::cin >> input)) {
+            std::cout << std::endl << "Input closed. Exiting." << std::endl;
+            return;
+        }
+
+        int seleccion = 0;
+        if (!parseNumero(input, seleccion)) {
             std::cout << SEPARADOR << std::endl;
             std::cout << "Invalid input. Please enter a valid number."
                       << std::endl;
             continue;
         }
         std::cout << SEPARADOR << std::endl;
-        --i;
-        if (i >= static_cast<int>(lista.size())) {
-            std::cout << "Error: index not available" << std::endl
-                      << std::endl;
-        } else if (i >= 0) {
-            std::cout << "The file selected was '" << lista[i] << "'"
-                      << std::endl;
-            std::cout << "Reading file '" << lista[i] << "'..." << std::endl;
-            valido = leerEntrada(lista[i], trie);
-        } else {
+
+        if (seleccion == 0) {
             std::cout << ">> File name: ";
             std::string archivo;
-            std::cin >> archivo;
+            if (!(std::cin >> archivo)) {
+                std::cout << std::endl
+                          << "Input closed. Exiting." << std::endl;
+                return;
+            }
             std::cout << "reading file '" << archivo << "'..." << std::endl;
             valido = leerEntrada(archivo, trie);
+            if (!valido) trie.clear();
+        } else if (seleccion > 0 &&
+                   static_cast<std::size_t>(seleccion) <= lista.size()) {
+            const std::string& archivo =
+                lista[static_cast<std::size_t>(seleccion) - 1];
+            std::cout << "The file selected was '" << archivo << "'"
+                      << std::endl;
+            std::cout << "Reading file '" << archivo << "'..." << std::endl;
+            valido = leerEntrada(archivo, trie);
+            if (!valido) trie.clear();
+        } else {
+            std::cout << "Error: index not available" << std::endl
+                      << std::endl;
         }
     }
 }
@@ -191,8 +239,8 @@ void mostrarEstadisticasTrie(const T& trie, const std::string& tipo) {
 // Muestra el total de palabras con el prefijo y las 5 primeras o las 5 más
 // frecuentes, según la preferencia elegida al arrancar.
 template <typename T>
-void imprimirAutocompletado(T& trie, const std::string& w, int& nodosVisitados,
-                            int op) {
+void imprimirAutocompletado(const T& trie, const std::string& w,
+                            int& nodosVisitados, int op) {
     // Primero se recuentan todas las palabras del prefijo.
     int nodosAux1 = 0;
     std::vector<std::string> todasPalabras =
@@ -233,11 +281,13 @@ void imprimirAutocompletado(T& trie, const std::string& w, int& nodosVisitados,
 // Busca una palabra o frase (varias palabras separadas por espacios) y mide
 // el tiempo y los nodos visitados.
 template <typename T>
-void searchCommand(T& trie, int op) {
+void searchCommand(const T& trie, int op) {
     std::cout << "Enter the word you want to search: ";
     std::string words;
     std::cin.ignore();
-    std::getline(std::cin, words);
+    if (!std::getline(std::cin, words)) {
+        return;
+    }
 
     std::stringstream ss(words);
     std::string word;
@@ -285,35 +335,31 @@ void searchCommand(T& trie, int op) {
 
 // Vacía el trie actual y carga en él un fichero nuevo.
 template <typename T>
-void openCommand(const std::vector<std::string>& lista, T& trie, bool& valido) {
+void openCommand(const std::vector<std::string>& lista, T& trie, bool& valido,
+                 const std::string& tipo) {
     std::cout << "Open file:" << std::endl;
-    trie = T();
+    trie.clear();
     valido = false;
     readFile(valido, lista, trie);
-    std::string tipo = "radix";
-    if (typeid(trie) == typeid(NodoTrie)) {
-        tipo = "normal";
-    }
+    if (!valido) return;
     mostrarEstadisticasTrie(trie, tipo);
 }
 
 // Bucle principal de comandos de la aplicación.
 template <typename T>
 void searchApplication(const std::vector<std::string>& lista, T& trie,
-                       bool& valido, int op) {
+                       bool& valido, int op, const std::string& tipo) {
     char command;
-    std::cin >> command;
-    while (valido && command != 'x') {
+    while (valido && (std::cin >> command) && command != 'x') {
         if (command == 's') {
             searchCommand(trie, op);
             std::cout << "Enter an option: ";
         } else if (command == 'o') {
-            openCommand(lista, trie, valido);
-            std::cout << "Enter an option: ";
+            openCommand(lista, trie, valido, tipo);
+            if (valido) std::cout << "Enter an option: ";
         } else {
             show_commands();
         }
-        std::cin >> command;
     }
 }
 
@@ -323,16 +369,21 @@ void ejecutarBusqueda(const std::string& tipoNombre,
     T trie;
     bool valido = false;
     readFile(valido, lista, trie);
+    if (!valido) return;
     mostrarEstadisticasTrie(trie, tipoNombre);
     show_commands();
-    searchApplication(lista, trie, valido, op);
+    searchApplication(lista, trie, valido, op, tipoNombre);
 }
 
 }  // namespace
 
 int main() {
     const std::string type = selectType();
+    if (type.empty()) return 0;
+
     const int op = selectPrefixAlgorithm();
+    if (op < 0) return 0;
+
     const std::vector<std::string> lista = listarArchivosTxt();
     if (type == "normal") {
         ejecutarBusqueda<NodoTrie>("normal", lista, op);

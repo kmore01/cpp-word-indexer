@@ -12,17 +12,22 @@ NodoTrie::NodoTrie() { ++nodos; }
 
 NodoTrie::NodoTrie(bool h) : hoja{h} { ++nodos; }
 
-NodoTrie::~NodoTrie() {
+NodoTrie::~NodoTrie() { clear(); }
+
+void NodoTrie::clear() {
     for (auto& par : hijos) {
         delete par.second;
     }
     hijos.clear();
+    lineaPos.clear();
+    hoja = false;
 }
 
 std::vector<std::string> NodoTrie::contarPalabrasPrefijo(const std::string& w,
-                                                         int& nv) {
+                                                         int& nv) const {
+    nv = 0;
     std::vector<std::string> resultados;
-    NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
+    const NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
     if (nodoPrefijo != nullptr) {
         completarDFS(nodoPrefijo, w, resultados, nv);
         --nv;  // El nodo del prefijo se contabilizó dos veces.
@@ -31,11 +36,12 @@ std::vector<std::string> NodoTrie::contarPalabrasPrefijo(const std::string& w,
 }
 
 std::vector<std::string> NodoTrie::obtenerTop5MasFrecuentes(
-    const std::string& w, int& nv) {
+    const std::string& w, int& nv) const {
     // Se reservan siempre 5 huecos; los no utilizados quedan vacíos.
     const int n = 5;
+    nv = 0;
     std::vector<std::pair<std::string, int>> resultados(n, {"", -1});
-    NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
+    const NodoTrie* nodoPrefijo = obtenerNodo(w, nv);
     if (nodoPrefijo != nullptr) {
         completarDFS2(nodoPrefijo, w, resultados, nv);
         --nv;  // El nodo del prefijo se contabilizó dos veces.
@@ -43,8 +49,9 @@ std::vector<std::string> NodoTrie::obtenerTop5MasFrecuentes(
     return toVectorString(resultados);
 }
 
-void NodoTrie::completarDFS(NodoTrie* nodo, std::string palabraActual,
-                            std::vector<std::string>& resultados, int& nv) {
+void NodoTrie::completarDFS(const NodoTrie* nodo, std::string palabraActual,
+                            std::vector<std::string>& resultados,
+                            int& nv) const {
     ++nv;
     if (nodo->hoja) {
         resultados.push_back(palabraActual);
@@ -55,8 +62,8 @@ void NodoTrie::completarDFS(NodoTrie* nodo, std::string palabraActual,
 }
 
 void NodoTrie::completarDFS2(
-    NodoTrie* nodo, std::string palabraActual,
-    std::vector<std::pair<std::string, int>>& resultados, int& nv) {
+    const NodoTrie* nodo, std::string palabraActual,
+    std::vector<std::pair<std::string, int>>& resultados, int& nv) const {
     ++nv;
     if (nodo->hoja) {
         const int ocurrencias = static_cast<int>(nodo->lineaPos.size());
@@ -84,17 +91,18 @@ NodoTrie* NodoTrie::obtenerNodo(char c) const {
     return nullptr;
 }
 
-NodoTrie* NodoTrie::obtenerNodo(std::string w, int& nv) {
+const NodoTrie* NodoTrie::obtenerNodo(const std::string& w, int& nv) const {
+    const NodoTrie* actual = this;
+    for (char c : w) {
+        ++nv;
+        auto it = actual->hijos.find(c);
+        if (it == actual->hijos.end()) {
+            return nullptr;
+        }
+        actual = it->second;
+    }
     ++nv;
-    if (w.empty()) {
-        return this;
-    }
-    auto it = hijos.find(w[0]);
-    if (it == hijos.end()) {
-        return nullptr;
-    }
-    const std::string resto = w.substr(1);
-    return it->second->obtenerNodo(resto, nv);
+    return actual;
 }
 
 void NodoTrie::insertar(char c) {
@@ -104,7 +112,7 @@ void NodoTrie::insertar(char c) {
     }
 }
 
-void NodoTrie::insertarPalabra(std::string w, int l, int p) {
+void NodoTrie::insertarPalabra(const std::string& w, int l, int p) {
     NodoTrie* aux = this;  // Se recorre el trie desde la raíz.
     for (char c : w) {
         NodoTrie* hijo = aux->obtenerNodo(c);
@@ -118,10 +126,10 @@ void NodoTrie::insertarPalabra(std::string w, int l, int p) {
     aux->lineaPos.push_back({l, p});
 }
 
-std::vector<std::pair<int, int>> NodoTrie::buscarPalabra(std::string w,
-                                                         int& nv) {
+std::vector<std::pair<int, int>> NodoTrie::buscarPalabra(
+    const std::string& w, int& nv) const {
     nv = 0;
-    NodoTrie* palabra = obtenerNodo(w, nv);
+    const NodoTrie* palabra = obtenerNodo(w, nv);
     if (palabra != nullptr && palabra->hoja) {
         return palabra->lineaPos;
     }
@@ -129,7 +137,7 @@ std::vector<std::pair<int, int>> NodoTrie::buscarPalabra(std::string w,
 }
 
 std::vector<std::pair<int, int>> NodoTrie::buscarFrase(
-    const std::vector<std::string>& frase, int& nv) {
+    const std::vector<std::string>& frase, int& nv) const {
     nv = 0;
     if (frase.empty()) return {};
 
@@ -178,7 +186,9 @@ bool NodoTrie::getHoja() const { return hoja; }
 
 int NodoTrie::getNodos() { return nodos; }
 
-std::unordered_map<char, NodoTrie*>& NodoTrie::getHijos() { return hijos; }
+const std::unordered_map<char, NodoTrie*>& NodoTrie::getHijos() const {
+    return hijos;
+}
 
 std::size_t NodoTrie::calcularMemoria() const {
     std::size_t total = sizeof(NodoTrie);
@@ -207,7 +217,7 @@ void NodoTrie::calcularProfundidadesAux(int profundidadActual, int& contador,
 }
 
 int NodoTrie::indexLessOcurr(
-    const std::vector<std::pair<std::string, int>>& v) {
+    const std::vector<std::pair<std::string, int>>& v) const {
     const std::size_t n = v.size();
     int idx = -1;
     int less = INT_MAX;
@@ -221,7 +231,7 @@ int NodoTrie::indexLessOcurr(
 }
 
 int NodoTrie::contiene(const std::vector<std::pair<std::string, int>>& v,
-                       const std::string& w) {
+                       const std::string& w) const {
     for (std::size_t i = 0; i < v.size(); ++i) {
         if (v[i].first == w) {
             return static_cast<int>(i);
@@ -231,7 +241,7 @@ int NodoTrie::contiene(const std::vector<std::pair<std::string, int>>& v,
 }
 
 std::vector<std::string> NodoTrie::toVectorString(
-    const std::vector<std::pair<std::string, int>>& v) {
+    const std::vector<std::pair<std::string, int>>& v) const {
     std::vector<std::string> resultado;
     resultado.reserve(v.size());
     for (const auto& par : v) {

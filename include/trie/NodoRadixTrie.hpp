@@ -36,55 +36,65 @@ class NodoRadixTrie {
 
     ~NodoRadixTrie();
 
+    // Libera todos los nodos hijos y deja este nodo como raíz vacía.
+    void clear();
+
+    // Los nodos poseen punteros propietarios: copiar un trie provocaría un
+    // doble delete, así que la copia queda prohibida.
+    NodoRadixTrie(const NodoRadixTrie&) = delete;
+    NodoRadixTrie& operator=(const NodoRadixTrie&) = delete;
+
     // Longitud del prefijo común más largo entre s1 y s2.
-    std::string prefijoCom(const std::string& s1, const std::string& s2);
+    std::string prefijoCom(const std::string& s1,
+                           const std::string& s2) const;
 
     // Devuelve todas las palabras que empiezan por el prefijo w.
     std::vector<std::string> contarPalabrasPrefijo(const std::string& w,
-                                                   int& nv);
+                                                   int& nv) const;
 
     // Selección por quickselect: devuelve el i-ésimo par mayor por frecuencia.
-    std::pair<std::string, int> encontrarIesimoMayor(
+    static std::pair<std::string, int> encontrarIesimoMayor(
         std::vector<std::pair<std::string, int>>& vec, int i);
 
-    int partition(std::vector<std::pair<std::string, int>>& vec, int left,
-                  int right);
+    static int partition(std::vector<std::pair<std::string, int>>& vec,
+                         int left, int right);
 
     // Devuelve las 5 palabras más frecuentes que empiezan por w.
     std::vector<std::string> obtenerTop5MasFrecuentes(const std::string& w,
-                                                      int& nv);
+                                                      int& nv) const;
 
     void completarPrefijoAux(const std::string& prefijoBuscado,
                              std::string palabraActual,
-                             std::vector<std::string>& resultados, int& nv);
+                             std::vector<std::string>& resultados,
+                             int& nv) const;
 
     void completarPrefijoAux2(
         const std::string& prefijoBuscado, std::string palabraActual,
-        std::vector<std::pair<std::string, int>>& resultados, int& nv);
+        std::vector<std::pair<std::string, int>>& resultados, int& nv) const;
 
-    void completarDFS(NodoRadixTrie* nodo, std::string& palabraActual,
-                      std::vector<std::string>& resultados, int& nv);
+    void completarDFS(const NodoRadixTrie* nodo, std::string& palabraActual,
+                      std::vector<std::string>& resultados, int& nv) const;
 
     // Nodo asociado al prefijo w, o nullptr si no existe.
-    NodoRadixTrie* obtenerNodo(const std::string& w, int& nv);
+    const NodoRadixTrie* obtenerNodo(const std::string& w, int& nv) const;
 
     // Inserta una aparición de la palabra w en (línea l, posición p).
     void insertarPalabra(const std::string& w, int l, int p);
 
     // Devuelve las posiciones donde aparece w, o vacío si no existe.
     std::vector<std::pair<int, int>> buscarPalabra(const std::string& w,
-                                                   int& nv);
+                                                   int& nv) const;
 
     // Busca una secuencia de palabras consecutivas dentro de una misma línea.
     std::vector<std::pair<int, int>> buscarFrase(
-        const std::vector<std::string>& frase, int& nv);
+        const std::vector<std::string>& frase, int& nv) const;
 
     // Getters y setters
     bool getHoja() const;
 
     static int getNodos();
 
-    std::unordered_map<std::string, NodoRadixTrie*>& getHijos();
+    const std::unordered_map<std::string, NodoRadixTrie*>& getHijos() const;
 
     std::size_t calcularMemoria() const;
 

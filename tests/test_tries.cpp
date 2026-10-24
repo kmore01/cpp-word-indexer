@@ -83,6 +83,20 @@ void probarAutocompletado(T& trie) {
 }
 
 template <typename T>
+void probarClear(T& trie) {
+    trie.insertarPalabra("hola", 1, 0);
+    trie.clear();
+
+    int nv = 0;
+    require(trie.buscarPalabra("hola", nv).empty(),
+            "clear debe eliminar las palabras anteriores");
+
+    trie.insertarPalabra("adios", 2, 0);
+    require(trie.buscarPalabra("adios", nv).size() == 1,
+            "el trie debe seguir usable después de clear");
+}
+
+template <typename T>
 void ejecutarPruebas(const char* nombre) {
     {
         T trie;
@@ -95,6 +109,10 @@ void ejecutarPruebas(const char* nombre) {
     {
         T trie;
         probarAutocompletado(trie);
+    }
+    {
+        T trie;
+        probarClear(trie);
     }
     std::cout << "OK: " << nombre << '\n';
 }

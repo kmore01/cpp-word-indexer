@@ -12,15 +12,19 @@ NodoRadixTrie::NodoRadixTrie() { ++nodos; }
 
 NodoRadixTrie::NodoRadixTrie(bool h) : hoja{h} { ++nodos; }
 
-NodoRadixTrie::~NodoRadixTrie() {
+NodoRadixTrie::~NodoRadixTrie() { clear(); }
+
+void NodoRadixTrie::clear() {
     for (auto& par : hijos) {
         delete par.second;
     }
     hijos.clear();
+    lineaPos.clear();
+    hoja = false;
 }
 
 std::string NodoRadixTrie::prefijoCom(const std::string& s1,
-                                      const std::string& s2) {
+                                      const std::string& s2) const {
     std::size_t i = 0;
     const std::size_t minLong = std::min(s1.size(), s2.size());
     while (i < minLong && s1[i] == s2[i]) {
@@ -30,7 +34,7 @@ std::string NodoRadixTrie::prefijoCom(const std::string& s1,
 }
 
 std::vector<std::string> NodoRadixTrie::contarPalabrasPrefijo(
-    const std::string& w, int& nv) {
+    const std::string& w, int& nv) const {
     std::vector<std::string> res;
     nv = 0;
     completarPrefijoAux(w, "", res, nv);
@@ -74,7 +78,7 @@ std::pair<std::string, int> NodoRadixTrie::encontrarIesimoMayor(
 }
 
 std::vector<std::string> NodoRadixTrie::obtenerTop5MasFrecuentes(
-    const std::string& w, int& nv) {
+    const std::string& w, int& nv) const {
     // Siempre se devuelven 5 huecos; los no utilizados quedan vacíos.
     const int n = 5;
     std::vector<std::pair<std::string, int>> res;
@@ -89,7 +93,7 @@ std::vector<std::string> NodoRadixTrie::obtenerTop5MasFrecuentes(
 
 void NodoRadixTrie::completarPrefijoAux2(
     const std::string& prefijoBuscado, std::string palabraActual,
-    std::vector<std::pair<std::string, int>>& resultados, int& nv) {
+    std::vector<std::pair<std::string, int>>& resultados, int& nv) const {
     ++nv;
     // Si ya se consumió todo el prefijo, se recogen todas las palabras.
     if (prefijoBuscado.empty()) {
@@ -124,7 +128,7 @@ void NodoRadixTrie::completarPrefijoAux2(
 
 void NodoRadixTrie::completarPrefijoAux(
     const std::string& prefijoBuscado, std::string palabraActual,
-    std::vector<std::string>& resultados, int& nv) {
+    std::vector<std::string>& resultados, int& nv) const {
     ++nv;
     // Si ya se consumió todo el prefijo, se recogen todas las palabras.
     if (prefijoBuscado.empty()) {
@@ -156,10 +160,10 @@ void NodoRadixTrie::completarPrefijoAux(
     }
 }
 
-void NodoRadixTrie::completarDFS(NodoRadixTrie* nodo,
+void NodoRadixTrie::completarDFS(const NodoRadixTrie* nodo,
                                  std::string& palabraActual,
                                  std::vector<std::string>& resultados,
-                                 int& nv) {
+                                 int& nv) const {
     ++nv;
     if (nodo->hoja) {
         resultados.push_back(palabraActual);
@@ -172,7 +176,8 @@ void NodoRadixTrie::completarDFS(NodoRadixTrie* nodo,
     }
 }
 
-NodoRadixTrie* NodoRadixTrie::obtenerNodo(const std::string& w, int& nv) {
+const NodoRadixTrie* NodoRadixTrie::obtenerNodo(const std::string& w,
+                                               int& nv) const {
     ++nv;
     if (w.empty()) {
         return this;
@@ -248,7 +253,8 @@ void NodoRadixTrie::insertarPalabra(const std::string& w, int l, int p) {
 }
 
 std::vector<std::pair<int, int>> NodoRadixTrie::buscarPalabra(
-    const std::string& w, int& nv) {
+    const std::string& w, int& nv) const {
+    nv = 0;
     if (w.empty()) {
         ++nv;
         if (hoja) {
@@ -280,7 +286,7 @@ std::vector<std::pair<int, int>> NodoRadixTrie::buscarPalabra(
 }
 
 std::vector<std::pair<int, int>> NodoRadixTrie::buscarFrase(
-    const std::vector<std::string>& frase, int& nv) {
+    const std::vector<std::string>& frase, int& nv) const {
     nv = 0;
     if (frase.empty()) return {};
 
@@ -329,7 +335,8 @@ bool NodoRadixTrie::getHoja() const { return hoja; }
 
 int NodoRadixTrie::getNodos() { return nodos; }
 
-std::unordered_map<std::string, NodoRadixTrie*>& NodoRadixTrie::getHijos() {
+const std::unordered_map<std::string, NodoRadixTrie*>&
+NodoRadixTrie::getHijos() const {
     return hijos;
 }
 
