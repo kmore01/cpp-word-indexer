@@ -1,0 +1,227 @@
+Aquestes proves s'han fet amb el fitcher d'Alice.
+
+resultats amb el trie normal y preferencia d'autocompletat "el primer que troba":
+	[...]
+	The file selected was 'gutenberg.org_cache_epub_11_pg11.txt'
+	Reading file 'gutenberg.org_cache_epub_11_pg11.txt'...
+	File was read correctly.
+	==================================
+	Total nodes created in the normal Trie: 9695
+	Memory used by the normal Trie: 2 MB
+	Average height of the normal Trie: 7.57018
+	[...]
+	Enter the word you want to search: a
+	Word found in lines: 40     40     41 [...] 3715     3732     3739     
+  
+	Total words founds: 690
+	==================================
+	Total words found with the prefix 'a': 185
+	Top 5 most frequent words:
+
+	a     axes     axis     approach     appealed     
+	==================================
+	Search took: 0.094096 ms
+	Visited nodes: 1236
+	
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: ali
+	Couldn't find the word 'ali'
+	==================================
+	Total words found with the prefix 'ali': 4
+	Top 4 most frequent words:
+
+	alive     alice     aliceand     alices     
+	==================================
+	Search took: 0.007053 ms
+	Visited nodes: 28
+	
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: Alice
+	Word found in lines: 58     61     70  [...]   3355     3360    3364     
+
+	Total words founds: 385
+	==================================
+	Total words found with the prefix 'alice': 3
+	Top 3 most frequent words:
+
+	alice     aliceand     alices     
+	==================================
+	Search took: 0.051556 ms
+	Visited nodes: 26
+
+
+
+resultats amb el trie normal y preferencia d'autocompletat "amb més aparicions":
+	[...]
+	The file selected was 'gutenberg.org_cache_epub_11_pg11.txt'
+	Reading file 'gutenberg.org_cache_epub_11_pg11.txt'...
+	File was read correctly.
+	==================================
+	Total nodes created in the normal Trie: 9695
+	Memory used by the normal Trie: 2 MB
+	Average height of the normal Trie: 7.57018
+	[...]
+	Enter the word you want to search: a
+	Word found in lines: 40     40     41   [...]    3739    3741     3746     
+
+	Total words founds: 690
+	==================================
+	Total words found with the prefix 'a': 185
+	Top 5 most frequent words:
+
+	a     and     as     alice     at     
+	==================================
+	Search took: 0.084689 ms
+	Visited nodes: 1236
+	==================================
+	
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: ali
+	Couldn't find the word 'ali'
+	==================================
+	Total words found with the prefix 'ali': 4
+	Top 5 most frequent words:
+
+	alive     alice     aliceand     alices     
+	==================================
+	Search took: 0.008596 ms
+	Visited nodes: 28
+	==================================
+	
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: Alice
+	Word found in lines: 58     61     70   [...]  3355     3360    3364     
+
+	Total words founds: 385
+	==================================
+	Total words found with the prefix 'alice': 3
+	Top 5 most frequent words:
+
+	alice     aliceand     alices     
+	==================================
+	Search took: 0.036779 ms
+	Visited nodes: 26
+
+
+
+resultats amb el radix trie y preferencia d'autocompletat "el primer que troba":
+	[...]
+	The file selected was 'gutenberg.org_cache_epub_11_pg11.txt'
+	Reading file 'gutenberg.org_cache_epub_11_pg11.txt'...
+	File was read correctly.
+	==================================
+	Total nodes created in the radix Trie: 4034
+	Memory used by the radix Trie: 1 MB
+	Average height of the radix Trie: 5.32362
+	[...]
+	Enter the word you want to search: a
+	Word found in lines: 40     40     41   [...]    3739    3741     3746     
+
+	Total words founds: 690
+	==================================
+	Total words found with the prefix 'a': 185
+	Top 5 most frequent words:
+
+	a     axes     axis     aim     air     
+	==================================
+	Search took: 0.079008 ms
+	Visited nodes: 18
+	==================================
+		
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: ali
+	Couldn't find the word 'ali'
+	==================================
+	Total words found with the prefix 'ali': 4
+	Top 4 most frequent words:
+
+	alive     alice     aliceand     alices     
+	==================================
+	Search took: 0.012894 ms
+	Visited nodes: 20
+	==================================
+		
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: Alice
+	Word found in lines: 58     61     70  [...]  3355     3360     3364     
+
+	Total words founds: 385
+	==================================
+	Total words found with the prefix 'alice': 3
+	Top 3 most frequent words:
+
+	alice     aliceand     alices     
+	==================================
+	Search took: 0.048561 ms
+	Visited nodes: 19
+
+
+
+resultats amb el radix trie y preferencia d'autocompletat "amb més aparicions":
+	[...]
+	The file selected was 'gutenberg.org_cache_epub_11_pg11.txt'
+	Reading file 'gutenberg.org_cache_epub_11_pg11.txt'...
+	File was read correctly.
+	==================================
+	Total nodes created in the radix Trie: 4034
+	Memory used by the radix Trie: 1 MB
+	Average height of the radix Trie: 5.32362
+	[...]
+	Enter the word you want to search: a
+	Word found in lines: 40     40     41  [...]  3739    3741     3746     
+
+	Total words founds: 690
+	==================================
+	Total words found with the prefix 'a': 185
+	Top 5 most frequent words:
+
+	and     a     alice     as     at     
+	==================================
+	Search took: 0.071524 ms
+	Visited nodes: 242
+	==================================
+		
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: ali
+	Couldn't find the word 'ali'
+	==================================
+	Total words found with the prefix 'ali': 4
+	Top 5 most frequent words:
+
+	alice     alices     alive     aliceand     
+	==================================
+	Search took: 0.017062 ms
+	Visited nodes: 20
+	==================================
+		
+	
+	#######################################################################################
+	[...]
+	Enter the word you want to search: Alice
+	Word found in lines: 58     61     70   [...]   3355     3360    3364     
+
+	Total words founds: 385
+	==================================
+	Total words found with the prefix 'alice': 3
+	Top 5 most frequent words:
+
+	alice     alices     aliceand     
+	==================================
+	Search took: 0.062657 ms
+	Visited nodes: 19
+	
+
